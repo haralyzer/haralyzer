@@ -16,3 +16,12 @@ def har_data(request):
         with open(full_path) as f:
             return json.loads(f.read())
     return load_doc
+
+
+@pytest.fixture
+def header_types(request):
+    """
+    Just returns all the headers we need to test
+    """
+    return ['content-length', 'content-encoding', 'accept-ranges', 'vary',
+            'connection', 'via', 'cache-control', 'date', 'content-type', 'age']
