@@ -1,1 +1,1 @@
-from .parser import HarParser
+from .assets import HarParser, HarPage

@@ -1,15 +1,162 @@
-class HarPage(object):
+import datetime
+import dateutil
+from dateutil import parser
+assert parser
+import re
 
-    def __init__(self, parser, page_id):
+
+class HarParser(object):
+
+    def __init__(self, har_data=None):
         """
         A Basic HAR parser that also adds helpful stuff for analyzing the
         performance of a web page.
 
-        :param parser: a HarParser object
-        :param page_id: ``str`` of the page ID
+        :param har: a ``dict`` representing the JSON of a HAR file (i.e. - you
+        need to load the HAR data into a string and use json.loads or
+        requests.json() if you are pulling the data via HTTP.
         """
-        self.parser = parser
+        if not har_data or not isinstance(har_data, dict):
+            raise ValueError('A dict() representation of a HAR file is required'
+                             ' to instantiate this class. Please RTFM.')
+        self.har_data = har_data['log']
+
+    def match_headers(self, entry, header_type, header, value, regex=True):
+        """
+        Tiny little helper function to match headers.
+
+        Since the output of headers might use different case, like:
+
+            'content-type' vs 'Content-Type'
+
+        This function is case-insensitive
+
+        :param entry: entry object
+        :param header_type: ``str`` of header type. Valid values:
+
+            * 'request'
+            * 'response'
+
+        :param header: ``str`` of the header to search for
+        :param value: ``str`` of value to search for
+        :param regex: ``bool`` indicating whether to use a regex for matching,
+        or a literal string match.
+        :returns: a ``bool`` indicating whether a match was found
+        """
+        if header_type not in entry:
+            raise ValueError('Invalid header_type, should be either:\n\n'
+                             '* \'request\'\n*\'response\'')
+
+        for h in entry[header_type]['headers']:
+            if h['name'].lower() == header.lower() and h['value'] is not None:
+                if regex and re.search(value, h['value'], flags=re.IGNORECASE):
+                    return True
+                elif value == h['value']:
+                    return True
+        return False
+
+    def match_request_type(self, entry, request_type, regex=True):
+        """
+        Helper function that returns request types based on the given regex
+
+        :param entry: entry object to analyze
+        :param request_type: ``str`` of request type to match
+        :param regex: ``bool`` indicating whether to use a regex or string match
+        """
+        if regex:
+            return re.search(request_type, entry['request']['method'],
+                             flags=re.IGNORECASE) is not None
+        else:
+            return entry['request']['method'] == request_type
+
+    def match_status_code(self, entry, status_code, regex=True):
+        """
+        Helper function that returns request types based on the given regex
+
+        NOTE: This is doing a STRING comparison NOT NUMERICAL
+
+        :param entry: entry object to analyze
+        :param request_type: ``regex`` of request type to match
+        """
+        if regex:
+            return re.search(status_code,
+                             str(entry['response']['status'])) is not None
+        else:
+            return str(entry['response']['status']) == status_code
+
+    def create_asset_timeline(self, asset_list):
+        """
+        Returns a ``dict`` of the timeline for the requested assets. The key is
+        a datetime object (down to the millisecond) of ANY time where at least
+        one of the requested assets was loaded. The value is a ``list`` of ALL
+        assets that were loading at that time.
+
+        :param asset_list: ``list`` of the assets to create a timeline for.
+        """
+        results = dict()
+        # Return None if none of these assets were on the page
+        if asset_list is None:
+            return None
+        for asset in asset_list:
+            time_key = dateutil.parser.parse(asset['startedDateTime'])
+            print time_key
+            load_time = int(asset['time'])
+            # Add the start time and asset to the results dict
+            if time_key in results:
+                results[time_key].append(asset)
+            else:
+                results[time_key] = [asset]
+            print results.keys()
+            # For each millisecond the asset was loading, insert the asset
+            # into the appropriate key of the results dict. Starting the range()
+            # index at 1 because we already inserted the first millisecond.
+            for t in range(1, load_time):
+                time_key = time_key + datetime.timedelta(milliseconds=1)
+                if time_key in results:
+                    results[time_key].append(asset)
+                else:
+                    results[time_key] = [asset]
+                print results.keys()
+
+        return results
+
+    @property
+    def pages(self):
+        pages = []
+        for page_id in self.har_data['pages']:
+            page = HarPage(page_id, parser=self)
+            pages.append(page)
+
+    @property
+    def browser(self):
+        return self.har_data['browser']
+
+    @property
+    def version(self):
+        return self.har_data['version']
+
+    @property
+    def creator(self):
+        return self.har_data['creator']
+
+
+class HarPage(object):
+
+    def __init__(self, page_id, parser=None, har_data=None):
+        """
+        An object representing one page of a HAR resource
+
+        :param page_id: ``str`` of the page ID
+        :param parser: a HarParser object
+        :param har_data: ``dict`` of a file HAR file
+        """
         self.page_id = page_id
+        if parser is None and har_data is None:
+            raise ValueError('Either parser or har_data is required')
+        if parser:
+            self.parser = parser
+        else:
+            self.parser = HarParser(har_data=har_data)
 
     def filter_entries(self, request_type='', content_type='',
                        status_code='', regex=True):
@@ -47,15 +194,10 @@ class HarPage(object):
     def get_load_time(self, request_type='.*', content_type='.*',
                       status_code='.*', async=True):
         """
-        Returns a ``dict`` of the timeline for the requested assets. The key is
-        a datetime object (down to the millisecond) of ANY time where at least
-        one of the requested assets was loaded. The value is a list of ALL
-        assets that were loading at that time.
-
         This method can return the TOTAL load time for the assets or the ACTUAL
         load time, the difference being that the actual load time takes
         asyncronys transactions into account. So, if you want the total load
-        time, set async=True.
+        time, set async=False.
 
         EXAMPLE:
 
@@ -76,15 +218,15 @@ class HarPage(object):
                 time += entry['time']
             return time
         else:
-            return len(self.parser._create_asset_timeline(entries))
+            return len(self.parser.create_asset_timeline(entries))
 
     @property
     def entries(self):
-        # Make sure the entries are sorted chronologically
         page_entries = []
         for entry in self.parser.har_data['entries']:
             if entry['pageref'] == self.page_id:
                 page_entries.append(entry)
+        # Make sure the entries are sorted chronologically
         return sorted(page_entries,
                       key=lambda asset: asset['startedDateTime'])
 
