@@ -13,7 +13,7 @@ class HarParser(object):
         performance of a web page.
 
         :param har: a ``dict`` representing the JSON of a HAR file (i.e. - you
-        need to load the HAR data into a string and use json.loads or
+        need to load the HAR data into a string using json.loads or
         requests.json() if you are pulling the data via HTTP.
         """
         if not har_data or not isinstance(har_data, dict):
@@ -23,7 +23,7 @@ class HarParser(object):
 
     def match_headers(self, entry, header_type, header, value, regex=True):
         """
-        Tiny little helper function to match headers.
+        Function to match headers.
 
         Since the output of headers might use different case, like:
 
@@ -41,6 +41,7 @@ class HarParser(object):
         :param value: ``str`` of value to search for
         :param regex: ``bool`` indicating whether to use a regex for matching,
         or a literal string match.
+
         :returns: a ``bool`` indicating whether a match was found
         """
         if header_type not in entry:
@@ -119,6 +120,10 @@ class HarParser(object):
 
     @property
     def pages(self):
+        """
+        This is a list of HarPage objects, each of which represents a page
+        from the HAR file.
+        """
         pages = []
         for har_page in self.har_data['pages']:
             page = HarPage(har_page['id'], parser=self)
@@ -189,26 +194,25 @@ class HarPage(object):
             Oh lords of python.... please forgive my soul
             """
             valid_entry = True
-            if request_type is not None:
-                if not self.parser.match_request_type(
+            p = self.parser
+            if request_type is not None and not p.match_request_type(
                     entry, request_type, regex=regex):
-                    valid_entry = False
-            if content_type is not None:
-                if not self.parser.match_headers(
-                    entry, 'response', 'Content-Type', content_type, regex=regex):
-                    valid_entry = False
-            if status_code is not None:
-                if not self.parser.match_status_code(
+                valid_entry = False
+            if content_type is not None and not p.match_headers(
+                    entry, 'response', 'Content-Type', content_type,
+                    regex=regex):
+                valid_entry = False
+            if status_code is not None and not p.match_status_code(
                     entry, status_code, regex=regex):
-                    valid_entry = False
+                valid_entry = False
 
             if valid_entry:
                 results.append(entry)
 
         return results
 
-    def get_load_time(self, request_type='.*', content_type='.*',
-                      status_code='.*', async=True):
+    def get_load_time(self, request_type=None, content_type=None,
+                      status_code=None, async=True):
         """
         This method can return the TOTAL load time for the assets or the ACTUAL
         load time, the difference being that the actual load time takes
@@ -235,6 +239,18 @@ class HarPage(object):
             return time
         else:
             return len(self.parser.create_asset_timeline(entries))
+
+    def get_total_size(self, entries):
+        """
+        Returns the total size of a collection of entries.
+
+        :param entries: ``list`` of entries to calculate the total size of.
+        """
+        size = 0
+        for entry in entries:
+            if entry['response']['bodySize'] > 0:
+                size += entry['response']['bodySize']
+        return size
 
     @property
     def entries(self):
@@ -265,14 +281,14 @@ class HarPage(object):
         """
         Returns a list of images, each of which is an 'entry' data object.
         """
-        return self.filter_entries(content_type='image')
+        return self.filter_entries(content_type='image.*')
 
     @property
     def css_files(self):
         """
         Returns a list of css files, each of which is an 'entry' data object.
         """
-        return self.filter_entries(content_type='css')
+        return self.filter_entries(content_type='.*css')
 
     @property
     def js_files(self):
@@ -280,14 +296,14 @@ class HarPage(object):
         Returns a list of javascript files, each of which is an 'entry'
         data object.
         """
-        return self.filter_entries(content_type='javascript')
+        return self.filter_entries(content_type='.*javascript')
 
     @property
-    def html_files(self):
+    def text_files(self):
         """
-        Returns a list of all HTML elements, each of which is an entry object.
+        Returns a list of all text elements, each of which is an entry object.
         """
-        return self.filter_entries(content_type='html')
+        return self.filter_entries(content_type='text.*')
 
     @property
     def audio_files(self):
@@ -301,7 +317,25 @@ class HarPage(object):
         """
         Returns a list of all HTML elements, each of which is an entry object.
         """
-        return self.filter_entries(content_type='video')
+        # All video/.* types, as well as flash
+        return self.filter_entries(content_type='video.*|.*flash')
+
+    @property
+    def misc_files(self):
+        """
+        We need to put misc files somewhere....
+        """
+        entries = []
+        for entry in self.entries:
+            if(entry not in self.image_files and
+               entry not in self.css_files and
+               entry not in self.js_files and
+               entry not in self.text_files and
+               entry not in self.audio_files and
+               entry not in self.video_files):
+                entries.append(entry)
+
+        return entries
 
     @property
     def actual_page(self):
@@ -328,17 +362,40 @@ class HarPage(object):
         """
         Returns the total page size (in bytes) including all assets
         """
-        size = 0
-        for entry in self.entries:
-            if entry['response']['bodySize'] and \
-                    entry['response']['bodySize'] > 0:
-                size += entry['response']['bodySize']
-        return size
+        return self.get_total_size(self.entries)
+
+    @property
+    def total_text_size(self):
+        """
+        Total size of all images as transferred via HTTP
+        """
+        return self.get_total_size(self.text_files)
+
+    @property
+    def total_css_size(self):
+        """
+        Total size of all css files as transferred via HTTP
+        """
+        return self.get_total_size(self.css_files)
+
+    @property
+    def total_js_size(self):
+        """
+        Total size of all javascript files as transferred via HTTP
+        """
+        return self.get_total_size(self.javascript_files)
+
+    @property
+    def total_image_size(self):
+        """
+        total size of all image files as transferred via HTTP
+        """
+        return self.get_total_size(self.image_files)
 
     @property
     def content_load_time(self):
         """
-        Returns the full load time (in bytes) of the page itself
+        Returns the full load time (in milliseconds) of the page itself
         """
         # Assuming for right now that the HAR file is only for one page
         return self.pageTimings['onContentLoad']

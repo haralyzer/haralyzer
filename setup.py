@@ -17,7 +17,7 @@ The full documentation is in the repository, run 'make doc' to get it."""
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
-    name='har',
+    name='haralyzer',
     version='0.0.1',
     description='A python framework for getting useful stuff out of HAR files',
     long_description=readme + '\n\n' + doclink + '\n\n' + history,
@@ -25,9 +25,9 @@ setup(
     author_email='justincrown1@gmail.com',
     url='https://github.com/mrname/har',
     packages=[
-        'har'
+        'haralyzer'
     ],
-    package_dir={'har': 'har'},
+    package_dir={'haralyzer': 'haralyzer'},
     license='Commercial',
     zip_safe=False,
     keywords='har',

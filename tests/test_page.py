@@ -50,7 +50,6 @@ def test_filter_entries(har_data):
     entries = page.filter_entries(request_type='.*ET', content_type='image.*')
     assert len(entries) == 1
     for entry in entries:
-        print entry['response']['headers']
         assert entry['request']['method'] == 'GET'
         for header in entry['response']['headers']:
             if header['name'] == 'Content-Type':
@@ -75,6 +74,27 @@ def test_filter_entries(har_data):
                                   status_code='3.*')
 
 
+def test_get_load_time(har_data):
+    """
+    Tests HarPage.get_load_time()
+    """
+    init_data = har_data('humanssuck.net.har')
+    page = HarPage(PAGE_ID, har_data=init_data)
+
+    assert page.get_load_time(request_type='GET') == 463
+    assert page.get_load_time(request_type='GET', async=False) == 843
+    assert page.get_load_time(content_type='image.*') == 304
+    assert page.get_load_time(status_code='2.*') == 463
+
+
+def test_entries(har_data):
+    init_data = har_data('humanssuck.net.har')
+    page = HarPage(PAGE_ID, har_data=init_data)
+
+    for entry in page.entries:
+        assert entry['pageref'] == page.page_id
+
+
 def test_file_types(har_data):
     """
     Test file type properties
@@ -89,7 +109,7 @@ def test_file_types(har_data):
     for k, v in file_types.iteritems():
         for asset in getattr(page, k, None):
             assert _correct_file_type(asset, v)
-    pass
+
 
 def test_request_types(har_data):
     """
@@ -104,6 +124,16 @@ def test_request_types(har_data):
 
     for req in page.post_requests:
         assert req['request']['method'] == 'POST'
+
+
+def test_sizes(har_data):
+    init_data = har_data('humanssuck.net.har')
+    page = HarPage(PAGE_ID, har_data=init_data)
+
+    assert page.page_size == 238
+    assert page.total_page_size == 62204
+
+
 
 def test_load_times(har_data):
     init_data = har_data('humanssuck.net.har')
