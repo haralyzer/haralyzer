@@ -2,8 +2,9 @@ from datetime import datetime
 import dateutil
 import pytest
 from har import HarPage, HarParser
+import re
 
-PAGE_ID = 'page_03'
+PAGE_ID = 'page_3'
 
 def test_init(har_data):
     """
@@ -20,6 +21,7 @@ def test_init(har_data):
     page = HarPage(PAGE_ID, parser=parser)
     assert isinstance(page, HarPage)
 
+    assert len(page.entries) == 4
     # Make sure that the entries are actually in order. Going a little bit
     # old school here.
     for index in range(0, len(page.entries)):
@@ -30,20 +32,63 @@ def test_init(har_data):
                 page.entries[index + 1]['startedDateTime'])
             assert current_date <= next_date
 
+
+def test_filter_entries(har_data):
+    """
+    Tests ability to filter entries, with or without regex
+    """
+    init_data = har_data('humanssuck.net.har')
+    page = HarPage(PAGE_ID, har_data=init_data)
+
+    # Filter by request type only
+    entries = page.filter_entries(request_type='.*ET')
+    assert len(entries) == 4
+    for entry in entries:
+        assert entry['request']['method'] == 'GET'
+
+    # Filter by request type and content_type
+    entries = page.filter_entries(request_type='.*ET', content_type='image.*')
+    assert len(entries) == 1
+    for entry in entries:
+        print entry['response']['headers']
+        assert entry['request']['method'] == 'GET'
+        for header in entry['response']['headers']:
+            if header['name'] == 'Content-Type':
+                assert re.search('image.*', header['value'])
+
+    # Filter by request type, content type, and status code
+    entries = page.filter_entries(request_type='.*ET', content_type='image.*',
+                                  status_code='2.*')
+    assert len(entries) == 1
+    for entry in entries:
+        assert entry['request']['method'] == 'GET'
+        assert re.search('2.*', str(entry['response']['status']))
+        for header in entry['response']['headers']:
+            if header['name'] == 'Content-Type':
+                assert re.search('image.*', header['value'])
+
+    entries = page.filter_entries(request_type='.*ST')
+    assert len(entries) == 0
+    entries = page.filter_entries(request_type='.*ET', content_type='video.*')
+    assert len(entries) == 0
+    entries = page.filter_entries(request_type='.*ET', content_type='image.*',
+                                  status_code='3.*')
+
+
 def test_file_types(har_data):
     """
     Test file type properties
     """
     init_data = har_data('humanssuck.net.har')
-    page = HarPage(har_data=init_data)
+    page = HarPage(PAGE_ID, har_data=init_data)
 
     file_types = {'image_files': 'image', 'css_files': 'css',
                   'js_files': 'javascript', 'audio_files': 'audio',
                   'video_files': 'video'}
 
-    #for k, v in file_types.iteritems():
-    #    for asset in getattr(h, k, None):
-    #        assert _correct_file_type(asset, v)
+    for k, v in file_types.iteritems():
+        for asset in getattr(page, k, None):
+            assert _correct_file_type(asset, v)
     pass
 
 def test_request_types(har_data):
@@ -51,7 +96,7 @@ def test_request_types(har_data):
     Test request type filters
     """
     init_data = har_data('humanssuck.net.har')
-    page = HarPage(har_data=init_data)
+    page = HarPage(PAGE_ID, har_data=init_data)
 
     # Check request type lists
     for req in page.get_requests:
@@ -62,7 +107,7 @@ def test_request_types(har_data):
 
 def test_load_times(har_data):
     init_data = har_data('humanssuck.net.har')
-    page = HarPage(har_data=init_data)
+    page = HarPage(PAGE_ID, har_data=init_data)
     pass
     # Check initial page load
     # assert h.initial_page['request']['url'] == 'http://humanssuck.net/'

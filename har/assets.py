@@ -99,14 +99,12 @@ class HarParser(object):
             return None
         for asset in asset_list:
             time_key = dateutil.parser.parse(asset['startedDateTime'])
-            print time_key
             load_time = int(asset['time'])
             # Add the start time and asset to the results dict
             if time_key in results:
                 results[time_key].append(asset)
             else:
                 results[time_key] = [asset]
-            print results.keys()
             # For each millisecond the asset was loading, insert the asset
             # into the appropriate key of the results dict. Starting the range()
             # index at 1 because we already inserted the first millisecond.
@@ -116,16 +114,17 @@ class HarParser(object):
                     results[time_key].append(asset)
                 else:
                     results[time_key] = [asset]
-                print results.keys()
 
         return results
 
     @property
     def pages(self):
         pages = []
-        for page_id in self.har_data['pages']:
-            page = HarPage(page_id, parser=self)
+        for har_page in self.har_data['pages']:
+            page = HarPage(har_page['id'], parser=self)
             pages.append(page)
+
+        return pages
 
     @property
     def browser(self):
@@ -158,8 +157,16 @@ class HarPage(object):
         else:
             self.parser = HarParser(har_data=har_data)
 
-    def filter_entries(self, request_type='', content_type='',
-                       status_code='', regex=True):
+        # Init properties that mimic the actual 'pages' object from the HAR file
+        raw_data = self.parser.har_data
+        for page in raw_data['pages']:
+            if page['id'] == self.page_id:
+                self.title = page['title']
+                self.startedDateTime = page['startedDateTime']
+                self.pageTimings = page['pageTimings']
+
+    def filter_entries(self, request_type=None, content_type=None,
+                       status_code=None, regex=True):
         """
         Returns a ``list`` of entry objects based on the filter criteria.
 
@@ -170,7 +177,6 @@ class HarPage(object):
         or an exact string match
         """
         results = []
-        request_type = request_type.upper()
 
         for entry in self.entries:
             """
@@ -182,11 +188,21 @@ class HarPage(object):
 
             Oh lords of python.... please forgive my soul
             """
-            if (self.parser.match_request_type(entry, request_type) and
-                    self.parser.match_status_code(entry, status_code,
-                                                  regex=regex) and
-                    self.parser.match_headers(entry, 'request', 'Content-Type',
-                                        regex=regex)):
+            valid_entry = True
+            if request_type is not None:
+                if not self.parser.match_request_type(
+                    entry, request_type, regex=regex):
+                    valid_entry = False
+            if content_type is not None:
+                if not self.parser.match_headers(
+                    entry, 'response', 'Content-Type', content_type, regex=regex):
+                    valid_entry = False
+            if status_code is not None:
+                if not self.parser.match_status_code(
+                    entry, status_code, regex=regex):
+                    valid_entry = False
+
+            if valid_entry:
                 results.append(entry)
 
         return results
@@ -228,7 +244,7 @@ class HarPage(object):
                 page_entries.append(entry)
         # Make sure the entries are sorted chronologically
         return sorted(page_entries,
-                      key=lambda asset: asset['startedDateTime'])
+                      key=lambda entry: entry['startedDateTime'])
 
     @property
     def get_requests(self):
@@ -288,9 +304,10 @@ class HarPage(object):
         return self.filter_entries(content_type='video')
 
     @property
-    def initial_page(self):
+    def actual_page(self):
         """
-        Returns the first entry object that does not have a redirect status.
+        Returns the first entry object that does not have a redirect status,
+        indicating that it is the actual page we care about (after redirects).
         """
         for entry in self.entries:
             if not (entry['response']['status'] >= 300 and
@@ -304,7 +321,7 @@ class HarPage(object):
         """
         # The initial request should always be the first one in the list that
         # does not redirect
-        return self.initial_page['response']['bodySize']
+        return self.actual_page['response']['bodySize']
 
     @property
     def total_page_size(self):
@@ -319,12 +336,12 @@ class HarPage(object):
         return size
 
     @property
-    def load_time(self):
+    def content_load_time(self):
         """
         Returns the full load time (in bytes) of the page itself
         """
         # Assuming for right now that the HAR file is only for one page
-        return self.initial_page['time']
+        return self.pageTimings['onContentLoad']
 
     @property
     def total_load_time(self):
@@ -332,7 +349,7 @@ class HarPage(object):
         Returns the full load time (in bytes) of all assets on the page
         """
         # Assuming for right now that the HAR file is only for one page
-        return self.pages[0]['pageTimings']['onLoad']
+        return self.pageTimings['onLoad']
 
     @property
     def image_load_time(self, async=True):

@@ -3,7 +3,7 @@ import dateutil
 from dateutil import parser
 assert parser
 import pytest
-from har import HarParser
+from har import HarParser, HarPage
 
 
 # This has two of each common content type as the values for each content-type
@@ -16,11 +16,16 @@ CONTENT_TYPES = ['application/json', 'application/javascript',
                  'image/jpeg', '']
 
 
-def test_init():
+def test_init(har_data):
     # Make sure we only tolerate valid input
     with pytest.raises(ValueError):
         har_parser = HarParser('please_dont_work')
         assert har_parser
+
+    har_data = har_data('humanssuck.net.har')
+    har_parser = HarParser(har_data)
+    for page in har_parser.pages:
+        assert isinstance(page, HarPage)
 
 
 def test_match_headers(har_data):
