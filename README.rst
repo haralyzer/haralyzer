@@ -1,6 +1,12 @@
-===========================
-Haralyzer version |version|
-===========================
+=========
+Haralyzer
+=========
+
+.. image:: https://travis-ci.org/mrname/haralyzer.svg?branch=master
+    :target: https://travis-ci.org/mrname/haralyzer
+
+.. image:: https://readthedocs.org/projects/haralyzer/badge/?version=latest
+    :target: http://haralyzer.readthedocs.org/en/latest/
 
 A Python Framework For Using HAR Files To Analyze Web Pages.
 
@@ -12,7 +18,11 @@ on a HAR file. ``HarParser()`` represents a full file (which might have
 multiple pages), and ``HarPage()`` represents a single page from said file.
 
 ``HarParser`` has a couple of helpful methods for analyzing single entries
-from a HAR file, but most of the pertinent functions are inside of the page.
+from a HAR file, but most of the pertinent functions are inside of the page
+object.
+
+``haralyzer`` was designed to be easy to use, but you can also access more
+powerful functions directly.
 
 Quick Intro
 -----------
