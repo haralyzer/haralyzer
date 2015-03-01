@@ -1,3 +1,7 @@
+"""
+Provides all of the main functional classes for analyzing HAR files
+"""
+
 import datetime
 import dateutil
 from dateutil import parser
@@ -6,12 +10,13 @@ import re
 
 
 class HarParser(object):
+    """
+    A Basic HAR parser that also adds helpful stuff for analyzing the
+    performance of a web page.
+    """
 
     def __init__(self, har_data=None):
         """
-        A Basic HAR parser that also adds helpful stuff for analyzing the
-        performance of a web page.
-
         :param har: a ``dict`` representing the JSON of a HAR file (i.e. - you
         need to load the HAR data into a string using json.loads or
         requests.json() if you are pulling the data via HTTP.
@@ -111,7 +116,7 @@ class HarParser(object):
             # For each millisecond the asset was loading, insert the asset
             # into the appropriate key of the results dict. Starting the range()
             # index at 1 because we already inserted the first millisecond.
-            for t in range(1, load_time):
+            for _ in range(1, load_time):
                 time_key = time_key + datetime.timedelta(milliseconds=1)
                 if time_key in results:
                     results[time_key].append(asset)
@@ -128,7 +133,7 @@ class HarParser(object):
         """
         pages = []
         for har_page in self.har_data['pages']:
-            page = HarPage(har_page['id'], parser=self)
+            page = HarPage(har_page['id'], har_parser=self)
             pages.append(page)
 
         return pages
@@ -147,20 +152,21 @@ class HarParser(object):
 
 
 class HarPage(object):
+    """
+    An object representing one page of a HAR resource
+    """
 
-    def __init__(self, page_id, parser=None, har_data=None):
+    def __init__(self, page_id, har_parser=None, har_data=None):
         """
-        An object representing one page of a HAR resource
-
         :param page_id: ``str`` of the page ID
         :param parser: a HarParser object
         :param har_data: ``dict`` of a file HAR file
         """
         self.page_id = page_id
-        if parser is None and har_data is None:
+        if har_parser is None and har_data is None:
             raise ValueError('Either parser or har_data is required')
-        if parser:
-            self.parser = parser
+        if har_parser:
+            self.parser = har_parser
         else:
             self.parser = HarParser(har_data=har_data)
 
@@ -388,7 +394,7 @@ class HarPage(object):
         """
         Total size of all javascript files as transferred via HTTP
         """
-        return self.get_total_size(self.javascript_files)
+        return self.get_total_size(self.js_files)
 
     @property
     def total_image_size(self):

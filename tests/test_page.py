@@ -1,4 +1,3 @@
-from datetime import datetime
 import dateutil
 import pytest
 from haralyzer import HarPage, HarParser
@@ -18,7 +17,7 @@ def test_init(har_data):
     page = HarPage(PAGE_ID, har_data=init_data)
     assert isinstance(page, HarPage)
     parser = HarParser(init_data)
-    page = HarPage(PAGE_ID, parser=parser)
+    page = HarPage(PAGE_ID, har_parser=parser)
     assert isinstance(page, HarPage)
 
     assert len(page.entries) == 4

@@ -44,7 +44,7 @@ The ``HarPage`` object contains most of the goods you need to easily analyze a
 page. It has helper methods that are accessible, but most of the data you need is
 in properties for easy access. You can create a HarPage object directly by giving
 it the page ID (yes, I know it is stupid, it's just how HAR is organized), and either
-a ``HarParser`` with `parser=parser`, or a ``dict`` representing the JSON of a full HAR
+a ``HarParser`` with `har_parser=parser`, or a ``dict`` representing the JSON of a full HAR
 file (see example above) with `har_data=har_data`::
 
     import json
