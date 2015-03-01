@@ -2,4 +2,6 @@ language: python
 install:
   - "pip install ."
   - "pip install -r requirements.txt"
-script: py.test tests/
+script: py.test tests/ -v --cov haralyzer --cov-report term-missing
+after_success:
+  - coveralls
