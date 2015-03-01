@@ -18,7 +18,7 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
     name='haralyzer',
-    version='1.0.2',
+    version='1.0.3',
     description='A python framework for getting useful stuff out of HAR files',
     long_description=readme + '\n\n' + doclink + '\n\n' + history,
     author='Justin Crown',
