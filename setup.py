@@ -23,7 +23,8 @@ setup(
     long_description=readme + '\n\n' + doclink + '\n\n' + history,
     author='Justin Crown',
     author_email='justincrown1@gmail.com',
-    url='https://github.com/mrname/har',
+    url='https://github.com/mrname/haralyzer',
+    download_url='https://github.com/mrname/haralyzer/tarball/1.0',
     packages=[
         'haralyzer'
     ],
