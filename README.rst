@@ -8,6 +8,9 @@ Haralyzer
 .. image:: https://travis-ci.org/mrname/haralyzer.svg?branch=master
     :target: https://travis-ci.org/mrname/haralyzer
 
+.. image:: https://coveralls.io/repos/mrname/haralyzer/badge.svg?branch=master
+  :target: https://coveralls.io/r/mrname/haralyzer?branch=master
+
 .. image:: https://readthedocs.org/projects/haralyzer/badge/?version=latest
     :target: http://haralyzer.readthedocs.org/en/latest/
 
