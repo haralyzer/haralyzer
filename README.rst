@@ -1,6 +1,10 @@
-=========
-Haralyzer
-=========
+===========================
+Haralyzer version |version|
+===========================
+
+.. image:: https://travis-ci.org/mrname/haralyzer.svg?branch=master
+   :target: https://travis-ci.org/mrname/haralyzer
+   :alt: Build status
 
 A Python Framework For Using HAR Files To Analyze Web Pages.
 
