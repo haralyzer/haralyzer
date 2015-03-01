@@ -252,6 +252,8 @@ class HarPage(object):
                 size += entry['response']['bodySize']
         return size
 
+    # BEGIN PROPERTIES #
+
     @property
     def entries(self):
         page_entries = []
@@ -276,6 +278,7 @@ class HarPage(object):
         """
         return self.filter_entries(request_type='post')
 
+    # FILE TYPE PROPERTIES #
     @property
     def image_files(self):
         """
@@ -348,6 +351,7 @@ class HarPage(object):
                     entry['response']['status'] <= 399):
                 return entry
 
+    # ASSET SIZE PROPERTIES #
     @property
     def page_size(self):
         """
@@ -392,6 +396,7 @@ class HarPage(object):
         """
         return self.get_total_size(self.image_files)
 
+    # BROWSER (ASNYC) LOAD TIMES #
     @property
     def content_load_time(self):
         """
@@ -401,45 +406,95 @@ class HarPage(object):
         return self.pageTimings['onContentLoad']
 
     @property
+    def image_load_time(self):
+        """
+        Returns the browser load time for all images.
+        """
+        return self.get_load_time(content_type='image')
+
+    @property
+    def css_load_time(self):
+        """
+        Returns the browser load time for all CSS files.
+        """
+        return self.get_load_time(content_type='css')
+
+    @property
+    def js_load_time(self):
+        """
+        Returns the browser load time for all javascript files.
+        """
+        return self.get_load_time(content_type='javascript')
+
+    @property
+    def html_load_time(self):
+        """
+        Returns the browser load time for all html files.
+        """
+        return self.get_load_time(content_type='html')
+
+    @property
+    def audio_load_time(self):
+        """
+        Returns the browser load time for all audio files.
+        """
+        return self.get_load_time(content_type='audio')
+
+    @property
+    def video_load_time(self):
+        """
+        Returns the browser load time for all video files.
+        """
+        return self.get_load_time(content_type='video')
+
+    # TOTAL LOAD TIMES #
+
+    @property
     def total_load_time(self):
         """
-        Returns the full load time (in bytes) of all assets on the page
+        Returns the full load time (in ms) of all assets on the page
         """
         # Assuming for right now that the HAR file is only for one page
         return self.pageTimings['onLoad']
 
     @property
-    def image_load_time(self, async=True):
+    def total_image_load_time(self):
         """
         Returns the total load time for all images.
         """
-        return self.get_load_time(content_type='image', async=async)
+        return self.get_load_time(content_type='image', async=False)
 
     @property
-    def css_load_time(self, async=True):
+    def total_css_load_time(self):
         """
         Returns the total load time for all CSS files.
         """
-        return self.get_load_time(content_type='css', async=async)
+        return self.get_load_time(content_type='css', async=False)
 
     @property
-    def js_load_time(self, async=True):
+    def total_js_load_time(self):
         """
         Returns the total load time for all javascript files.
         """
-        return self.get_load_time(content_type='javascript', async=async)
+        return self.get_load_time(content_type='javascript', async=False)
 
     @property
-    def html_load_time(self, async=True):
+    def total_html_load_time(self):
         """
         Returns the total load time for all html files.
         """
-        return self.get_load_time(content_type='html', async=async)
+        return self.get_load_time(content_type='html', async=False)
 
     @property
-    def audio_load_time(self, async=True):
-        return self.get_load_time(content_type='audio', async=async)
+    def total_audio_load_time(self):
+        """
+        Returns the total load time for all audio files.
+        """
+        return self.get_load_time(content_type='audio', async=False)
 
     @property
-    def video_load_time(self, async=True):
-        return self.get_load_time(content_type='video', async=async)
+    def total_video_load_time(self):
+        """
+        Returns the total load time for all video files.
+        """
+        return self.get_load_time(content_type='video', async=False)
