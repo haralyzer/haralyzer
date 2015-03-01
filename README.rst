@@ -6,6 +6,10 @@ Haralyzer version |version|
    :target: https://travis-ci.org/mrname/haralyzer
    :alt: Build status
 
+.. image:: https://readthedocs.org/projects/haralyzer/badge/?version=latest
+   :target: http://haralyzer.readthedocs.org/en/latest/
+
+
 A Python Framework For Using HAR Files To Analyze Web Pages.
 
 Overview
