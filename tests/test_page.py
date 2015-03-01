@@ -102,13 +102,16 @@ def test_file_types(har_data):
     init_data = har_data('cnn.har')
     page = HarPage(PAGE_ID, har_data=init_data)
 
-    file_types = {'image_files': 'image', 'css_files': 'css',
-                  'js_files': 'javascript', 'audio_files': 'audio',
-                  'video_files': 'video', 'text_files': 'text',
-                  'misc_files': 'font-woff'}
+    file_types = {'image_files': ['image'], 'css_files': ['css'],
+                  'js_files': ['javascript'], 'audio_files': ['audio'],
+                  'video_files': ['video', 'flash'], 'text_files': ['text']}
+
+    # TODO - Add a test for page.misc_files
 
     for k, v in file_types.iteritems():
         for asset in getattr(page, k, None):
+            if not _correct_file_type(asset, v):
+                print asset
             assert _correct_file_type(asset, v)
 
 
@@ -172,7 +175,7 @@ def test_load_times(har_data):
     assert page.total_video_load_time == 0
 
 
-def _correct_file_type(entry, file_type):
+def _correct_file_type(entry, file_types):
     for header in entry['response']['headers']:
         if header['name'] == 'Content-Type':
-            return file_type in header['value']
+            return any(ft in header['value'] for ft in file_types)
