@@ -1,4 +1,5 @@
 language: python
 install:
-  - "python setup.py install"
+  - "pip install ."
+  - "pip install -r requirements.txt"
 script: py.test tests/
