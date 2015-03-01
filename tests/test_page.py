@@ -5,6 +5,7 @@ import re
 
 PAGE_ID = 'page_3'
 
+
 def test_init(har_data):
     """
     Test the object loading
@@ -98,12 +99,13 @@ def test_file_types(har_data):
     """
     Test file type properties
     """
-    init_data = har_data('humanssuck.net.har')
+    init_data = har_data('cnn.har')
     page = HarPage(PAGE_ID, har_data=init_data)
 
     file_types = {'image_files': 'image', 'css_files': 'css',
                   'js_files': 'javascript', 'audio_files': 'audio',
-                  'video_files': 'video'}
+                  'video_files': 'video', 'text_files': 'text',
+                  'misc_files': 'font-woff'}
 
     for k, v in file_types.iteritems():
         for asset in getattr(page, k, None):
@@ -131,9 +133,17 @@ def test_sizes(har_data):
 
     assert page.page_size == 238
     assert page.total_page_size == 62204
+    assert page.total_text_size == 246
+    assert page.total_css_size == 8
+    assert page.total_js_size == 38367
+    assert page.total_image_size == 23591
 
 
 def test_load_times(har_data):
+    """
+    This whole test really needs better sample data. I need to make a
+    web page with like 2-3 of each asset type to really test the load times.
+    """
     init_data = har_data('humanssuck.net.har')
     page = HarPage(PAGE_ID, har_data=init_data)
     # Check initial page load
@@ -141,11 +151,25 @@ def test_load_times(har_data):
 
     # Check initial page load times
     assert page.initial_load_time == 153
-    assert page.total_load_time == 567
+    assert page.content_load_time == 543
+    # Check content type browser (async) load times
+    assert page.image_load_time == 304
+    assert page.css_load_time == 76
+    assert page.js_load_time == 310
+    assert page.html_load_time == 153
+    # TODO - Need to get sample data for these types
+    assert page.audio_load_time == 0
+    assert page.video_load_time == 0
 
-    # Check sizes. Kind of lame, but the page sizes are hardcoded, and were
-    # confirmed with other services that parse HAR files (like GTMetrix)
-    # assert h.total_page_size == 62204
+    # Total load times
+    assert page.total_load_time == 567
+    assert page.total_image_load_time == 304
+    assert page.total_css_load_time == 76
+    assert page.total_js_load_time == 310
+    assert page.total_html_load_time == 153
+    # TODO - Need to get sample data for these types
+    assert page.total_audio_load_time == 0
+    assert page.total_video_load_time == 0
 
 
 def _correct_file_type(entry, file_type):

@@ -27,6 +27,10 @@ def test_init(har_data):
     for page in har_parser.pages:
         assert isinstance(page, HarPage)
 
+    assert har_parser.browser == {'name': 'Firefox', 'version': '25.0.1'}
+    assert har_parser.version == '1.1'
+    assert har_parser.creator == {'name': 'Firebug', 'version': '1.12'}
+
 
 def test_match_headers(har_data):
 
@@ -37,6 +41,16 @@ def test_match_headers(har_data):
     har_parser = HarParser(init_data)
 
     raw_headers = har_data('single_entry.har')
+
+    # Make sure that bad things happen if we don't give it response/request
+    test_data = {'captain beefheart':
+                    {'accept': '.*text/html,application/xhtml.*',
+                     'host': 'humanssuck.*',
+                     'accept-encoding': '.*deflate',
+                     },
+                 }
+    with pytest.raises(ValueError):
+        _headers_test(har_parser, raw_headers, test_data, True, True)
 
     # TEST THE REGEX FEATURE FIRST #
 

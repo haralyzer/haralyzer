@@ -102,9 +102,6 @@ class HarParser(object):
         :param asset_list: ``list`` of the assets to create a timeline for.
         """
         results = dict()
-        # Return None if none of these assets were on the page
-        if asset_list is None:
-            return None
         for asset in asset_list:
             time_key = dateutil.parser.parse(asset['startedDateTime'])
             load_time = int(asset['time'])
