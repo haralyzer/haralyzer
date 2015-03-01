@@ -22,9 +22,7 @@ HarParser
 
 The ``HarParser`` takes a single argument of a ``dict`` representing the JSON
 of a full HAR file. It has the same properties of the HAR file, EXCEPT that each
-page in HarParser.pages is a HarPage object.
-
-.. code block:: python
+page in HarParser.pages is a HarPage object::
 
     import json
     from haralyzer import HarParser, HarPage
@@ -32,10 +30,12 @@ page in HarParser.pages is a HarPage object.
     with open('har_data.har', 'r') as f:
         har_parser = HarParser(json.loads(f.read()))
 
-    print har_parser.browser (prints {u'name': u'Firefox', u'version': u'25.0.1'})
+    print har_parser.browser
+    # {u'name': u'Firefox', u'version': u'25.0.1'}
 
     for page in har_parser.pages:
-        assert isinstance(page, HarPage, None)    (returns True for each)
+        assert isinstance(page, HarPage, None)
+        # returns True for each
 
 HarPage
 +++++++
@@ -45,9 +45,7 @@ page. It has helper methods that are accessible, but most of the data you need i
 in properties for easy access. You can create a HarPage object directly by giving
 it the page ID (yes, I know it is stupid, it's just how HAR is organized), and either
 a ``HarParser`` with `parser=parser`, or a ``dict`` representing the JSON of a full HAR
-file (see example above) with `har_data=har_data`.
-
-.. code block:: python
+file (see example above) with `har_data=har_data`::
 
     import json
     from haralyzer import HarPage
@@ -87,9 +85,7 @@ Advanced Usage
 ==============
 
 ``HarPage`` includes a lot of helpful properties, but they are all
-easily produced using the public methods of ``HarParser`` and ``HarPage``.
-
-.. code block:: python
+easily produced using the public methods of ``HarParser`` and ``HarPage``::
 
     import json
     from haralyzer import HarPage
@@ -129,10 +125,9 @@ This could potentially be out of date, so please check out the sphinx docs.
 More.... Advanced Usage
 =======================
 
-All of the HarPage methods above leverage stuff from the HarParser, some of which can be useful
-for my complex operations. They either operate on a single entry (from a HarPage) or a ``list`` of entries.
-
-.. code block:: python
+All of the HarPage methods above leverage stuff from the HarParser,
+some of which can be useful for more complex operations. They either
+operate on a single entry (from a HarPage) or a ``list`` of entries::
 
     import json
     from haralyzer import HarParser
@@ -165,9 +160,7 @@ loading at that time. Each value of the ``list`` is a ``dict`` representing
 an entry from a page.
 
 It takes a ``list`` of entries to analyze, so it assumes that you have
-already filtered the entries you want to know about.
-
-.. code block:: python
+already filtered the entries you want to know about::
 
     import json
     from haralyzer import HarParser
@@ -192,7 +185,7 @@ already filtered the entries you want to know about.
         # <type 'list'>
         print value
         # Each entry in the list is an asset from the page
-        [{u'serverIPAddress': u'157.166.249.67', u'cache': {}, u'startedDateTime': u'2015-02-21T19:15:40.351-08:00', u'pageref': u'page_3', u'request': {u'cookies':............................
+        # [{u'serverIPAddress': u'157.166.249.67', u'cache': {}, u'startedDateTime': u'2015-02-21T19:15:40.351-08:00', u'pageref': u'page_3', u'request': {u'cookies':............................
  
 
 With this, you can examine the timeline for any number of assets. Since the key is a ``datetime``

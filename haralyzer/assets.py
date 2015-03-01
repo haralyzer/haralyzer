@@ -39,8 +39,7 @@ class HarParser(object):
 
         :param header: ``str`` of the header to search for
         :param value: ``str`` of value to search for
-        :param regex: ``bool`` indicating whether to use a regex for matching,
-        or a literal string match.
+        :param regex: ``bool`` indicating whether to use regex or exact match
 
         :returns: a ``bool`` indicating whether a match was found
         """
@@ -178,8 +177,7 @@ class HarPage(object):
         :param request_type: ``str`` of request type (i.e. - GET or POST)
         :param content_type: ``str`` of regex to use for finding content type
         :param status_code: ``int`` of the desired status code
-        :param regex: ``bool`` indicating whether this should be a regex match
-        or an exact string match
+        :param regex: ``bool`` indicating whether to use regex or exact match.
         """
         results = []
 
