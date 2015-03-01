@@ -57,7 +57,8 @@ class HarParser(object):
 
     def match_request_type(self, entry, request_type, regex=True):
         """
-        Helper function that returns request types based on the given regex
+        Helper function that returns entries with a request type
+        matching the given `request_type` argument.
 
         :param entry: entry object to analyze
         :param request_type: ``str`` of request type to match
@@ -71,11 +72,13 @@ class HarParser(object):
 
     def match_status_code(self, entry, status_code, regex=True):
         """
-        Helper function that returns request types based on the given regex
+        Helper function that returns entries with a status code matching
+        then given `status_code` argument.
 
         NOTE: This is doing a STRING comparison NOT NUMERICAL
 
         :param entry: entry object to analyze
+        :param status_code: ``str`` of status code to search for
         :param request_type: ``regex`` of request type to match
         """
         if regex:
@@ -393,6 +396,13 @@ class HarPage(object):
         total size of all image files as transferred via HTTP
         """
         return self.get_total_size(self.image_files)
+
+    @property
+    def initial_load_time(self):
+        """
+        Load time for the first non-redirect page
+        """
+        return self.actual_page['time']
 
     # BROWSER (ASNYC) LOAD TIMES #
     @property

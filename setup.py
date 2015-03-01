@@ -6,7 +6,7 @@ except ImportError:
     from distutils.core import setup
 
 
-install_reqs = []
+install_reqs = ['python-dateutil']
 
 readme = open('README.rst').read()
 doclink = """
@@ -18,7 +18,7 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
     name='haralyzer',
-    version='0.0.1',
+    version='1.0',
     description='A python framework for getting useful stuff out of HAR files',
     long_description=readme + '\n\n' + doclink + '\n\n' + history,
     author='Justin Crown',
@@ -34,7 +34,7 @@ setup(
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
+        'License :: OSI Approved :: GPL License',
         'Natural Language :: English',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.6',

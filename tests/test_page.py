@@ -1,7 +1,7 @@
 from datetime import datetime
 import dateutil
 import pytest
-from har import HarPage, HarParser
+from haralyzer import HarPage, HarParser
 import re
 
 PAGE_ID = 'page_3'
@@ -134,17 +134,15 @@ def test_sizes(har_data):
     assert page.total_page_size == 62204
 
 
-
 def test_load_times(har_data):
     init_data = har_data('humanssuck.net.har')
     page = HarPage(PAGE_ID, har_data=init_data)
-    pass
     # Check initial page load
-    # assert h.initial_page['request']['url'] == 'http://humanssuck.net/'
+    assert page.actual_page['request']['url'] == 'http://humanssuck.net/'
 
     # Check initial page load times
-    # assert h.load_time == 153
-    # assert h.total_load_time == 567
+    assert page.initial_load_time == 153
+    assert page.total_load_time == 567
 
     # Check sizes. Kind of lame, but the page sizes are hardcoded, and were
     # confirmed with other services that parse HAR files (like GTMetrix)

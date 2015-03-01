@@ -3,7 +3,7 @@ import dateutil
 from dateutil import parser
 assert parser
 import pytest
-from har import HarParser, HarPage
+from haralyzer import HarParser, HarPage
 
 
 # This has two of each common content type as the values for each content-type
