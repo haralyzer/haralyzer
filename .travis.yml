@@ -1,4 +1,4 @@
 language: python
 install:
-  - "pip install ."
+  - "python setup.py install"
 script: py.test tests/
