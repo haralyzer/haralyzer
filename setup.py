@@ -6,7 +6,8 @@ except ImportError:
     from distutils.core import setup
 
 
-install_reqs = ['python-dateutil']
+install_reqs = ['python-dateutil',
+                'pygal']
 
 readme = open('README.rst').read()
 
@@ -26,6 +27,11 @@ setup(
     license='Commercial',
     zip_safe=False,
     keywords='har',
+    entry_points={
+        'console_scripts': [
+            'harchart = haralyzer.charts:har_chart_cli',
+        ]
+    },
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',

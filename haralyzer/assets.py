@@ -25,6 +25,8 @@ class HarParser(object):
             raise ValueError('A dict() representation of a HAR file is required'
                              ' to instantiate this class. Please RTFM.')
         self.har_data = har_data['log']
+        # A constant to store the strings we support as content type
+        self.content_types = ['image', 'css', 'js', 'html', 'video', 'audio']
 
     def match_headers(self, entry, header_type, header, value, regex=True):
         """
@@ -175,6 +177,8 @@ class HarPage(object):
                 self.startedDateTime = page['startedDateTime']
                 self.pageTimings = page['pageTimings']
 
+        # Store the URL of the 'initial' page request
+        self.url = self.actual_page['request']['url']
     def filter_entries(self, request_type=None, content_type=None,
                        status_code=None, regex=True):
         """
@@ -306,11 +310,11 @@ class HarPage(object):
         return self.filter_entries(content_type='.*javascript')
 
     @property
-    def text_files(self):
+    def html_files(self):
         """
         Returns a list of all text elements, each of which is an entry object.
         """
-        return self.filter_entries(content_type='text.*')
+        return self.filter_entries(content_type='.*html')
 
     @property
     def audio_files(self):
@@ -373,11 +377,11 @@ class HarPage(object):
         return self.get_total_size(self.entries)
 
     @property
-    def total_text_size(self):
+    def total_html_size(self):
         """
         Total size of all images as transferred via HTTP
         """
-        return self.get_total_size(self.text_files)
+        return self.get_total_size(self.html_files)
 
     @property
     def total_css_size(self):

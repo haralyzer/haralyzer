@@ -1,3 +1,4 @@
 python-dateutil
-pytest-cov
 python-coveralls
+pytest
+pytest-cov
