@@ -104,7 +104,7 @@ def test_file_types(har_data):
 
     file_types = {'image_files': ['image'], 'css_files': ['css'],
                   'js_files': ['javascript'], 'audio_files': ['audio'],
-                  'video_files': ['video', 'flash'], 'text_files': ['text']}
+                  'video_files': ['video', 'flash'], 'html_files': ['html']}
 
     # TODO - Add a test for page.misc_files
 
@@ -136,7 +136,7 @@ def test_sizes(har_data):
 
     assert page.page_size == 238
     assert page.total_page_size == 62204
-    assert page.total_text_size == 246
+    assert page.total_html_size == 238
     assert page.total_css_size == 8
     assert page.total_js_size == 38367
     assert page.total_image_size == 23591
