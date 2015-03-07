@@ -44,6 +44,8 @@ def make_chart(chart_type=None, har_files=None):
         load_time_by_content_bar(all_pages)
     elif chart_type == 'total_load_time':
         total_load_time(all_pages)
+    elif chart_type == 'size_by_content':
+        size_by_content_pie(all_pages)
 
 
 def load_time_by_content_pie(pages):
@@ -138,13 +140,62 @@ def total_load_time(pages):
     bar_chart.render_to_file('{0}.svg'.format(tld))
 
 
+def size_by_content_pie(pages):
+    """
+    Renders a pie chart for load time by content type, showing the percentage
+    of the load time of each asset type in relation to the total load time.
+    One chart will be created for each page in the ``pages`` argument.
+
+    :param pages: ``list`` of Instances of a HarPage object
+    """
+    for page in pages:
+        tld = urlparse(page.url).netloc
+        total_size = page.total_page_size
+        pie_chart = pygal.Pie()
+        pie_chart.title = 'Page size by content for {0}'.format(
+            page.url)
+        rows = []
+        for c_type in page.parser.content_types:
+            content_size = getattr(page, 'total_{0}_size'.format(c_type))
+            percent = 100 * float(content_size)/float(total_size)
+            rows.append((c_type, percent))
+
+        # Sort the rows by highest percentage
+        rows = sorted(rows, key=lambda row: row[1], reverse=True)
+        for row in rows:
+            pie_chart.add('{0} {1:.0f}%'.format(row[0], row[1]), row[1])
+
+        pie_chart.render_to_file('{0}.svg'.format(tld))
+
+
+def timeline(pages):
+    """
+    Renders a basic timeline of the given assets
+    """
+    pass
+
+
+def _render_bar_chart():
+    """
+    Renders a bar chart
+    """
+    pass
+
+
+def _render_pie_chart():
+    """
+    Renders a pie chart
+    """
+    pass
+
+
 def _create_multiplier(vals, val_type=''):
     """
     Takes an array of values and returns the proper multiplier for
     scaling charts.
 
     :param vals: a ``list`` of ``int`` of the vals to examine
-    :param measurement: ``str`` of value type, valid values are:
+    :param val_type: ``str`` of value type, valid values are:
 
         * time - this assumes that all input is in ms
         * size = this assumes that all input is in bytes

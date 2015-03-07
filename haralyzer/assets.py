@@ -26,7 +26,8 @@ class HarParser(object):
                              ' to instantiate this class. Please RTFM.')
         self.har_data = har_data['log']
         # A constant to store the strings we support as content type
-        self.content_types = ['image', 'css', 'js', 'html', 'video', 'audio']
+        self.content_types = ['image', 'css', 'js', 'html', 'video', 'audio',
+                              'font', 'misc']
 
     def match_headers(self, entry, header_type, header, value, regex=True):
         """
@@ -179,6 +180,7 @@ class HarPage(object):
 
         # Store the URL of the 'initial' page request
         self.url = self.actual_page['request']['url']
+
     def filter_entries(self, request_type=None, content_type=None,
                        status_code=None, regex=True):
         """
@@ -332,6 +334,14 @@ class HarPage(object):
         return self.filter_entries(content_type='video.*|.*flash')
 
     @property
+    def font_files(self):
+        """
+        Returns a list of all HTML elements, each of which is an entry object.
+        """
+        # All video/.* types, as well as flash
+        return self.filter_entries(content_type='.*font.*')
+
+    @property
     def misc_files(self):
         """
         We need to put misc files somewhere....
@@ -341,8 +351,9 @@ class HarPage(object):
             if(entry not in self.image_files and
                entry not in self.css_files and
                entry not in self.js_files and
-               entry not in self.text_files and
+               entry not in self.html_files and
                entry not in self.audio_files and
+               entry not in self.font_files and
                entry not in self.video_files):
                 entries.append(entry)
 
@@ -398,11 +409,39 @@ class HarPage(object):
         return self.get_total_size(self.js_files)
 
     @property
+    def total_video_size(self):
+        """
+        Total size of all javascript files as transferred via HTTP
+        """
+        return self.get_total_size(self.video_files)
+
+    @property
+    def total_audio_size(self):
+        """
+        Total size of all javascript files as transferred via HTTP
+        """
+        return self.get_total_size(self.audio_files)
+
+    @property
     def total_image_size(self):
         """
         total size of all image files as transferred via HTTP
         """
         return self.get_total_size(self.image_files)
+
+    @property
+    def total_font_size(self):
+        """
+        total size of all image files as transferred via HTTP
+        """
+        return self.get_total_size(self.font_files)
+
+    @property
+    def total_misc_size(self):
+        """
+        total size of all miscellaneous files as transferred via HTTP
+        """
+        return self.get_total_size(self.misc_files)
 
     @property
     def initial_load_time(self):
@@ -462,6 +501,13 @@ class HarPage(object):
         """
         return self.get_load_time(content_type='video')
 
+    @property
+    def font_load_time(self):
+        """
+        Returns the browser load time for all video files.
+        """
+        return self.get_load_time(content_type='font')
+
     # TOTAL LOAD TIMES #
 
     @property
@@ -513,3 +559,10 @@ class HarPage(object):
         Returns the total load time for all video files.
         """
         return self.get_load_time(content_type='video', async=False)
+
+    @property
+    def total_font_load_time(self):
+        """
+        Returns the total load time for all video files.
+        """
+        return self.get_load_time(content_type='font', async=False)
