@@ -4,6 +4,8 @@ import pygal
 from textwrap import dedent
 from haralyzer import HarParser
 from urlparse import urlparse
+import time
+import pdb
 
 
 def har_chart_cli():
@@ -42,6 +44,8 @@ def make_chart(chart_type=None, har_files=None):
         load_time_by_content_pie(all_pages)
     elif chart_type == 'load_time_by_content_bar':
         load_time_by_content_bar(all_pages)
+    elif chart_type == 'load_time_by_content_stacked_bar':
+        load_time_by_content_stacked_bar(all_pages)
     elif chart_type == 'total_load_time':
         total_load_time(all_pages)
     elif chart_type == 'size_by_content':
@@ -116,6 +120,62 @@ def load_time_by_content_bar(pages):
         bar_chart.add(page_id, [t * multiplier for t in timeset])
 
     bar_chart.render_to_file('{0}.svg'.format(tld))
+
+
+def load_time_by_content_stacked_bar(pages):
+    """
+    Renders a bar chart for load time by content type. Unlike the pie chart,
+    this shows actual load time in seconds.
+
+    :param pages: ``list`` of Instances of HarPage objects.
+
+    :returns: bar chart object
+    """
+    bar_chart = pygal.StackedBar()
+    page_titles = []
+    for page in pages:
+        page_titles.append(page.url)
+    bar_chart.x_labels = map(str, page_titles)
+    bar_chart.title = 'Load time by content for {0}'.format(
+        '"testing" in seconds')
+
+    # timings needs to be a dict where the key is the content type, and the
+    # value is a list of the load times for each content type. The way that
+    # pygal works, the order of the value list represents the load time of that
+    # element on the X axis
+    # http://pygal.org/chart_types/#idid2
+    timings = dict()
+
+    # We need to remove the misc files from this because we do not care!
+    content_types = page.parser.content_types
+    content_types.remove('misc')
+
+    for c_type in content_types:
+        timings[c_type] = []
+
+    page_timings = []
+    for page in pages:
+        page_time = 0
+        for c_type in content_types:
+            load_time = getattr(page, '{0}_load_time'.format(c_type))
+            page_time += load_time
+            timings[c_type].append(load_time)
+        page_timings.append(page_time)
+
+    # Add the arrays for each content type
+    for c_type, vals in timings.iteritems():
+        bar_chart.add(c_type, vals)
+
+    pdb.set_trace()
+    # Add the total load time for each page. Since we want the full bar to
+    # represent the total load time, we actually need to give it the value of
+    # (total_load_time - all_load_times_added_thus_far)
+    total_load_times = []
+    for i in range(len(pages)):
+        total_load_times.append(pages[i].total_load_time - page_timings[i])
+    bar_chart.add('Total', total_load_times)
+
+    bar_chart.render_to_file('{0}.svg'.format(time.time()))
 
 
 def total_load_time(pages):
