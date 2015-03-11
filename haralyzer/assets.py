@@ -269,6 +269,18 @@ class HarPage(object):
                       key=lambda entry: entry['startedDateTime'])
 
     @property
+    def time_to_first_byte(self):
+        """
+        Time to first byte of the page request in ms
+        """
+        initial_entry = self.entries[0]
+        ttfb = 0
+        for k, v in initial_entry['timings'].iteritems():
+            if k != 'receive':
+                ttfb += v
+        return ttfb
+
+    @property
     def get_requests(self):
         """
         Returns a list of GET requests, each of which is an 'entry' data object

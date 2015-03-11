@@ -175,6 +175,15 @@ def test_load_times(har_data):
     assert page.total_video_load_time == 0
 
 
+def test_time_to_first_byte(har_data):
+    """
+    Tests that TTFB is correctly reported as a property of the page.
+    """
+    init_data = har_data('humanssuck.net.har')
+    page = HarPage(PAGE_ID, har_data=init_data)
+    assert page.time_to_first_byte == 153
+
+
 def _correct_file_type(entry, file_types):
     for header in entry['response']['headers']:
         if header['name'] == 'Content-Type':
