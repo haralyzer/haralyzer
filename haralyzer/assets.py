@@ -7,6 +7,10 @@ import dateutil
 from dateutil import parser
 assert parser
 import re
+import statistics
+
+
+DECIMAL_PRECISION = 2
 
 
 class HarParser(object):
@@ -17,8 +21,8 @@ class HarParser(object):
 
     def __init__(self, har_data=None):
         """
-        :param har: a ``dict`` representing the JSON of a HAR file (i.e. - you
-        need to load the HAR data into a string using json.loads or
+        :param har_data: a ``dict`` representing the JSON of a HAR file
+        (i.e. - you need to load the HAR data into a string using json.loads or
         requests.json() if you are pulling the data via HTTP.
         """
         if not har_data or not isinstance(har_data, dict):
@@ -146,6 +150,81 @@ class HarParser(object):
     @property
     def creator(self):
         return self.har_data['creator']
+
+
+class MultiHarParser(object):
+    """
+    An object that represents multiple HAR files OF THE SAME CONTENT.
+    It is used to gather overall statistical data in situations where you have
+    multiple runs against the same web asset, which is common in performance
+    testing.
+    """
+
+    def __init__(self, har_data=[], page_id=None):
+        """
+        :param har_data: A ``list`` of ``dict`` representing the JSON
+        of a HAR file. See the docstring of HarParser.__init__ for more detail.
+        :param page_id: IF a ``str`` of the page ID is provided, the
+        multiparser will return aggregate results for this specific page. If
+        not, it will assume that there is only one page in the run (this was
+        written specifically for that use case).
+        """
+        if not har_data:
+            raise ValueError('A list of dicts representing HAR files is '
+                             'required. Please read the developer docs.')
+        self.har_data = har_data
+        self.page_id = page_id
+
+    def get_load_times(self, asset_type='', total=True):
+        """
+        Just a ``list`` of the load times of a certain asset type for each page
+
+        :param asset_type: ``str`` of the asset to type to return load times for
+        :param total: ``bool`` indicating whether this should be the total load
+        time or the async load time of the browser.
+        """
+        load_times = []
+        if total:
+            search_str = 'total_'
+        if asset_type:
+            search_str += '{0}_'.format(asset_type)
+        search_str += 'load_time'
+        for har_page in self.pages:
+            val = getattr(har_page, search_str, None)
+            load_times.append(val)
+        return load_times
+
+    @property
+    def pages(self):
+        """
+        The aggregate pages of all the parser objects.
+        """
+        pages = []
+        for har_dict in self.har_data:
+            har_parser = HarParser(har_data=har_dict)
+            if self.page_id:
+                for page in har_parser.pages:
+                    if page['page_id'] == self.page_id:
+                        pages.append(page)
+            else:
+                pages.append(har_parser.pages[0])
+        return pages
+
+    @property
+    def load_time_mean(self):
+        """
+        The average total load time for all runs (not weighted).
+        """
+        load_times = self.get_load_times()
+        return round(statistics.mean(load_times), DECIMAL_PRECISION)
+
+    @property
+    def load_time_stdev(self):
+        """
+        Standard deviations of the load times for all pages
+        """
+        load_times = self.get_load_times()
+        return round(statistics.stdev(load_times), DECIMAL_PRECISION)
 
 
 class HarPage(object):

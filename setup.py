@@ -6,7 +6,7 @@ except ImportError:
     from distutils.core import setup
 
 
-install_reqs = ['python-dateutil']
+install_reqs = ['python-dateutil', 'statistics']
 
 readme = open('README.rst').read()
 
