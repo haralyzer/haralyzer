@@ -175,7 +175,7 @@ class MultiHarParser(object):
         self.har_data = har_data
         self.page_id = page_id
 
-    def get_load_times(self, asset_type='', total=True):
+    def get_load_times(self, asset_type='', total=False):
         """
         Just a ``list`` of the load times of a certain asset type for each page
 
@@ -186,6 +186,8 @@ class MultiHarParser(object):
         load_times = []
         if total:
             search_str = 'total_'
+        else:
+            search_str = ''
         if asset_type:
             search_str += '{0}_'.format(asset_type)
         search_str += 'load_time'
@@ -211,11 +213,22 @@ class MultiHarParser(object):
         return pages
 
     @property
+    def time_to_first_byte(self):
+        """
+        The aggregate time to first byte for all pages.
+        """
+        ttfb = []
+        for page in self.pages:
+            print page.time_to_first_byte
+            ttfb.append(page.time_to_first_byte)
+        return round(statistics.mean(ttfb), DECIMAL_PRECISION)
+
+    @property
     def load_time_mean(self):
         """
         The average total load time for all runs (not weighted).
         """
-        load_times = self.get_load_times()
+        load_times = self.get_load_times(total=True)
         return round(statistics.mean(load_times), DECIMAL_PRECISION)
 
     @property
@@ -223,9 +236,43 @@ class MultiHarParser(object):
         """
         Standard deviations of the load times for all pages
         """
-        load_times = self.get_load_times()
+        load_times = self.get_load_times(total=True)
         return round(statistics.stdev(load_times), DECIMAL_PRECISION)
 
+    @property
+    def js_load_time(self):
+        """
+        Returns aggregate javascript load time.
+
+        :param total: ``bool`` indicating whether this should be should be the
+        total load time or the browser load time
+        """
+        load_times = self.get_load_times('js')
+        return round(statistics.mean(load_times), DECIMAL_PRECISION)
+
+    @property
+    def css_load_time(self):
+        """
+        Returns aggregate css load time for all pages.
+        """
+        load_times = self.get_load_times('css')
+        return round(statistics.mean(load_times), DECIMAL_PRECISION)
+
+    @property
+    def image_load_time(self):
+        """
+        Returns aggregate image load time for all pages.
+        """
+        load_times = self.get_load_times('image')
+        return round(statistics.mean(load_times), DECIMAL_PRECISION)
+
+    @property
+    def html_load_time(self):
+        """
+        Returns aggregate image load time for all pages.
+        """
+        load_times = self.get_load_times('html')
+        return round(statistics.mean(load_times), DECIMAL_PRECISION)
 
 class HarPage(object):
     """
