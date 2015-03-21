@@ -134,12 +134,11 @@ def test_sizes(har_data):
     init_data = har_data('humanssuck.net.har')
     page = HarPage(PAGE_ID, har_data=init_data)
 
-    assert page.page_size == 238
-    assert page.total_page_size == 62204
-    assert page.total_text_size == 246
-    assert page.total_css_size == 8
-    assert page.total_js_size == 38367
-    assert page.total_image_size == 23591
+    assert page.page_size == 62204
+    assert page.text_size == 246
+    assert page.css_size == 8
+    assert page.js_size == 38367
+    assert page.image_size == 23591
 
 
 def test_load_times(har_data):
@@ -163,16 +162,6 @@ def test_load_times(har_data):
     # TODO - Need to get sample data for these types
     assert page.audio_load_time == 0
     assert page.video_load_time == 0
-
-    # Total load times
-    assert page.total_load_time == 567
-    assert page.total_image_load_time == 304
-    assert page.total_css_load_time == 76
-    assert page.total_js_load_time == 310
-    assert page.total_html_load_time == 153
-    # TODO - Need to get sample data for these types
-    assert page.total_audio_load_time == 0
-    assert page.total_video_load_time == 0
 
 
 def test_time_to_first_byte(har_data):
