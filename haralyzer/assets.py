@@ -198,37 +198,53 @@ class HarPage(object):
         files_regex = '(\D.*)_files'
         size_regex = '(\D.*)_size'
         load_regex = '(\D.*)_load_time'
+        # total_asset_load_time is no longer part of the API, but it used to
+        # be, so this is in here for backwards compatability
+        total_load_regex = 'total_(\D.*)_load_time'
 
         # Try to match the request to one of the regexes above.
         files_match = re.search(files_regex, name)
         size_match = re.search(size_regex, name)
         load_match = re.search(load_regex, name)
+        total_load_match = re.search(total_load_regex, name)
 
-        if any([files_match, size_match, load_match]):
-            if files_match:
-                asset_type = files_match.groups()[0]
-                return self.filter_entries(
-                    content_type=self.asset_types[asset_type])
+        if files_match:
+            asset_type = files_match.groups()[0]
+            return self.filter_entries(
+                content_type=self.asset_types[asset_type])
 
-            elif size_match:
-                asset_type = size_match.groups()[0]
-                if asset_type == 'page':
-                    assets = self.entries
-                else:
-                    assets = getattr(self, '{0}_files'.format(asset_type), None)
-                return self.get_total_size(assets)
+        elif size_match:
+            asset_type = size_match.groups()[0]
+            return self._get_asset_size(asset_type)
 
-            elif load_match:
-                asset_type = load_match.groups()[0]
-                if asset_type == 'initial':
-                    return self.actual_page['time']
-                elif asset_type == 'content':
-                    return self.pageTimings['onContentLoad']
-                else:
-                    return self.get_load_time(
-                        content_type=self.asset_types[asset_type])
+        elif load_match or total_load_match:
+            match = total_load_match or load_match
+            asset_type = match.groups()[0]
+            return self._get_asset_load(asset_type)
+
+    def _get_asset_size(self, asset_type):
+        """
+        Helper function to dynamically create *_size properties.
+        """
+        if asset_type == 'page':
+            assets = self.entries
         else:
-            return self.__dict[name]
+            assets = getattr(self, '{0}_files'.format(asset_type), None)
+        return self.get_total_size(assets)
+
+    def _get_asset_load(self, asset_type):
+        """
+        Helper function to dynamically create *_load_time properties. Return
+        value is in ms.
+        """
+        if asset_type == 'initial':
+            return self.actual_page['time']
+        elif asset_type == 'content':
+            return self.pageTimings['onContentLoad']
+        elif asset_type == 'total':
+            return self.pageTimings['onLoad']
+        else:
+            return self.get_load_time(content_type=self.asset_types[asset_type])
 
     def filter_entries(self, request_type=None, content_type=None,
                        status_code=None, regex=True):
@@ -361,13 +377,3 @@ class HarPage(object):
             if not (entry['response']['status'] >= 300 and
                     entry['response']['status'] <= 399):
                 return entry
-
-    # ASSET SIZE PROPERTIES #
-
-    @property
-    def total_load_time(self):
-        """
-        Returns the full load time (in ms) of all assets on the page
-        """
-        # Assuming for right now that the HAR file is only for one page
-        return self.pageTimings['onLoad']
