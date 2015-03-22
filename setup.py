@@ -6,7 +6,8 @@ except ImportError:
     from distutils.core import setup
 
 
-install_reqs = ['python-dateutil']
+install_reqs = ['python-dateutil',
+                'cached-property']
 
 readme = open('README.rst').read()
 

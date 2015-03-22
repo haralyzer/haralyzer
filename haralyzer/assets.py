@@ -2,6 +2,7 @@
 Provides all of the main functional classes for analyzing HAR files
 """
 
+from cached_property import cached_property
 import datetime
 import dateutil
 # I know this import is stupid, but I cannot use dateutil.parser without it
@@ -187,40 +188,11 @@ class HarPage(object):
                 self.startedDateTime = page['startedDateTime']
                 self.pageTimings = page['pageTimings']
 
-    def __getattr__(self, name):
+    def _get_asset_files(self, asset_type):
         """
-        Using some voodoo here to dynamically generate properties. This allows
-        us to avoid defining tons of similar properties, like image_files,
-        css_files, text_files, etc.). If the requested property should be
-        created dynamically, but the asset type is not in
-        self.asset_types a KeyError will be raised.
+        Returns a list of all files of a certain type.
         """
-        files_regex = '(\D.*)_files'
-        size_regex = '(\D.*)_size'
-        load_regex = '(\D.*)_load_time'
-        # total_asset_load_time is no longer part of the API, but it used to
-        # be, so this is in here for backwards compatability
-        total_load_regex = 'total_(\D.*)_load_time'
-
-        # Try to match the request to one of the regexes above.
-        files_match = re.search(files_regex, name)
-        size_match = re.search(size_regex, name)
-        load_match = re.search(load_regex, name)
-        total_load_match = re.search(total_load_regex, name)
-
-        if files_match:
-            asset_type = files_match.groups()[0]
-            return self.filter_entries(
-                content_type=self.asset_types[asset_type])
-
-        elif size_match:
-            asset_type = size_match.groups()[0]
-            return self._get_asset_size(asset_type)
-
-        elif load_match or total_load_match:
-            match = total_load_match or load_match
-            asset_type = match.groups()[0]
-            return self._get_asset_load(asset_type)
+        return self.filter_entries(content_type=self.asset_types[asset_type])
 
     def _get_asset_size(self, asset_type):
         """
@@ -241,7 +213,7 @@ class HarPage(object):
             return self.actual_page['time']
         elif asset_type == 'content':
             return self.pageTimings['onContentLoad']
-        elif asset_type == 'total':
+        elif asset_type == 'page':
             return self.pageTimings['onLoad']
         else:
             return self.get_load_time(content_type=self.asset_types[asset_type])
@@ -329,7 +301,7 @@ class HarPage(object):
 
     # BEGIN PROPERTIES #
 
-    @property
+    @cached_property
     def entries(self):
         page_entries = []
         for entry in self.parser.har_data['entries']:
@@ -339,7 +311,7 @@ class HarPage(object):
         return sorted(page_entries,
                       key=lambda entry: entry['startedDateTime'])
 
-    @property
+    @cached_property
     def time_to_first_byte(self):
         """
         Time to first byte of the page request in ms
@@ -351,14 +323,14 @@ class HarPage(object):
                 ttfb += v
         return ttfb
 
-    @property
+    @cached_property
     def get_requests(self):
         """
         Returns a list of GET requests, each of which is an 'entry' data object
         """
         return self.filter_entries(request_type='get')
 
-    @property
+    @cached_property
     def post_requests(self):
         """
         Returns a list of POST requests, each of which is an 'entry' data object
@@ -367,7 +339,7 @@ class HarPage(object):
 
     # FILE TYPE PROPERTIES #
 
-    @property
+    @cached_property
     def actual_page(self):
         """
         Returns the first entry object that does not have a redirect status,
@@ -377,3 +349,101 @@ class HarPage(object):
             if not (entry['response']['status'] >= 300 and
                     entry['response']['status'] <= 399):
                 return entry
+
+    # Convenience properties. Easy accessible through the API, but even easier
+    # to use as properties
+    @cached_property
+    def image_files(self):
+        return self._get_asset_files('image')
+
+    @cached_property
+    def css_files(self):
+        return self._get_asset_files('css')
+
+    @cached_property
+    def text_files(self):
+        return self._get_asset_files('text')
+
+    @cached_property
+    def js_files(self):
+        return self._get_asset_files('js')
+
+    @cached_property
+    def audio_files(self):
+        return self._get_asset_files('audio')
+
+    @cached_property
+    def video_files(self):
+        return self._get_asset_files('video')
+
+    @cached_property
+    def html_files(self):
+        return self._get_asset_files('html')
+
+    @cached_property
+    def page_size(self):
+        return self._get_asset_size('page')
+
+    @cached_property
+    def image_size(self):
+        return self._get_asset_size('image')
+
+    @cached_property
+    def css_size(self):
+        return self._get_asset_size('css')
+
+    @cached_property
+    def text_size(self):
+        return self._get_asset_size('text')
+
+    @cached_property
+    def js_size(self):
+        return self._get_asset_size('js')
+
+    @cached_property
+    def audio_size(self):
+        return self._get_asset_size('audio')
+
+    @cached_property
+    def video_size(self):
+        return self._get_asset_size('video')
+
+    @cached_property
+    def initial_load_time(self):
+        return self._get_asset_load('initial')
+
+    @cached_property
+    def content_load_time(self):
+        return self._get_asset_load('content')
+
+    @cached_property
+    def page_load_time(self):
+        return self._get_asset_load('page')
+
+    @cached_property
+    def image_load_time(self):
+        return self._get_asset_load('image')
+
+    @cached_property
+    def css_load_time(self):
+        return self._get_asset_load('css')
+
+    @cached_property
+    def text_load_time(self):
+        return self._get_asset_load('text')
+
+    @cached_property
+    def js_load_time(self):
+        return self._get_asset_load('js')
+
+    @cached_property
+    def audio_load_time(self):
+        return self._get_asset_load('audio')
+
+    @cached_property
+    def video_load_time(self):
+        return self._get_asset_load('video')
+
+    @cached_property
+    def html_load_time(self):
+        return self._get_asset_load('html')

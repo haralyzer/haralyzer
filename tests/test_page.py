@@ -159,10 +159,7 @@ def test_load_times(har_data):
     assert page.css_load_time == 76
     assert page.js_load_time == 310
     assert page.html_load_time == 153
-    # total_load_time is just a passthrough for load_time for individual assets
-    assert page.total_html_load_time == 153
-    # Only total load time is it's own unique property
-    assert page.total_load_time == 567
+    assert page.page_load_time == 567
     # TODO - Need to get sample data for these types
     assert page.audio_load_time == 0
     assert page.video_load_time == 0
