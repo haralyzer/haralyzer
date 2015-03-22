@@ -104,9 +104,8 @@ def test_file_types(har_data):
 
     file_types = {'image_files': ['image'], 'css_files': ['css'],
                   'js_files': ['javascript'], 'audio_files': ['audio'],
-                  'video_files': ['video', 'flash'], 'text_files': ['text']}
-
-    # TODO - Add a test for page.misc_files
+                  'video_files': ['video', 'flash'], 'text_files': ['text'],
+                  'html_files': ['html']}
 
     for k, v in file_types.iteritems():
         for asset in getattr(page, k, None):
@@ -139,6 +138,9 @@ def test_sizes(har_data):
     assert page.css_size == 8
     assert page.js_size == 38367
     assert page.image_size == 23591
+    # TODO - Get test data for audio and video
+    assert page.audio_size == 0
+    assert page.video_size == 0
 
 
 def test_load_times(har_data):

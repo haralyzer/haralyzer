@@ -429,10 +429,6 @@ class HarPage(object):
         return self._get_asset_load('css')
 
     @cached_property
-    def text_load_time(self):
-        return self._get_asset_load('text')
-
-    @cached_property
     def js_load_time(self):
         return self._get_asset_load('js')
 
