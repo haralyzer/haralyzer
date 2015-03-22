@@ -2,8 +2,10 @@
 Provides all of the main functional classes for analyzing HAR files
 """
 
+from cached_property import cached_property
 import datetime
 import dateutil
+# I know this import is stupid, but I cannot use dateutil.parser without it
 from dateutil import parser
 assert parser
 import re
@@ -167,6 +169,17 @@ class HarPage(object):
         else:
             self.parser = HarParser(har_data=har_data)
 
+        # This maps the content type attributes to their respective regex
+        # representations
+        self.asset_types = {'image': 'image.*',
+                            'css': '.*css',
+                            'text': 'text.*',
+                            'js': '.*javascript',
+                            'audio': 'audio.*',
+                            'video': 'video.*|.*flash',
+                            'html': 'html',
+                            }
+
         # Init properties that mimic the actual 'pages' object from the HAR file
         raw_data = self.parser.har_data
         for page in raw_data['pages']:
@@ -174,6 +187,36 @@ class HarPage(object):
                 self.title = page['title']
                 self.startedDateTime = page['startedDateTime']
                 self.pageTimings = page['pageTimings']
+
+    def _get_asset_files(self, asset_type):
+        """
+        Returns a list of all files of a certain type.
+        """
+        return self.filter_entries(content_type=self.asset_types[asset_type])
+
+    def _get_asset_size(self, asset_type):
+        """
+        Helper function to dynamically create *_size properties.
+        """
+        if asset_type == 'page':
+            assets = self.entries
+        else:
+            assets = getattr(self, '{0}_files'.format(asset_type), None)
+        return self.get_total_size(assets)
+
+    def _get_asset_load(self, asset_type):
+        """
+        Helper function to dynamically create *_load_time properties. Return
+        value is in ms.
+        """
+        if asset_type == 'initial':
+            return self.actual_page['time']
+        elif asset_type == 'content':
+            return self.pageTimings['onContentLoad']
+        elif asset_type == 'page':
+            return self.pageTimings['onLoad']
+        else:
+            return self.get_load_time(content_type=self.asset_types[asset_type])
 
     def filter_entries(self, request_type=None, content_type=None,
                        status_code=None, regex=True):
@@ -258,7 +301,7 @@ class HarPage(object):
 
     # BEGIN PROPERTIES #
 
-    @property
+    @cached_property
     def entries(self):
         page_entries = []
         for entry in self.parser.har_data['entries']:
@@ -268,7 +311,7 @@ class HarPage(object):
         return sorted(page_entries,
                       key=lambda entry: entry['startedDateTime'])
 
-    @property
+    @cached_property
     def time_to_first_byte(self):
         """
         Time to first byte of the page request in ms
@@ -280,14 +323,14 @@ class HarPage(object):
                 ttfb += v
         return ttfb
 
-    @property
+    @cached_property
     def get_requests(self):
         """
         Returns a list of GET requests, each of which is an 'entry' data object
         """
         return self.filter_entries(request_type='get')
 
-    @property
+    @cached_property
     def post_requests(self):
         """
         Returns a list of POST requests, each of which is an 'entry' data object
@@ -295,68 +338,8 @@ class HarPage(object):
         return self.filter_entries(request_type='post')
 
     # FILE TYPE PROPERTIES #
-    @property
-    def image_files(self):
-        """
-        Returns a list of images, each of which is an 'entry' data object.
-        """
-        return self.filter_entries(content_type='image.*')
 
-    @property
-    def css_files(self):
-        """
-        Returns a list of css files, each of which is an 'entry' data object.
-        """
-        return self.filter_entries(content_type='.*css')
-
-    @property
-    def js_files(self):
-        """
-        Returns a list of javascript files, each of which is an 'entry'
-        data object.
-        """
-        return self.filter_entries(content_type='.*javascript')
-
-    @property
-    def text_files(self):
-        """
-        Returns a list of all text elements, each of which is an entry object.
-        """
-        return self.filter_entries(content_type='text.*')
-
-    @property
-    def audio_files(self):
-        """
-        Returns a list of all HTML elements, each of which is an entry object.
-        """
-        return self.filter_entries(content_type='audio')
-
-    @property
-    def video_files(self):
-        """
-        Returns a list of all HTML elements, each of which is an entry object.
-        """
-        # All video/.* types, as well as flash
-        return self.filter_entries(content_type='video.*|.*flash')
-
-    @property
-    def misc_files(self):
-        """
-        We need to put misc files somewhere....
-        """
-        entries = []
-        for entry in self.entries:
-            if(entry not in self.image_files and
-               entry not in self.css_files and
-               entry not in self.js_files and
-               entry not in self.text_files and
-               entry not in self.audio_files and
-               entry not in self.video_files):
-                entries.append(entry)
-
-        return entries
-
-    @property
+    @cached_property
     def actual_page(self):
         """
         Returns the first entry object that does not have a redirect status,
@@ -367,157 +350,96 @@ class HarPage(object):
                     entry['response']['status'] <= 399):
                 return entry
 
-    # ASSET SIZE PROPERTIES #
-    @property
+    # Convenience properties. Easy accessible through the API, but even easier
+    # to use as properties
+    @cached_property
+    def image_files(self):
+        return self._get_asset_files('image')
+
+    @cached_property
+    def css_files(self):
+        return self._get_asset_files('css')
+
+    @cached_property
+    def text_files(self):
+        return self._get_asset_files('text')
+
+    @cached_property
+    def js_files(self):
+        return self._get_asset_files('js')
+
+    @cached_property
+    def audio_files(self):
+        return self._get_asset_files('audio')
+
+    @cached_property
+    def video_files(self):
+        return self._get_asset_files('video')
+
+    @cached_property
+    def html_files(self):
+        return self._get_asset_files('html')
+
+    @cached_property
     def page_size(self):
-        """
-        Returns the size (in bytes) of the first non-redirect page
-        """
-        # The initial request should always be the first one in the list that
-        # does not redirect
-        return self.actual_page['response']['bodySize']
+        return self._get_asset_size('page')
 
-    @property
-    def total_page_size(self):
-        """
-        Returns the total page size (in bytes) including all assets
-        """
-        return self.get_total_size(self.entries)
+    @cached_property
+    def image_size(self):
+        return self._get_asset_size('image')
 
-    @property
-    def total_text_size(self):
-        """
-        Total size of all images as transferred via HTTP
-        """
-        return self.get_total_size(self.text_files)
+    @cached_property
+    def css_size(self):
+        return self._get_asset_size('css')
 
-    @property
-    def total_css_size(self):
-        """
-        Total size of all css files as transferred via HTTP
-        """
-        return self.get_total_size(self.css_files)
+    @cached_property
+    def text_size(self):
+        return self._get_asset_size('text')
 
-    @property
-    def total_js_size(self):
-        """
-        Total size of all javascript files as transferred via HTTP
-        """
-        return self.get_total_size(self.js_files)
+    @cached_property
+    def js_size(self):
+        return self._get_asset_size('js')
 
-    @property
-    def total_image_size(self):
-        """
-        total size of all image files as transferred via HTTP
-        """
-        return self.get_total_size(self.image_files)
+    @cached_property
+    def audio_size(self):
+        return self._get_asset_size('audio')
 
-    @property
+    @cached_property
+    def video_size(self):
+        return self._get_asset_size('video')
+
+    @cached_property
     def initial_load_time(self):
-        """
-        Load time for the first non-redirect page
-        """
-        return self.actual_page['time']
+        return self._get_asset_load('initial')
 
-    # BROWSER (ASNYC) LOAD TIMES #
-    @property
+    @cached_property
     def content_load_time(self):
-        """
-        Returns the full load time (in milliseconds) of the page itself
-        """
-        # Assuming for right now that the HAR file is only for one page
-        return self.pageTimings['onContentLoad']
+        return self._get_asset_load('content')
 
-    @property
+    @cached_property
+    def page_load_time(self):
+        return self._get_asset_load('page')
+
+    @cached_property
     def image_load_time(self):
-        """
-        Returns the browser load time for all images.
-        """
-        return self.get_load_time(content_type='image')
+        return self._get_asset_load('image')
 
-    @property
+    @cached_property
     def css_load_time(self):
-        """
-        Returns the browser load time for all CSS files.
-        """
-        return self.get_load_time(content_type='css')
+        return self._get_asset_load('css')
 
-    @property
+    @cached_property
     def js_load_time(self):
-        """
-        Returns the browser load time for all javascript files.
-        """
-        return self.get_load_time(content_type='javascript')
+        return self._get_asset_load('js')
 
-    @property
-    def html_load_time(self):
-        """
-        Returns the browser load time for all html files.
-        """
-        return self.get_load_time(content_type='html')
-
-    @property
+    @cached_property
     def audio_load_time(self):
-        """
-        Returns the browser load time for all audio files.
-        """
-        return self.get_load_time(content_type='audio')
+        return self._get_asset_load('audio')
 
-    @property
+    @cached_property
     def video_load_time(self):
-        """
-        Returns the browser load time for all video files.
-        """
-        return self.get_load_time(content_type='video')
+        return self._get_asset_load('video')
 
-    # TOTAL LOAD TIMES #
-
-    @property
-    def total_load_time(self):
-        """
-        Returns the full load time (in ms) of all assets on the page
-        """
-        # Assuming for right now that the HAR file is only for one page
-        return self.pageTimings['onLoad']
-
-    @property
-    def total_image_load_time(self):
-        """
-        Returns the total load time for all images.
-        """
-        return self.get_load_time(content_type='image', async=False)
-
-    @property
-    def total_css_load_time(self):
-        """
-        Returns the total load time for all CSS files.
-        """
-        return self.get_load_time(content_type='css', async=False)
-
-    @property
-    def total_js_load_time(self):
-        """
-        Returns the total load time for all javascript files.
-        """
-        return self.get_load_time(content_type='javascript', async=False)
-
-    @property
-    def total_html_load_time(self):
-        """
-        Returns the total load time for all html files.
-        """
-        return self.get_load_time(content_type='html', async=False)
-
-    @property
-    def total_audio_load_time(self):
-        """
-        Returns the total load time for all audio files.
-        """
-        return self.get_load_time(content_type='audio', async=False)
-
-    @property
-    def total_video_load_time(self):
-        """
-        Returns the total load time for all video files.
-        """
-        return self.get_load_time(content_type='video', async=False)
+    @cached_property
+    def html_load_time(self):
+        return self._get_asset_load('html')
