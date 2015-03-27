@@ -23,6 +23,9 @@ def test_load_times(har_data):
     assert har_parser.css_load_time == 74
     assert har_parser.image_load_time == 379
     assert har_parser.html_load_time == 70
+    # TODO - Get audio/video load time data
+    assert har_parser.video_load_time == 0
+    assert har_parser.audio_load_time == 0
 
 
 def _load_test_data(har_data):

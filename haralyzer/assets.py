@@ -262,9 +262,25 @@ class MultiHarParser(object):
     @cached_property
     def html_load_time(self):
         """
-        Returns aggregate image load time for all pages.
+        Returns aggregate html load time for all pages.
         """
         load_times = self.get_load_times('html')
+        return round(statistics.mean(load_times), DECIMAL_PRECISION)
+
+    @cached_property
+    def audio_load_time(self):
+        """
+        Returns aggregate audio load time for all pages.
+        """
+        load_times = self.get_load_times('audio')
+        return round(statistics.mean(load_times), DECIMAL_PRECISION)
+
+    @cached_property
+    def video_load_time(self):
+        """
+        Returns aggregate video load time for all pages.
+        """
+        load_times = self.get_load_times('video')
         return round(statistics.mean(load_times), DECIMAL_PRECISION)
 
 
