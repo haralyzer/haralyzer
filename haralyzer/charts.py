@@ -22,8 +22,6 @@ def har_chart_cli():
 
     args = parser.parse_args()
 
-    print args
-
     make_chart(chart_type=args.chart_type, har_files=args.har_files)
 
 

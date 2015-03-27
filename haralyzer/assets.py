@@ -27,7 +27,7 @@ class HarParser(object):
         self.har_data = har_data['log']
         # A constant to store the strings we support as content type
         self.content_types = ['image', 'css', 'js', 'html', 'video', 'audio',
-                              'font', 'misc']
+                              'font']
 
     def match_headers(self, entry, header_type, header, value, regex=True):
         """
