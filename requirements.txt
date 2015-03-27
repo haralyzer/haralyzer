@@ -2,3 +2,4 @@ statistics
 python-dateutil
 pytest-cov
 python-coveralls
+cached-property

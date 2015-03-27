@@ -3,6 +3,13 @@
 History
 -------
 
+1.1.0 (2015-03-22)
+++++++++++++++++++
+
+* Using @cached_property instead of @property
+* Small refactor to logic behind getting property values
+* Increased test coverage
+
 1.0.8 (2015-03-01)
 ++++++++++++++++++
 

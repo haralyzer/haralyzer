@@ -6,13 +6,15 @@ except ImportError:
     from distutils.core import setup
 
 
-install_reqs = ['python-dateutil', 'statistics']
+install_reqs = ['python-dateutil',
+                'cached-property',
+                'statistics']
 
 readme = open('README.rst').read()
 
 setup(
     name='haralyzer',
-    version='1.0.9',
+    version='1.1',
     description='A python framework for getting useful stuff out of HAR files',
     long_description=readme,
     author='Justin Crown',
