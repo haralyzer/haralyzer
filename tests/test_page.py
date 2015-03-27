@@ -109,8 +109,6 @@ def test_file_types(har_data):
 
     for k, v in file_types.iteritems():
         for asset in getattr(page, k, None):
-            if not _correct_file_type(asset, v):
-                print asset
             assert _correct_file_type(asset, v)
 
 
