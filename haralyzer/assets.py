@@ -190,6 +190,19 @@ class MultiHarParser(object):
             load_times.append(val)
         return load_times
 
+    def get_stdev(self, asset_type):
+        """
+        Small helper function that returns the standard deviation for a set
+        of a certain asset type.
+
+        :param asset_type: ``str`` of the asset type to calculate standard
+        deviation for.
+        :returns: A ``int`` of ``float`` of standard deviation, depending on
+        the DECIMAL_PRECISION
+        """
+        load_times = self.get_load_times(asset_type)
+        return round(statistics.stdev(load_times), DECIMAL_PRECISION)
+
     @property
     def pages(self):
         """
@@ -206,7 +219,7 @@ class MultiHarParser(object):
                 pages.append(har_parser.pages[0])
         return pages
 
-    @property
+    @cached_property
     def time_to_first_byte(self):
         """
         The aggregate time to first byte for all pages.
@@ -217,7 +230,17 @@ class MultiHarParser(object):
         return round(statistics.mean(ttfb), DECIMAL_PRECISION)
 
     @cached_property
-    def load_time_mean(self):
+    def time_to_first_byte_stdev(self):
+        """
+        The aggregate time to first byte for all pages.
+        """
+        ttfb = []
+        for page in self.pages:
+            ttfb.append(page.time_to_first_byte)
+        return round(statistics.stdev(ttfb), DECIMAL_PRECISION)
+
+    @cached_property
+    def load_time(self):
         """
         The average total load time for all runs (not weighted).
         """
@@ -227,10 +250,9 @@ class MultiHarParser(object):
     @cached_property
     def load_time_stdev(self):
         """
-        Standard deviations of the load times for all pages
+        Standard deviation of the total load times for all pages
         """
-        load_times = self.get_load_times('page')
-        return round(statistics.stdev(load_times), DECIMAL_PRECISION)
+        return self.get_stdev('page')
 
     @cached_property
     def js_load_time(self):
@@ -244,12 +266,26 @@ class MultiHarParser(object):
         return round(statistics.mean(load_times), DECIMAL_PRECISION)
 
     @cached_property
+    def js_load_time_stdev(self):
+        """
+        Standard deviation of the javascript load times for all pages
+        """
+        return self.get_stdev('js')
+
+    @cached_property
     def css_load_time(self):
         """
         Returns aggregate css load time for all pages.
         """
         load_times = self.get_load_times('css')
         return round(statistics.mean(load_times), DECIMAL_PRECISION)
+
+    @cached_property
+    def css_load_time_stdev(self):
+        """
+        Standard deviation of the css load times for all pages
+        """
+        return self.get_stdev('css')
 
     @cached_property
     def image_load_time(self):
@@ -260,12 +296,26 @@ class MultiHarParser(object):
         return round(statistics.mean(load_times), DECIMAL_PRECISION)
 
     @cached_property
+    def image_load_time_stdev(self):
+        """
+        Standard deviation of the image load times for all pages
+        """
+        return self.get_stdev('image')
+
+    @cached_property
     def html_load_time(self):
         """
         Returns aggregate html load time for all pages.
         """
         load_times = self.get_load_times('html')
         return round(statistics.mean(load_times), DECIMAL_PRECISION)
+
+    @cached_property
+    def html_load_time_stdev(self):
+        """
+        Standard deviation of the html load times for all pages
+        """
+        return self.get_stdev('js')
 
     @cached_property
     def audio_load_time(self):
@@ -276,12 +326,26 @@ class MultiHarParser(object):
         return round(statistics.mean(load_times), DECIMAL_PRECISION)
 
     @cached_property
+    def audio_load_time_stdev(self):
+        """
+        Standard deviations of the audio load times for all pages
+        """
+        return self.get_stdev('audio')
+
+    @cached_property
     def video_load_time(self):
         """
         Returns aggregate video load time for all pages.
         """
         load_times = self.get_load_times('video')
         return round(statistics.mean(load_times), DECIMAL_PRECISION)
+
+    @cached_property
+    def video_load_time_stdev(self):
+        """
+        Standard deviations of the video load times for all pages
+        """
+        return self.get_stdev('video')
 
 
 class HarPage(object):

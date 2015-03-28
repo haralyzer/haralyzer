@@ -97,6 +97,42 @@ file (see example above) with `har_data=har_data`::
     # We could do this with 'css', 'js', 'html', 'audio', or 'video'
 
 
+MultiHarParser
++++++++++
+
+The ``MutliHarParser`` takes a ``list`` of ``dict``, each of which represents the JSON
+of a full HAR file. The concept here is that you can provide multiple HAR files of the
+same page (representing multiple test runs) and the ``MultiHarParser`` will provide
+aggregate results for load times::
+
+    import json
+    from haralyzer import HarParser, HarPage
+
+    test_runs = []
+    with open('har_data1.har', 'r') as f1:
+        test_runs.append( (json.loads( f1.read() ) )
+    with open('har_data2.har', 'r') as f2:
+        test_runs.append( (json.loads( f2.read() ) )
+
+    multi_har_parser = MultiHarParser(har_data=test_runs)
+
+    # Get the mean for the time to first byte of all runs in MS
+    print multi_har_parser.time_to_first_byte
+    # 70
+
+    # Get the load time mean for all runs in MS
+    print multi_har_parser.load_time
+    # 150
+
+    # Get the javascript load time mean for all runs in MS
+    print multi_har_parser.js_load_time
+    # 50
+
+    # You can get the standard deviation for any of these as well
+    # Let's get the standard deviation for javascript load time
+    print multi_har_parser.js_load_time_stdev
+    # 5
+
 Advanced Usage
 ==============
 
