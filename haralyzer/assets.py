@@ -162,7 +162,7 @@ class MultiHarParser(object):
     testing.
     """
 
-    def __init__(self, har_data=[], page_id=None):
+    def __init__(self, har_data, page_id=None):
         """
         :param har_data: A ``list`` of ``dict`` representing the JSON
         of a HAR file. See the docstring of HarParser.__init__ for more detail.
@@ -171,7 +171,7 @@ class MultiHarParser(object):
         not, it will assume that there is only one page in the run (this was
         written specifically for that use case).
         """
-        if not har_data:
+        if not har_data or not isinstance(har_data, list):
             raise ValueError('A list of dicts representing HAR files is '
                              'required. Please read the developer docs.')
         self.har_data = har_data
