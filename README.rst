@@ -75,24 +75,16 @@ file (see example above) with `har_data=har_data`::
     har_page.image_load_time
     # prints 713
 
-    # Get the TOTAL image load time
-    har_page.total_image_load_time
-    # prints 2875 
     # We could do this with 'css', 'js', 'html', 'audio', or 'video'
 
     ### WORK WITH SIZES (all sizes are in bytes) ###
 
     # Get the total page size (with all assets)
-    har_page.total_page_size
+    har_page.page_size
     # prints 2423765
 
-    # Get the size of the actual first page that was not a redirect
-    # (i.e. - the HTML of the first page we care about)
-    har_page.page_size
-    # prints 26951
-
     # Get the total image size
-    har_page.total_image_size
+    har_page.image_size
     # prints 733488
     # We could do this with 'css', 'js', 'html', 'audio', or 'video'
 
@@ -120,7 +112,7 @@ aggregate results for load times::
     print multi_har_parser.time_to_first_byte
     # 70
 
-    # Get the load time mean for all runs in MS
+    # Get the total page load time mean for all runs in MS
     print multi_har_parser.load_time
     # 150
 
@@ -130,8 +122,23 @@ aggregate results for load times::
 
     # You can get the standard deviation for any of these as well
     # Let's get the standard deviation for javascript load time
-    print multi_har_parser.js_load_time_stdev
+    print multi_har_parser.get_stdev('js')
     # 5
+    # We can also do that with 'page' or 'ttfb' (time to first byte)
+    print multi_har_parser.get_stdev('page')
+    # 11
+    print multi_har_parser.get_stdev('ttfb')
+    # 10
+
+    ### DECIMAL PRECISION ###
+
+    # You will notice that all of the results are above. That is because
+    # the default decimal precision for the multi parser is 0. However, you
+    # can pass whatever you want into the constructor to control this.
+
+    multi_har_parser = MultiHarParser(har_data=test_runs, decimal_precision=2)
+    print multi_har_parser.time_to_first_byte
+    # 70.15
 
 Advanced Usage
 ==============
