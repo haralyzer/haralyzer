@@ -1,10 +1,19 @@
+import pytest
 from haralyzer import MultiHarParser, HarPage
 
 
+PAGE_ID = 'page_3'
+
+
 def test_init(har_data):
-    data = _load_test_data(har_data)
+    data = _load_test_data(har_data, num_test_files=4)
     # Test the default of it only caring about one page
     har_parser = MultiHarParser(har_data=data)
+    assert len(har_parser.pages) == 4
+    for page in har_parser.pages:
+        assert isinstance(page, HarPage)
+    har_parser = MultiHarParser(har_data=data, page_id=PAGE_ID)
+    assert len(har_parser.pages) == 3
     for page in har_parser.pages:
         assert isinstance(page, HarPage)
 
@@ -33,6 +42,8 @@ def test_stdev(har_data):
     """
     data = _load_test_data(har_data)
     har_parser = MultiHarParser(har_data=data)
+    with pytest.raises(ValueError):
+        har_parser.get_stdev('nonexistent')
     # Full page load time stdev
     assert har_parser.get_stdev('page') == 11
     # Time to first byte stdev
@@ -47,11 +58,14 @@ def test_stdev(har_data):
     assert har_parser.get_stdev('audio') == 0
 
 
-def _load_test_data(har_data):
+def _load_test_data(har_data, num_test_files=3):
     """
     Loads the test files we need and returns them in the proper format.
+
+    :param num_test_files: Maximum number of test files to return.
+    :type num_test_files: integer
     """
-    har_data_1 = har_data('multi_test_1.har')
-    har_data_2 = har_data('multi_test_2.har')
-    har_data_3 = har_data('multi_test_3.har')
-    return [har_data_1, har_data_2, har_data_3]
+    results = []
+    for i in range(1, num_test_files + 1):
+        results.append(har_data('multi_test_{0}.har'.format(i)))
+    return results

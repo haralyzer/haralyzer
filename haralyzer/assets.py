@@ -224,7 +224,7 @@ class MultiHarParser(object):
             har_parser = HarParser(har_data=har_dict)
             if self.page_id:
                 for page in har_parser.pages:
-                    if page['page_id'] == self.page_id:
+                    if page.page_id == self.page_id:
                         pages.append(page)
             else:
                 pages.append(har_parser.pages[0])
