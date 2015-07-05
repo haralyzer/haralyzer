@@ -64,7 +64,7 @@ a ``HarParser`` with `har_parser=parser`, or a ``dict`` representing the JSON of
 file (see example above) with `har_data=har_data`::
 
     import json
-    from haralyzer import HarPage
+    From haralyzer import HarPage
 
     with open('har_data.har', 'r') as f:
         har_page = HarPage('page_3', har_data=json.loads(f.read()))
@@ -90,7 +90,7 @@ file (see example above) with `har_data=har_data`::
 
 
 MultiHarParser
-+++++++++
+++++++++++++++
 
 The ``MutliHarParser`` takes a ``list`` of ``dict``, each of which represents the JSON
 of a full HAR file. The concept here is that you can provide multiple HAR files of the
@@ -139,6 +139,7 @@ aggregate results for load times::
     multi_har_parser = MultiHarParser(har_data=test_runs, decimal_precision=2)
     print multi_har_parser.time_to_first_byte
     # 70.15
+
 
 Advanced Usage
 ==============
