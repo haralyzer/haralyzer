@@ -64,7 +64,7 @@ a ``HarParser`` with `har_parser=parser`, or a ``dict`` representing the JSON of
 file (see example above) with `har_data=har_data`::
 
     import json
-    from haralyzer import HarPage
+    From haralyzer import HarPage
 
     with open('har_data.har', 'r') as f:
         har_page = HarPage('page_3', har_data=json.loads(f.read()))
@@ -75,26 +75,70 @@ file (see example above) with `har_data=har_data`::
     har_page.image_load_time
     # prints 713
 
-    # Get the TOTAL image load time
-    har_page.total_image_load_time
-    # prints 2875 
     # We could do this with 'css', 'js', 'html', 'audio', or 'video'
 
     ### WORK WITH SIZES (all sizes are in bytes) ###
 
     # Get the total page size (with all assets)
-    har_page.total_page_size
+    har_page.page_size
     # prints 2423765
 
-    # Get the size of the actual first page that was not a redirect
-    # (i.e. - the HTML of the first page we care about)
-    har_page.page_size
-    # prints 26951
-
     # Get the total image size
-    har_page.total_image_size
+    har_page.image_size
     # prints 733488
     # We could do this with 'css', 'js', 'html', 'audio', or 'video'
+
+
+MultiHarParser
+++++++++++++++
+
+The ``MutliHarParser`` takes a ``list`` of ``dict``, each of which represents the JSON
+of a full HAR file. The concept here is that you can provide multiple HAR files of the
+same page (representing multiple test runs) and the ``MultiHarParser`` will provide
+aggregate results for load times::
+
+    import json
+    from haralyzer import HarParser, HarPage
+
+    test_runs = []
+    with open('har_data1.har', 'r') as f1:
+        test_runs.append( (json.loads( f1.read() ) )
+    with open('har_data2.har', 'r') as f2:
+        test_runs.append( (json.loads( f2.read() ) )
+
+    multi_har_parser = MultiHarParser(har_data=test_runs)
+
+    # Get the mean for the time to first byte of all runs in MS
+    print multi_har_parser.time_to_first_byte
+    # 70
+
+    # Get the total page load time mean for all runs in MS
+    print multi_har_parser.load_time
+    # 150
+
+    # Get the javascript load time mean for all runs in MS
+    print multi_har_parser.js_load_time
+    # 50
+
+    # You can get the standard deviation for any of these as well
+    # Let's get the standard deviation for javascript load time
+    print multi_har_parser.get_stdev('js')
+    # 5
+    # We can also do that with 'page' or 'ttfb' (time to first byte)
+    print multi_har_parser.get_stdev('page')
+    # 11
+    print multi_har_parser.get_stdev('ttfb')
+    # 10
+
+    ### DECIMAL PRECISION ###
+
+    # You will notice that all of the results are above. That is because
+    # the default decimal precision for the multi parser is 0. However, you
+    # can pass whatever you want into the constructor to control this.
+
+    multi_har_parser = MultiHarParser(har_data=test_runs, decimal_precision=2)
+    print multi_har_parser.time_to_first_byte
+    # 70.15
 
 
 Advanced Usage
