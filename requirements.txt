@@ -1,4 +1,4 @@
-statistics
+statistics; python_version <= '2.7'
 python-dateutil
 pytest-cov
 python-coveralls
