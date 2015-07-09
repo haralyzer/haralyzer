@@ -7,8 +7,8 @@ except ImportError:
 
 
 install_reqs = ['cached-property',
-                'python-dateutil',
-                'statistics', ]
+                'numpy',
+                'python-dateutil', ]
 
 readme = open('README.rst').read()
 
