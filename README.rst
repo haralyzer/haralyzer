@@ -251,3 +251,8 @@ already filtered the entries you want to know about::
 With this, you can examine the timeline for any number of assets. Since the key is a ``datetime``
 object, this is a heavy operation. We could always change this in the future, but for now,
 limit the assets you give this method to only what you need to examine.
+
+Known Issues
+------------
+
+The `haralyzer` module is currently not compatible with python 3.2. This is due to the fact that it leverages the `statistics` backport, which is not compatible with python 3.2. We will be working on a fix as soon as possible, feel free to submit a pull request in the meantime.
