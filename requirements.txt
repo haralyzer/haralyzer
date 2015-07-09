@@ -1,5 +1,5 @@
-statistics; python_version <= '2.7'
+cached-property
+numpy
 python-dateutil
 pytest-cov
 python-coveralls
-cached-property

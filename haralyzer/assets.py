@@ -7,9 +7,9 @@ import datetime
 import dateutil
 # I know this import is stupid, but I cannot use dateutil.parser without it
 from dateutil import parser
+import numpy
 assert parser
 import re
-import statistics
 
 from haralyzer.compat import iteritems
 
@@ -214,7 +214,8 @@ class MultiHarParser(object):
         else:
             load_times = self.get_load_times(asset_type)
 
-        return round(statistics.stdev(load_times), self.decimal_precision)
+        return round(numpy.std(load_times, ddof=1),
+                     self.decimal_precision)
 
     @property
     def pages(self):
@@ -247,7 +248,7 @@ class MultiHarParser(object):
         ttfb = []
         for page in self.pages:
             ttfb.append(page.time_to_first_byte)
-        return round(statistics.mean(ttfb), self.decimal_precision)
+        return round(numpy.mean(ttfb), self.decimal_precision)
 
     @cached_property
     def page_load_time(self):
@@ -255,7 +256,7 @@ class MultiHarParser(object):
         The average total load time for all runs (not weighted).
         """
         load_times = self.get_load_times('page')
-        return round(statistics.mean(load_times), self.decimal_precision)
+        return round(numpy.mean(load_times), self.decimal_precision)
 
     @cached_property
     def js_load_time(self):
@@ -266,7 +267,7 @@ class MultiHarParser(object):
         total load time or the browser load time
         """
         load_times = self.get_load_times('js')
-        return round(statistics.mean(load_times), self.decimal_precision)
+        return round(numpy.mean(load_times), self.decimal_precision)
 
     @cached_property
     def css_load_time(self):
@@ -274,7 +275,7 @@ class MultiHarParser(object):
         Returns aggregate css load time for all pages.
         """
         load_times = self.get_load_times('css')
-        return round(statistics.mean(load_times), self.decimal_precision)
+        return round(numpy.mean(load_times), self.decimal_precision)
 
     @cached_property
     def image_load_time(self):
@@ -282,7 +283,7 @@ class MultiHarParser(object):
         Returns aggregate image load time for all pages.
         """
         load_times = self.get_load_times('image')
-        return round(statistics.mean(load_times), self.decimal_precision)
+        return round(numpy.mean(load_times), self.decimal_precision)
 
     @cached_property
     def html_load_time(self):
@@ -290,7 +291,7 @@ class MultiHarParser(object):
         Returns aggregate html load time for all pages.
         """
         load_times = self.get_load_times('html')
-        return round(statistics.mean(load_times), self.decimal_precision)
+        return round(numpy.mean(load_times), self.decimal_precision)
 
     @cached_property
     def audio_load_time(self):
@@ -298,7 +299,7 @@ class MultiHarParser(object):
         Returns aggregate audio load time for all pages.
         """
         load_times = self.get_load_times('audio')
-        return round(statistics.mean(load_times), self.decimal_precision)
+        return round(numpy.mean(load_times), self.decimal_precision)
 
     @cached_property
     def video_load_time(self):
@@ -306,7 +307,7 @@ class MultiHarParser(object):
         Returns aggregate video load time for all pages.
         """
         load_times = self.get_load_times('video')
-        return round(statistics.mean(load_times), self.decimal_precision)
+        return round(numpy.mean(load_times), self.decimal_precision)
 
 
 class HarPage(object):

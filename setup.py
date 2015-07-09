@@ -7,14 +7,14 @@ except ImportError:
 
 
 install_reqs = ['cached-property',
-                'python-dateutil',
-                'statistics', ]
+                'numpy',
+                'python-dateutil', ]
 
 readme = open('README.rst').read()
 
 setup(
     name='haralyzer',
-    version='1.2.2',
+    version='1.3',
     description='A python framework for getting useful stuff out of HAR files',
     long_description=readme,
     author='Justin Crown',
