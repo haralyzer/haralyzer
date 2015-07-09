@@ -4,6 +4,7 @@ from dateutil import parser
 assert parser
 import pytest
 from haralyzer import HarParser, HarPage
+from haralyzer.compat import iteritems
 
 
 # This has two of each common content type as the values for each content-type
@@ -175,7 +176,7 @@ def test_create_asset_timeline(har_data):
         assert time_key in asset_timeline
         assert len(asset_timeline[time_key]) == 1
         # Compare the dicts
-        for key, value in entry.iteritems():
+        for key, value in iteritems(entry):
             assert asset_timeline[time_key][0][key] == entry[key]
         time_key = time_key + datetime.timedelta(milliseconds=1)
 
@@ -192,8 +193,8 @@ def _headers_test(parser, entry, test_data, expects, regex):
     :param regex: ``bool`` indicating whether we should be using regex
     search
     """
-    for req_type, data in test_data.iteritems():
-        for header, value in data.iteritems():
+    for req_type, data in iteritems(test_data):
+        for header, value in iteritems(data):
             is_match = parser.match_headers(entry, req_type,
                                                 header, value, regex=regex)
             if expects:

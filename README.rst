@@ -236,17 +236,17 @@ already filtered the entries you want to know about::
 
     timeline = har_parser.create_asset_timeline(entries)
 
-    for key, value in timeline.iteritems():
-        print type(key)
+    for key, value in timeline.items():
+        print(type(key))
         # <type 'datetime.datetime'>
-        print key
+        print(key)
         # 2015-02-21 19:15:41.450000-08:00
-        print type(value)
+        print(type(value))
         # <type 'list'>
-        print value
+        print(value)
         # Each entry in the list is an asset from the page
         # [{u'serverIPAddress': u'157.166.249.67', u'cache': {}, u'startedDateTime': u'2015-02-21T19:15:40.351-08:00', u'pageref': u'page_3', u'request': {u'cookies':............................
- 
+
 
 With this, you can examine the timeline for any number of assets. Since the key is a ``datetime``
 object, this is a heavy operation. We could always change this in the future, but for now,

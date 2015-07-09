@@ -11,6 +11,8 @@ assert parser
 import re
 import statistics
 
+from haralyzer.compat import iteritems
+
 
 DECIMAL_PRECISION = 0
 
@@ -475,7 +477,7 @@ class HarPage(object):
         """
         initial_entry = self.entries[0]
         ttfb = 0
-        for k, v in initial_entry['timings'].iteritems():
+        for k, v in iteritems(initial_entry['timings']):
             if k != 'receive':
                 ttfb += v
         return ttfb

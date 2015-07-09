@@ -1,6 +1,7 @@
 import dateutil
 import pytest
 from haralyzer import HarPage, HarParser
+from haralyzer.compat import iteritems
 import re
 
 PAGE_ID = 'page_3'
@@ -107,7 +108,7 @@ def test_file_types(har_data):
                   'video_files': ['video', 'flash'], 'text_files': ['text'],
                   'html_files': ['html']}
 
-    for k, v in file_types.iteritems():
+    for k, v in iteritems(file_types):
         for asset in getattr(page, k, None):
             assert _correct_file_type(asset, v)
 
