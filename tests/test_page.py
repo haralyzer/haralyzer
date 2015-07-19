@@ -175,6 +175,15 @@ def test_time_to_first_byte(har_data):
     assert page.time_to_first_byte == 153
 
 
+def test_hostname(har_data):
+    """
+    Makes sure that the correct hostname is returned.
+    """
+    init_data = har_data('humanssuck.net.har')
+    page = HarPage(PAGE_ID, har_data=init_data)
+    assert page.hostname == 'humanssuck.net'
+
+
 def _correct_file_type(entry, file_types):
     for header in entry['response']['headers']:
         if header['name'] == 'Content-Type':
