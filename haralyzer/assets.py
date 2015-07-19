@@ -155,6 +155,10 @@ class HarParser(object):
     def creator(self):
         return self.har_data['creator']
 
+    @cached_property
+    def hostname(self):
+        return self.pages[0].hostname
+
 
 class MultiHarParser(object):
     """
@@ -460,6 +464,15 @@ class HarPage(object):
         return size
 
     # BEGIN PROPERTIES #
+
+    @cached_property
+    def hostname(self):
+        """
+        Hostname of the initial request
+        """
+        for header in self.entries[0]['request']['headers']:
+            if header['name'] == 'Host':
+                return header['value']
 
     @cached_property
     def entries(self):
