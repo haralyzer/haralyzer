@@ -49,6 +49,9 @@ page in HarParser.pages is a HarPage object::
     print har_parser.browser
     # {u'name': u'Firefox', u'version': u'25.0.1'}
 
+    print har_parser.hostname
+    # 'humanssuck.net'
+
     for page in har_parser.pages:
         assert isinstance(page, HarPage, None)
         # returns True for each
@@ -68,6 +71,10 @@ file (see example above) with `har_data=har_data`::
 
     with open('har_data.har', 'r') as f:
         har_page = HarPage('page_3', har_data=json.loads(f.read()))
+
+    ### GET BASIC INFO
+    har_page.hostname
+    # 'humanssuck.net'
 
     ### WORK WITH LOAD TIMES (all load times are in ms) ###
 
