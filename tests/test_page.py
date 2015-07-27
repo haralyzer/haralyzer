@@ -184,6 +184,15 @@ def test_hostname(har_data):
     assert page.hostname == 'humanssuck.net'
 
 
+def test_url(har_data):
+    """
+    Makes sure that the correct URL is returned.
+    """
+    init_data = har_data('humanssuck.net.har')
+    page = HarPage(PAGE_ID, har_data=init_data)
+    assert page.url == 'http://humanssuck.net/'
+
+
 def _correct_file_type(entry, file_types):
     for header in entry['response']['headers']:
         if header['name'] == 'Content-Type':

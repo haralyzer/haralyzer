@@ -475,6 +475,13 @@ class HarPage(object):
                 return header['value']
 
     @cached_property
+    def url(self):
+        """
+        The absolute URL of the initial request.
+        """
+        return self.entries[0]['request']['url']
+
+    @cached_property
     def entries(self):
         page_entries = []
         for entry in self.parser.har_data['entries']:

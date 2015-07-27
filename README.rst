@@ -75,6 +75,8 @@ file (see example above) with `har_data=har_data`::
     ### GET BASIC INFO
     har_page.hostname
     # 'humanssuck.net'
+    har_page.url
+    $ 'http://humanssuck.net/about/'
 
     ### WORK WITH LOAD TIMES (all load times are in ms) ###
 
