@@ -11,7 +11,8 @@ import numpy
 assert parser
 import re
 
-from haralyzer.compat import iteritems
+from .compat import iteritems
+from .errors import PageNotFoundError
 
 
 DECIMAL_PRECISION = 0
@@ -351,6 +352,15 @@ class HarPage(object):
                 self.title = page['title']
                 self.startedDateTime = page['startedDateTime']
                 self.pageTimings = page['pageTimings']
+
+        if not getattr(self, 'title', None):
+            raise PageNotFoundError(
+                'No page found with id {0}\n\nValid pages are {1}'.format(
+                    self.page_id, self.parser.pages)
+            )
+
+    def __repr__(self):
+        return 'ID: {0}, URL: {1}'.format(self.page_id, self.url)
 
     def _get_asset_files(self, asset_type):
         """
