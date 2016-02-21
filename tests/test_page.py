@@ -2,8 +2,10 @@ import dateutil
 import pytest
 from haralyzer import HarPage, HarParser
 from haralyzer.compat import iteritems
+from haralyzer.errors import PageNotFoundError
 import re
 
+BAD_PAGE_ID = 'sup_dawg'
 PAGE_ID = 'page_3'
 
 
@@ -14,8 +16,13 @@ def test_init(har_data):
     with pytest.raises(ValueError):
         page = HarPage(PAGE_ID)
 
-    # Make sure it can load with either har_data or a parser
     init_data = har_data('humanssuck.net.har')
+
+    # Throws PageNotFoundException with bad page ID
+    with pytest.raises(PageNotFoundError):
+        page = HarPage(BAD_PAGE_ID, har_data=init_data)
+
+    # Make sure it can load with either har_data or a parser
     page = HarPage(PAGE_ID, har_data=init_data)
     assert isinstance(page, HarPage)
     parser = HarParser(init_data)
