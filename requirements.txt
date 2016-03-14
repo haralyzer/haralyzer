@@ -1,5 +1,2 @@
 cached-property
-numpy
 python-dateutil
-pytest-cov
-python-coveralls
