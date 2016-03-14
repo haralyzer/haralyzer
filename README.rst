@@ -104,6 +104,7 @@ MultiHarParser
 Most of the feature of ``MutliHarParser`` require numpy.
 
 make sure you have ``numpy`` in your environment::
+
     pip install -r requirements_multi.yxy
     or
     pip install haralyzer[multipage]
