@@ -1,30 +1,50 @@
-from functools import wraps
-import warnings
+import functools
 
-try:
-    import numpy
+try:  # numpy
+    from numpy import std
+
+    stdev = functools.partial(std, ddof=1)
+    from numpy import mean
 except ImportError:
-    has_numpy = False
-else:
-    has_numpy = True
+    try:  # python >= 3.4 or back
+        from statistics import stdev
+        from statistics import mean
+    except ImportError:
+        try:  # backports.statistics available
+            from backports.statistics import stdev
+            from backports.statistics import mean
+        except ImportError:
+            # http://stackoverflow.com/questions/15389768/
+            # standard-deviation-of-a-list
+            def mean(data):
+                """Return the sample arithmetic mean of data."""
+                n = len(data)
+                if n < 1:
+                    raise ValueError('mean requires at least one data point')
+                return sum(data) / float(n)
+
+
+            def _ss(data):
+                """Return sum of square deviations of sequence data."""
+                c = mean(data)
+                ss = sum((x - c) ** 2 for x in data)
+                return ss
+
+
+            def stdev(data):
+                """Calculates the population standard deviation."""
+                n = len(data)
+                if n < 2:
+                    raise ValueError(
+                            'variance requires at least two data points')
+                ss = _ss(data)
+                pvar = ss / n  # the population variance
+                return pvar ** 0.5
 
 from cached_property import cached_property
-
 from .assets import HarParser
 
 DECIMAL_PRECISION = 0
-
-
-def needs_numpy(f):
-    @wraps(f)
-    def with_numpy(*args, **kwargs):
-        if not has_numpy:
-            warnings.warn("numpy is required to use this feature",
-                          ImportWarning)
-            return
-        return f(*args, **kwargs)
-
-    return with_numpy
 
 
 class MultiHarParser(object):
@@ -65,7 +85,6 @@ class MultiHarParser(object):
             load_times.append(val)
         return load_times
 
-    @needs_numpy
     def get_stdev(self, asset_type):
         """
         Returns the standard deviation for a set of a certain asset type.
@@ -86,7 +105,7 @@ class MultiHarParser(object):
         else:
             load_times = self.get_load_times(asset_type)
 
-        return round(numpy.std(load_times, ddof=1),
+        return round(stdev(load_times, ddof=1),
                      self.decimal_precision)
 
     @property
@@ -113,7 +132,6 @@ class MultiHarParser(object):
         return self.pages[0].asset_types
 
     @cached_property
-    @needs_numpy
     def time_to_first_byte(self):
         """
         The aggregate time to first byte for all pages.
@@ -121,67 +139,60 @@ class MultiHarParser(object):
         ttfb = []
         for page in self.pages:
             ttfb.append(page.time_to_first_byte)
-        return round(numpy.mean(ttfb), self.decimal_precision)
+        return round(mean(ttfb), self.decimal_precision)
 
     @cached_property
-    @needs_numpy
     def page_load_time(self):
         """
         The average total load time for all runs (not weighted).
         """
         load_times = self.get_load_times('page')
-        return round(numpy.mean(load_times), self.decimal_precision)
+        return round(mean(load_times), self.decimal_precision)
 
     @cached_property
-    @needs_numpy
     def js_load_time(self):
         """
         Returns aggregate javascript load time.
         """
         load_times = self.get_load_times('js')
-        return round(numpy.mean(load_times), self.decimal_precision)
+        return round(mean(load_times), self.decimal_precision)
 
     @cached_property
-    @needs_numpy
     def css_load_time(self):
         """
         Returns aggregate css load time for all pages.
         """
         load_times = self.get_load_times('css')
-        return round(numpy.mean(load_times), self.decimal_precision)
+        return round(mean(load_times), self.decimal_precision)
 
     @cached_property
-    @needs_numpy
     def image_load_time(self):
         """
         Returns aggregate image load time for all pages.
         """
         load_times = self.get_load_times('image')
-        return round(numpy.mean(load_times), self.decimal_precision)
+        return round(mean(load_times), self.decimal_precision)
 
     @cached_property
-    @needs_numpy
     def html_load_time(self):
         """
         Returns aggregate html load time for all pages.
         """
         load_times = self.get_load_times('html')
-        return round(numpy.mean(load_times), self.decimal_precision)
+        return round(mean(load_times), self.decimal_precision)
 
     @cached_property
-    @needs_numpy
     def audio_load_time(self):
         """
         Returns aggregate audio load time for all pages.
         """
         load_times = self.get_load_times('audio')
-        return round(numpy.mean(load_times), self.decimal_precision)
+        return round(mean(load_times), self.decimal_precision)
 
     @cached_property
-    @needs_numpy
     def video_load_time(self):
         """
         Returns aggregate video load time for all pages.
         """
         load_times = self.get_load_times('video')
-        return round(numpy.mean(load_times), self.decimal_precision)
+        return round(mean(load_times), self.decimal_precision)

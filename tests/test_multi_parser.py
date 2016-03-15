@@ -1,6 +1,5 @@
 import pytest
 from haralyzer import MultiHarParser, HarPage
-from haralyzer.multihar import has_numpy
 
 PAGE_ID = 'page_3'
 
@@ -18,8 +17,6 @@ def test_init(har_data):
         assert isinstance(page, HarPage)
 
 
-@pytest.mark.skipif(not has_numpy,
-                    reason="requires numpy")
 def test_load_times(har_data):
     data = _load_test_data(har_data)
     # Test the default of it only caring about one page
@@ -38,8 +35,6 @@ def test_load_times(har_data):
     assert har_parser.audio_load_time == 0
 
 
-@pytest.mark.skipif(not has_numpy,
-                    reason="requires numpy")
 def test_stdev(har_data):
     """
     Tests the get_stdev method

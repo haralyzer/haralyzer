@@ -29,7 +29,7 @@ setup(
         test_requires=test_requirements,
         install_requires=install_reqs,
         extras_require={
-            'multipage': option_requirements,
+            'numpy': option_requirements,
         },
         license='MIT',
         zip_safe=False,
