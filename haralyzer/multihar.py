@@ -1,45 +1,37 @@
-import functools
-
-try:  # numpy
-    from numpy import std
-
-    stdev = functools.partial(std, ddof=1)
-    from numpy import mean
+try:  # python >= 3.4 or back
+    from statistics import stdev
+    from statistics import mean
 except ImportError:
-    try:  # python >= 3.4 or back
-        from statistics import stdev
-        from statistics import mean
+    try:  # backports.statistics available
+        from backports.statistics import stdev
+        from backports.statistics import mean
     except ImportError:
-        try:  # backports.statistics available
-            from backports.statistics import stdev
-            from backports.statistics import mean
-        except ImportError:
-            # http://stackoverflow.com/questions/15389768/
-            # standard-deviation-of-a-list
-            def mean(data):
-                """Return the sample arithmetic mean of data."""
-                n = len(data)
-                if n < 1:
-                    raise ValueError('mean requires at least one data point')
-                return sum(data) / float(n)
+        # http://stackoverflow.com/questions/15389768/
+        # standard-deviation-of-a-list
+        def mean(data):
+            """Return the sample arithmetic mean of data."""
+            n = len(data)
+            if n < 1:
+                raise ValueError('mean requires at least one data point')
+            return sum(data) / float(n)
 
 
-            def _ss(data):
-                """Return sum of square deviations of sequence data."""
-                c = mean(data)
-                ss = sum((x - c) ** 2 for x in data)
-                return ss
+        def _ss(data):
+            """Return sum of square deviations of sequence data."""
+            c = mean(data)
+            ss = sum((x - c) ** 2 for x in data)
+            return ss
 
 
-            def stdev(data):
-                """Calculates the population standard deviation."""
-                n = len(data)
-                if n < 2:
-                    raise ValueError(
-                            'variance requires at least two data points')
-                ss = _ss(data)
-                pvar = ss / n  # the population variance
-                return pvar ** 0.5
+        def stdev(data):
+            """Calculates the population standard deviation."""
+            n = len(data)
+            if n < 2:
+                raise ValueError(
+                        'variance requires at least two data points')
+            ss = _ss(data)
+            pvar = ss / n  # the population variance
+            return pvar ** 0.5
 
 from cached_property import cached_property
 from .assets import HarParser
@@ -105,7 +97,7 @@ class MultiHarParser(object):
         else:
             load_times = self.get_load_times(asset_type)
 
-        return round(stdev(load_times, ddof=1),
+        return round(stdev(load_times),
                      self.decimal_precision)
 
     @property

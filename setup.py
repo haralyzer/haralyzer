@@ -10,7 +10,6 @@ install_reqs = ['cached-property',
 test_requirements = ['pytest-cov',
                      'python-coveralls', ]
 
-option_requirements = ["numpy"]
 readme = open('README.rst').read()
 
 setup(
@@ -26,10 +25,9 @@ setup(
             'haralyzer'
         ],
         package_dir={'haralyzer': 'haralyzer'},
-        test_requires=test_requirements,
+        tests_require=test_requirements,
         install_requires=install_reqs,
         extras_require={
-            'numpy': option_requirements,
         },
         license='MIT',
         zip_safe=False,

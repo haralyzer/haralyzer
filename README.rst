@@ -101,13 +101,6 @@ file (see example above) with `har_data=har_data`::
 MultiHarParser
 ++++++++++++++
 
-Most of the feature of ``MutliHarParser`` can benefit from numpy
-if you have it installed.
-
-    pip install numpy
-    or
-    pip install haralyzer[numpy]
-
 The ``MutliHarParser`` takes a ``list`` of ``dict``, each of which represents the JSON
 of a full HAR file. The concept here is that you can provide multiple HAR files of the
 same page (representing multiple test runs) and the ``MultiHarParser`` will provide
