@@ -30,7 +30,7 @@ except ImportError:
                 raise ValueError(
                         'variance requires at least two data points')
             ss = _ss(data)
-            pvar = ss / n  # the population variance
+            pvar = ss / (n - 1)  # the variance
             return pvar ** 0.5
 
 from cached_property import cached_property
