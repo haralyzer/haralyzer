@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import sys
 
 try:
     from setuptools import setup
@@ -7,6 +8,10 @@ except ImportError:
 
 install_reqs = ['cached-property',
                 'python-dateutil', ]
+if sys.version_info < (3, 4):
+    install_reqs.extend([
+        "backports.statistics",
+    ])
 test_requirements = ['pytest-cov',
                      'python-coveralls', ]
 
