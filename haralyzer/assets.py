@@ -2,18 +2,19 @@
 Provides all of the main functional classes for analyzing HAR files
 """
 
-from cached_property import cached_property
 import datetime
+
 import dateutil
+from cached_property import cached_property
+
 # I know this import is stupid, but I cannot use dateutil.parser without it
 from dateutil import parser
-import numpy
+
 assert parser
 import re
 
 from .compat import iteritems
 from .errors import PageNotFoundError
-
 
 DECIMAL_PRECISION = 0
 
@@ -31,8 +32,9 @@ class HarParser(object):
         requests.json() if you are pulling the data via HTTP.
         """
         if not har_data or not isinstance(har_data, dict):
-            raise ValueError('A dict() representation of a HAR file is required'
-                             ' to instantiate this class. Please RTFM.')
+            raise ValueError(
+                'A dict() representation of a HAR file is required'
+                ' to instantiate this class. Please RTFM.')
         self.har_data = har_data['log']
 
     def match_headers(self, entry, header_type, header, value, regex=True):
@@ -161,160 +163,6 @@ class HarParser(object):
         return self.pages[0].hostname
 
 
-class MultiHarParser(object):
-    """
-    An object that represents multiple HAR files OF THE SAME CONTENT.
-    It is used to gather overall statistical data in situations where you have
-    multiple runs against the same web asset, which is common in performance
-    testing.
-    """
-
-    def __init__(self, har_data, page_id=None,
-                 decimal_precision=DECIMAL_PRECISION):
-        """
-        :param har_data: A ``list`` of ``dict`` representing the JSON
-        of a HAR file. See the docstring of HarParser.__init__ for more detail.
-        :param page_id: IF a ``str`` of the page ID is provided, the
-        multiparser will return aggregate results for this specific page. If
-        not, it will assume that there is only one page in the run (this was
-        written specifically for that use case).
-        :param decimal_precision: ``int`` representing the precision of the
-        return values for the means and standard deviations provided by this
-        class.
-        """
-        self.har_data = har_data
-        self.page_id = page_id
-        self.decimal_precision = decimal_precision
-
-    def get_load_times(self, asset_type):
-        """
-        Just a ``list`` of the load times of a certain asset type for each page
-
-        :param asset_type: ``str`` of the asset to type to return load times for
-        """
-        load_times = []
-        search_str = '{0}_load_time'.format(asset_type)
-        for har_page in self.pages:
-            val = getattr(har_page, search_str, None)
-            load_times.append(val)
-        return load_times
-
-    def get_stdev(self, asset_type):
-        """
-        Returns the standard deviation for a set of a certain asset type.
-
-        :param asset_type: ``str`` of the asset type to calculate standard
-        deviation for.
-        :returns: A ``int`` or ``float`` of standard deviation, depending on
-        the self.decimal_precision
-        """
-        load_times = []
-        # Handle edge cases like TTFB
-        if asset_type == 'ttfb':
-            for page in self.pages:
-                load_times.append(page.time_to_first_byte)
-        elif asset_type not in self.asset_types and asset_type != 'page':
-            raise ValueError('asset_type must be one of:\nttfb\n{0}'.format(
-                '\n'.join(self.asset_types)))
-        else:
-            load_times = self.get_load_times(asset_type)
-
-        return round(numpy.std(load_times, ddof=1),
-                     self.decimal_precision)
-
-    @property
-    def pages(self):
-        """
-        The aggregate pages of all the parser objects.
-        """
-        pages = []
-        for har_dict in self.har_data:
-            har_parser = HarParser(har_data=har_dict)
-            if self.page_id:
-                for page in har_parser.pages:
-                    if page.page_id == self.page_id:
-                        pages.append(page)
-            else:
-                pages.append(har_parser.pages[0])
-        return pages
-
-    @cached_property
-    def asset_types(self):
-        """
-        Mimic the asset types stored in HarPage
-        """
-        return self.pages[0].asset_types
-
-    @cached_property
-    def time_to_first_byte(self):
-        """
-        The aggregate time to first byte for all pages.
-        """
-        ttfb = []
-        for page in self.pages:
-            ttfb.append(page.time_to_first_byte)
-        return round(numpy.mean(ttfb), self.decimal_precision)
-
-    @cached_property
-    def page_load_time(self):
-        """
-        The average total load time for all runs (not weighted).
-        """
-        load_times = self.get_load_times('page')
-        return round(numpy.mean(load_times), self.decimal_precision)
-
-    @cached_property
-    def js_load_time(self):
-        """
-        Returns aggregate javascript load time.
-
-        :param total: ``bool`` indicating whether this should be should be the
-        total load time or the browser load time
-        """
-        load_times = self.get_load_times('js')
-        return round(numpy.mean(load_times), self.decimal_precision)
-
-    @cached_property
-    def css_load_time(self):
-        """
-        Returns aggregate css load time for all pages.
-        """
-        load_times = self.get_load_times('css')
-        return round(numpy.mean(load_times), self.decimal_precision)
-
-    @cached_property
-    def image_load_time(self):
-        """
-        Returns aggregate image load time for all pages.
-        """
-        load_times = self.get_load_times('image')
-        return round(numpy.mean(load_times), self.decimal_precision)
-
-    @cached_property
-    def html_load_time(self):
-        """
-        Returns aggregate html load time for all pages.
-        """
-        load_times = self.get_load_times('html')
-        return round(numpy.mean(load_times), self.decimal_precision)
-
-    @cached_property
-    def audio_load_time(self):
-        """
-        Returns aggregate audio load time for all pages.
-        """
-        load_times = self.get_load_times('audio')
-        return round(numpy.mean(load_times), self.decimal_precision)
-
-    @cached_property
-    def video_load_time(self):
-        """
-        Returns aggregate video load time for all pages.
-        """
-        load_times = self.get_load_times('video')
-        return round(numpy.mean(load_times), self.decimal_precision)
-
-
 class HarPage(object):
     """
     An object representing one page of a HAR resource
@@ -355,8 +203,8 @@ class HarPage(object):
 
         if not getattr(self, 'title', None):
             raise PageNotFoundError(
-                'No page found with id {0}\n\nValid pages are {1}'.format(
-                    self.page_id, self.parser.pages)
+                    'No page found with id {0}\n\nValid pages are {1}'.format(
+                            self.page_id, self.parser.pages)
             )
 
     def __repr__(self):
@@ -390,7 +238,8 @@ class HarPage(object):
         elif asset_type == 'page':
             return self.pageTimings['onLoad']
         else:
-            return self.get_load_time(content_type=self.asset_types[asset_type])
+            return self.get_load_time(
+                content_type=self.asset_types[asset_type])
 
     def filter_entries(self, request_type=None, content_type=None,
                        status_code=None, regex=True):
@@ -537,7 +386,7 @@ class HarPage(object):
         """
         for entry in self.entries:
             if not (entry['response']['status'] >= 300 and
-                    entry['response']['status'] <= 399):
+                            entry['response']['status'] <= 399):
                 return entry
 
     # Convenience properties. Easy accessible through the API, but even easier

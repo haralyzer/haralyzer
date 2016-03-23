@@ -1,7 +1,6 @@
 import pytest
 from haralyzer import MultiHarParser, HarPage
 
-
 PAGE_ID = 'page_3'
 
 
