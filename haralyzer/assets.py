@@ -63,6 +63,7 @@ class HarParser(object):
             raise ValueError('Invalid header_type, should be either:\n\n'
                              '* \'request\'\n*\'response\'')
 
+        # TODO - headers are empty in some HAR data.... need fallbacks here
         for h in entry[header_type]['headers']:
             if h['name'].lower() == header.lower() and h['value'] is not None:
                 if regex and re.search(value, h['value'], flags=re.IGNORECASE):
@@ -271,10 +272,10 @@ class HarPage(object):
             if request_type is not None and not p.match_request_type(
                     entry, request_type, regex=regex):
                 valid_entry = False
-            if content_type is not None and not p.match_headers(
-                    entry, 'response', 'Content-Type', content_type,
-                    regex=regex):
-                valid_entry = False
+            if content_type is not None:
+                if not self.match_content_type(entry, content_type, regex=regex):
+                    # TODO- look in ['response']['content']['mimeType']
+                    valid_entry = False
             if status_code is not None and not p.match_status_code(
                     entry, status_code, regex=regex):
                 valid_entry = False
@@ -283,6 +284,24 @@ class HarPage(object):
                 results.append(entry)
 
         return results
+
+    def match_content_type(self, entry, content_type, regex=True):
+        """
+        Matches the content type of a request using the mimeType metadata.
+
+        :param entry: ``dict`` of a single entry from a HarPage
+        :param content_type: ``str`` of regex to use for finding content type
+        :param regex: ``bool`` indicating whether to use regex or exact match.
+        """
+        mimeType = entry['response']['content']['mimeType']
+
+        if regex and re.search(content_type, mimeType, flags=re.IGNORECASE):
+            return True
+
+        elif content_type == mimeType:
+            return True
+
+        return False
 
     def get_load_time(self, request_type=None, content_type=None,
                       status_code=None, async=True):
