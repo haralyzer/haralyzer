@@ -3,6 +3,12 @@
 History
 -------
 
+1.4.6 (2016-04-01)
+++++++++++++++++++
+
+* Bugfix for maximum recursion depth being hit when HarPage is initialized with a page
+  ID that does not exist in the HAR file.
+
 1.4.5 (2016-03-22)
 ++++++++++++++++++
 
