@@ -195,16 +195,18 @@ class HarPage(object):
 
         # Init properties that mimic the actual 'pages' object from the HAR file
         raw_data = self.parser.har_data
+        valid = False
         for page in raw_data['pages']:
             if page['id'] == self.page_id:
+                valid = True
                 self.title = page['title']
                 self.startedDateTime = page['startedDateTime']
                 self.pageTimings = page['pageTimings']
 
-        if not getattr(self, 'title', None):
+        if not valid:
             raise PageNotFoundError(
-                    'No page found with id {0}\n\nValid pages are {1}'.format(
-                            self.page_id, self.parser.pages)
+                    'No page found with id {0}\n\nPages are {1}'.format(
+                            self.page_id, raw_data['pages'])
             )
 
     def __repr__(self):
