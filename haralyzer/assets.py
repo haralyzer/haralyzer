@@ -204,9 +204,10 @@ class HarPage(object):
                 self.pageTimings = page['pageTimings']
 
         if not valid:
+            page_ids = [page['id'] for page in raw_data['pages']]
             raise PageNotFoundError(
-                    'No page found with id {0}\n\nPages are {1}'.format(
-                            self.page_id, raw_data['pages'])
+                    'No page found with id {0}\n\nPage ID\'s are {1}'.format(
+                            self.page_id, page_ids)
             )
 
     def __repr__(self):
