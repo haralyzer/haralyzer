@@ -154,6 +154,22 @@ def test_match_status_code(har_data):
     assert not har_parser.match_status_code(entry, '201', regex=False)
 
 
+def test_http_version(har_data):
+    """
+    Tests the ability of the parser to match status codes.
+    """
+    init_data = har_data('humanssuck.net.har')
+    har_parser = HarParser(init_data)
+
+    entry = har_data('single_entry.har')
+
+    # TEST THE REGEX FEATURE FIRST #
+    assert har_parser.match_http_version(entry, '.*1.1')
+    assert not har_parser.match_http_version(entry, '.*2')
+    # TEST LITERAL STRING MATCH #
+    assert har_parser.match_http_version(entry, 'HTTP/1.1', regex=False)
+    assert not har_parser.match_http_version(entry, 'HTTP/2.0', regex=False)
+
 def test_create_asset_timeline(har_data):
     """
     Tests the asset timeline function by making sure that it inserts one object
