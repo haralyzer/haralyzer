@@ -172,6 +172,12 @@ easily produced using the public methods of ``HarParser`` and ``HarPage``::
     # It also has methods for filtering assets #
     # Get a collection of entries that were images in the 2XX status code range #
     entries = har_page.filter_entries(content_type='image.*', status_code='2.*')
+    # This method can filter by:
+    # * content_type ('application/json' for example)
+    # * status_code ('200' for example)
+    # * request_type ('GET' for example)
+    # * http_version ('HTTP/1.1' for example)
+    # It will use a regex by default, but you can also force a literal string match by passing regex=False
 
     # Get the size of the collection we just made #
     collection_size = har_page.get_total_size(entries)

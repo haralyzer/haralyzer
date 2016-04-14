@@ -106,6 +106,23 @@ class HarParser(object):
         else:
             return entry['request']['method'] == request_type
 
+    @staticmethod
+    def match_http_version(entry, http_version, regex=True):
+        """
+        Helper function that returns entries with a request type
+        matching the given `request_type` argument.
+
+        :param entry: entry object to analyze
+        :param request_type: ``str`` of request type to match
+        :param regex: ``bool`` indicating whether to use a regex or string match
+        """
+        response_version = entry['response']['httpVersion']
+        if regex:
+            return re.search(http_version, response_version,
+                             flags=re.IGNORECASE) is not None
+        else:
+            return response_version == http_version
+
     def match_status_code(self, entry, status_code, regex=True):
         """
         Helper function that returns entries with a status code matching
@@ -269,13 +286,14 @@ class HarPage(object):
                 content_type=self.asset_types[asset_type])
 
     def filter_entries(self, request_type=None, content_type=None,
-                       status_code=None, regex=True):
+                       status_code=None, http_version=None, regex=True):
         """
         Returns a ``list`` of entry objects based on the filter criteria.
 
         :param request_type: ``str`` of request type (i.e. - GET or POST)
         :param content_type: ``str`` of regex to use for finding content type
         :param status_code: ``int`` of the desired status code
+        :param http_version: ``str`` of HTTP version of request
         :param regex: ``bool`` indicating whether to use regex or exact match.
         """
         results = []
@@ -287,6 +305,7 @@ class HarPage(object):
                 * The request type using self._match_request_type()
                 * The content type using self._match_headers()
                 * The HTTP response status code using self._match_status_code()
+                * The HTTP version using self._match_headers()
 
             Oh lords of python.... please forgive my soul
             """
@@ -301,6 +320,9 @@ class HarPage(object):
                     valid_entry = False
             if status_code is not None and not p.match_status_code(
                     entry, status_code, regex=regex):
+                valid_entry = False
+            if http_version is not None and not p.match_http_version(
+                    entry, http_version, regex=regex):
                 valid_entry = False
 
             if valid_entry:
