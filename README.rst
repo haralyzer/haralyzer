@@ -98,6 +98,31 @@ file (see example above) with `har_data=har_data`::
     # We could do this with 'css', 'js', 'html', 'audio', or 'video'
 
 
+Dealing with page load times
+============================
+
+Depending on how your HAR file was created, you may or may not be able to get the actual
+page load time. This is because tools like BrowserMobProxy have no concept of browser actions,
+so it cannot report a full page load time, as it does not take things like Javascript
+execution into account. When the full page load time is not available, an attempt to use
+`haralyzer.HarPage.page_load_time` will raise `haralyzer.HarPage.PageLoadTimeError`. You can
+then catch it and use `haralyzer.HarPage.asset_load_time` instead::
+
+    import json
+    From haralyzer import HarPage
+
+    with open('har_data.har', 'r') as f:
+        har_page = HarPage('page_3', har_data=json.loads(f.read()))
+
+    load_time = 0
+    # Try to grab the REAL page load time, including things like JS execution
+    try:
+        load_time = multi_har_parser.page_load_time
+    # We dont have it, that sucks, use the closest possible approximation, the time
+    # it took for all of the assets to load
+    except PageLoadTimeError:
+        load_time = multi_har_parser.asset_load_time
+
 MultiHarParser
 ++++++++++++++
 

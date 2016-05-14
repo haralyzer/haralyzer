@@ -14,7 +14,7 @@ assert parser
 import re
 
 from .compat import iteritems
-from .errors import PageNotFoundError
+from .errors import PageLoadTimeError, PageNotFoundError
 
 DECIMAL_PRECISION = 0
 
@@ -276,7 +276,10 @@ class HarPage(object):
         elif asset_type == 'content':
             return self.pageTimings['onContentLoad']
         elif asset_type == 'page':
-            return self.pageTimings['onLoad']
+            if 'onLoad' in self.pageTimings:
+                return self.pageTimings['onLoad']
+            else:
+                raise PageLoadTimeError('full page load time is not available')
             # TODO - should we return a slightly fake total load time to
             # accomodate HAR data that cannot understand things like JS
             # rendering or just throw a warning?
@@ -398,6 +401,15 @@ class HarPage(object):
         # Make sure the entries are sorted chronologically
         return sorted(page_entries,
                       key=lambda entry: entry['startedDateTime'])
+
+    def asset_load_time(self):
+        """
+        Total load time of all assets, including async loading. This is as
+        close as you can get to the actual page load time if you have a HAR
+        file that does not take browser side actions like javascript into
+        account.
+        """
+        return len(self.parser.create_asset_timeline(self.entries))
 
     @cached_property
     def time_to_first_byte(self):

@@ -168,6 +168,7 @@ def test_load_times(har_data):
     assert page.js_load_time == 310
     assert page.html_load_time == 153
     assert page.page_load_time == 567
+    assert page.asset_load_time == 567
     # TODO - Need to get sample data for these types
     assert page.audio_load_time == 0
     assert page.video_load_time == 0
