@@ -333,15 +333,11 @@ class HarPage(object):
                     entry, http_version, regex=regex):
                 valid_entry = False
             if source is not None and source == 'internal':
-                if p.hostname == get_entry_hostname(entry):
-                    valid_entry = True
-                else:
+                if p.hostname != get_entry_hostname(entry):
                     valid_entry = False
             elif source is not None and source == 'external':
                 if p.hostname == get_entry_hostname(entry):
                     valid_entry = False
-                else:
-                    valid_entry = True
             if valid_entry:
                 results.append(entry)
 
