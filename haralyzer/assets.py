@@ -18,6 +18,14 @@ from .errors import PageNotFoundError
 
 DECIMAL_PRECISION = 0
 
+def get_entry_hostname(entry):
+    '''
+    Getting hostname from entries
+    '''
+    for header in entry['request']['headers']:
+        if header['name'] == 'Host':
+            return header['value']
+
 
 class HarParser(object):
     """
@@ -286,7 +294,7 @@ class HarPage(object):
                 content_type=self.asset_types[asset_type])
 
     def filter_entries(self, request_type=None, content_type=None,
-                       status_code=None, http_version=None, regex=True):
+                       status_code=None, http_version=None, regex=True, source=None):
         """
         Returns a ``list`` of entry objects based on the filter criteria.
 
@@ -324,7 +332,16 @@ class HarPage(object):
             if http_version is not None and not p.match_http_version(
                     entry, http_version, regex=regex):
                 valid_entry = False
-
+            if source is not None and source == 'internal':
+                if p.hostname == get_entry_hostname(entry):
+                    valid_entry = True
+                else:
+                    valid_entry = False
+            elif source is not None and source == 'external':
+                if p.hostname == get_entry_hostname(entry):
+                    valid_entry = False
+                else:
+                    valid_entry = True
             if valid_entry:
                 results.append(entry)
 
