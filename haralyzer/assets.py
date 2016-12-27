@@ -303,6 +303,7 @@ class HarPage(object):
         :param status_code: ``int`` of the desired status code
         :param http_version: ``str`` of HTTP version of request
         :param regex: ``bool`` indicating whether to use regex or exact match.
+        :param source: ``str`` of source type (i.e. internal or external)
         """
         results = []
 
@@ -314,7 +315,7 @@ class HarPage(object):
                 * The content type using self._match_headers()
                 * The HTTP response status code using self._match_status_code()
                 * The HTTP version using self._match_headers()
-
+                * The source type using p.hostname and get_entry_hostname()
             Oh lords of python.... please forgive my soul
             """
             valid_entry = True
@@ -338,6 +339,9 @@ class HarPage(object):
             elif source is not None and source == 'external':
                 if p.hostname == get_entry_hostname(entry):
                     valid_entry = False
+            elif source is not None and isinstance(source, str) == True:
+                raise ValueError("Source must be set to internal/external")
+
             if valid_entry:
                 results.append(entry)
 
