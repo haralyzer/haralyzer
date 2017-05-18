@@ -407,7 +407,7 @@ class HarPage(object):
         initial_entry = self.entries[0]
         ttfb = 0
         for k, v in iteritems(initial_entry['timings']):
-            if k != 'receive':
+            if k != 'receive' and isinstance(v, int)
                 ttfb += v
         return ttfb
 
