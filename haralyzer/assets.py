@@ -256,6 +256,16 @@ class HarPage(object):
         """
         return self.filter_entries(content_type=self.asset_types[asset_type])
 
+    def _get_asset_size_trans(self, asset_type):
+        """
+        Helper function to dynamically create *_size properties.
+        """
+        if asset_type == 'page':
+            assets = self.entries
+        else:
+            assets = getattr(self, '{0}_files'.format(asset_type), None)
+        return self.get_total_size_trans(assets)
+
     def _get_asset_size(self, asset_type):
         """
         Helper function to dynamically create *_size properties.
@@ -371,6 +381,35 @@ class HarPage(object):
                 size += entry['response']['bodySize']
         return size
 
+    def get_total_size_content(self, entries):
+        """
+        Returns the total size of a collection of entries - uncompressed.
+
+        NOTE: use with har file generated with chrome-har-capturer
+        NOTE: not used at the moment
+
+        :param entries: ``list`` of entries to calculate the total size of.
+        """
+        size = 0
+        for entry in entries:
+            if entry['response']['content']['size'] > 0:
+                size += entry['response']['content']['size']
+        return size
+
+    def get_total_size_trans(self, entries):
+        """
+        Returns the total size of a collection of entries - transferred.
+
+        NOTE: use with har file generated with chrome-har-capturer
+
+        :param entries: ``list`` of entries to calculate the total size of.
+        """
+        size = 0
+        for entry in entries:
+            if entry['response']['_transferSize'] > 0:
+                size += entry['response']['_transferSize']
+        return size
+
     # BEGIN PROPERTIES #
 
     @cached_property
@@ -404,12 +443,23 @@ class HarPage(object):
         """
         Time to first byte of the page request in ms
         """
-        initial_entry = self.entries[0]
         ttfb = 0
-        for k, v in iteritems(initial_entry['timings']):
-            if k != 'receive':
-                ttfb += v
+        for x in self.entries:
+            if x['response']['status'] == 200:
+                for k, v in iteritems(x['timings']):
+                    if k != 'receive':
+                        ttfb += v
+                break
+            else:
+                ttfb += x['time']
+
         return ttfb
+
+        #ttfb = 0
+        #for k, v in iteritems(initial_entry['timings']):
+        #    if k != 'receive':
+        #        ttfb += v
+        #return ttfb
 
     @cached_property
     def get_requests(self):
@@ -495,6 +545,34 @@ class HarPage(object):
     @cached_property
     def video_size(self):
         return self._get_asset_size('video')
+
+    @cached_property
+    def page_size_trans(self):
+        return self._get_asset_size_trans('page')
+
+    @cached_property
+    def image_size_trans(self):
+        return self._get_asset_size_trans('image')
+
+    @cached_property
+    def css_size_trans(self):
+        return self._get_asset_size_trans('css')
+
+    @cached_property
+    def text_size_trans(self):
+        return self._get_asset_size_trans('text')
+
+    @cached_property
+    def js_size_trans(self):
+        return self._get_asset_size_trans('js')
+
+    @cached_property
+    def audio_size_trans(self):
+        return self._get_asset_size_trans('audio')
+
+    @cached_property
+    def video_size_trans(self):
+        return self._get_asset_size_trans('video')
 
     @cached_property
     def initial_load_time(self):
