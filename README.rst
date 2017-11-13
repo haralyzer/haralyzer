@@ -97,7 +97,7 @@ file (see example above) with `har_data=har_data`::
     # prints 733488
     # We could do this with 'css', 'js', 'html', 'audio', or 'video'
 
-    # Get the transferred sizes
+    # Get the transferred sizes (works only with HAR files, generated with Chrome)
     har_page.page_size_trans
     har_page.image_size_trans
     har_page.css_size_trans
