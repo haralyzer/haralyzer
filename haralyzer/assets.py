@@ -444,22 +444,17 @@ class HarPage(object):
         Time to first byte of the page request in ms
         """
         ttfb = 0
-        for x in self.entries:
-            if x['response']['status'] == 200:
-                for k, v in iteritems(x['timings']):
+        for entry in self.entries:
+            if entry['response']['status'] == 200:
+                for k, v in iteritems(entry['timings']):
                     if k != 'receive':
-                        ttfb += v
+                        if v > 0:
+                            ttfb += v
                 break
             else:
-                ttfb += x['time']
+                ttfb += entry['time']
 
         return ttfb
-
-        #ttfb = 0
-        #for k, v in iteritems(initial_entry['timings']):
-        #    if k != 'receive':
-        #        ttfb += v
-        #return ttfb
 
     @cached_property
     def get_requests(self):
