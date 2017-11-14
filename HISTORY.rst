@@ -3,6 +3,11 @@
 History
 -------
 
+1.4.11 (2017-11-14)
++++++++++++++++++++
+
+* Adding methods for retreiving transferred size of assets (with compression)
+
 1.4.6 (2016-04-01)
 ++++++++++++++++++
 
