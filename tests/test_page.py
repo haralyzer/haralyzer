@@ -134,6 +134,18 @@ def test_request_types(har_data):
     for req in page.post_requests:
         assert req['request']['method'] == 'POST'
 
+def test_sizes_trans(har_data):
+    init_data = har_data('cnn-chrome.har')
+    page = HarPage('page_1', har_data=init_data)
+
+    assert page.page_size_trans == 2609508
+    assert page.text_size_trans == 569814
+    assert page.css_size_trans == 169573
+    assert page.js_size_trans == 1600321
+    assert page.image_size_trans == 492950
+    # TODO - Get test data for audio and video
+    assert page.audio_size_trans == 0
+    assert page.video_size_trans == 0
 
 def test_sizes(har_data):
     init_data = har_data('humanssuck.net.har')
