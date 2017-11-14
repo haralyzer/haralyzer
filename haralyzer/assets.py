@@ -381,21 +381,6 @@ class HarPage(object):
                 size += entry['response']['bodySize']
         return size
 
-    def get_total_size_content(self, entries):
-        """
-        Returns the total size of a collection of entries - uncompressed.
-
-        NOTE: use with har file generated with chrome-har-capturer
-        NOTE: not used at the moment
-
-        :param entries: ``list`` of entries to calculate the total size of.
-        """
-        size = 0
-        for entry in entries:
-            if entry['response']['content']['size'] > 0:
-                size += entry['response']['content']['size']
-        return size
-
     def get_total_size_trans(self, entries):
         """
         Returns the total size of a collection of entries - transferred.
