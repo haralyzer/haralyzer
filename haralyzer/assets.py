@@ -176,7 +176,8 @@ class HarParser(object):
         This is a list of HarPage objects, each of which represents a page
         from the HAR file.
         """
-        pages = []
+        # Start with a page object for unknown entries
+        pages = [HarPage('unknown', har_parser=self)]
         for har_page in self.har_data['pages']:
             page = HarPage(har_page['id'], har_parser=self)
             pages.append(page)
@@ -197,7 +198,8 @@ class HarParser(object):
 
     @cached_property
     def hostname(self):
-        return self.pages[0].hostname
+        valid_pages = [p for p in self.pages if p.page_id != 'unknown']
+        return valid_pages[0].hostname
 
 
 class HarPage(object):
@@ -233,6 +235,8 @@ class HarPage(object):
         # Init properties that mimic the actual 'pages' object from the HAR file
         raw_data = self.parser.har_data
         valid = False
+        if self.page_id == 'unknown':
+            valid = True
         for page in raw_data['pages']:
             if page['id'] == self.page_id:
                 valid = True
@@ -286,6 +290,8 @@ class HarPage(object):
         elif asset_type == 'content':
             return self.pageTimings['onContentLoad']
         elif asset_type == 'page':
+            if self.page_id == 'unknown':
+                return None
             return self.pageTimings['onLoad']
             # TODO - should we return a slightly fake total load time to
             # accomodate HAR data that cannot understand things like JS
@@ -361,6 +367,8 @@ class HarPage(object):
                                       content_type=content_type,
                                       status_code=status_code)
 
+        if not entries:
+            return None
         if not async:
             time = 0
             for entry in entries:
@@ -411,23 +419,33 @@ class HarPage(object):
         """
         The absolute URL of the initial request.
         """
-        return self.entries[0]['request']['url']
+        if self.entries and 'request' in self.entries[0] and 'url' in self.entries[0]['request']:
+            return self.entries[0]['request']['url']
+        return None
 
     @cached_property
     def entries(self):
         page_entries = []
         for entry in self.parser.har_data['entries']:
-            if entry['pageref'] == self.page_id:
+            if 'pageref' not in entry:
+                if self.page_id == 'unknown':
+                    page_entries.append(entry)
+            elif entry['pageref'] == self.page_id:
                 page_entries.append(entry)
         # Make sure the entries are sorted chronologically
-        return sorted(page_entries,
-                      key=lambda entry: entry['startedDateTime'])
+        if all('startedDateTime' in x for x in page_entries):
+            return sorted(page_entries,
+                        key=lambda entry: entry['startedDateTime'])
+        else:
+            return page_entries
 
     @cached_property
     def time_to_first_byte(self):
         """
         Time to first byte of the page request in ms
         """
+        if self.page_id == 'unknown':
+            return None
         ttfb = 0
         for entry in self.entries:
             if entry['response']['status'] == 200:

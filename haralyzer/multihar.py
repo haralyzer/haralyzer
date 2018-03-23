@@ -48,7 +48,13 @@ class MultiHarParser(object):
         search_str = '{0}_load_time'.format(asset_type)
         for har_page in self.pages:
             val = getattr(har_page, search_str, None)
-            load_times.append(val)
+            if val is not None:
+                load_times.append(val)
+        # If no matching load times are found we should be returning 0. However.
+        # other methods might be using the result to get the mean or stdev, so
+        # we just return [0, 0] to let it come up with 0 on it's own
+        if not load_times:
+            return [0, 0]
         return load_times
 
     def get_stdev(self, asset_type):
@@ -64,13 +70,16 @@ class MultiHarParser(object):
         # Handle edge cases like TTFB
         if asset_type == 'ttfb':
             for page in self.pages:
-                load_times.append(page.time_to_first_byte)
+                if page.time_to_first_byte is not None:
+                    load_times.append(page.time_to_first_byte)
         elif asset_type not in self.asset_types and asset_type != 'page':
             raise ValueError('asset_type must be one of:\nttfb\n{0}'.format(
                     '\n'.join(self.asset_types)))
         else:
             load_times = self.get_load_times(asset_type)
 
+        if not load_times or not sum(load_times):
+            return 0
         return round(stdev(load_times),
                      self.decimal_precision)
 
@@ -87,7 +96,7 @@ class MultiHarParser(object):
                     if page.page_id == self.page_id:
                         pages.append(page)
             else:
-                pages.append(har_parser.pages[0])
+                pages = pages + har_parser.pages
         return pages
 
     @cached_property
@@ -104,7 +113,8 @@ class MultiHarParser(object):
         """
         ttfb = []
         for page in self.pages:
-            ttfb.append(page.time_to_first_byte)
+            if page.time_to_first_byte is not None:
+                ttfb.append(page.time_to_first_byte)
         return round(mean(ttfb), self.decimal_precision)
 
     @cached_property

@@ -33,6 +33,20 @@ def test_init(har_data):
     assert har_parser.creator == {'name': 'Firebug', 'version': '1.12'}
     assert har_parser.hostname == 'humanssuck.net'
 
+def test_init_entry_with_no_pageref(har_data):
+    '''
+    If we find an entry with no pageref it should end up in a HarPage object
+    with page ID of unknown
+    '''
+    data = har_data('missing_pageref.har')
+    har_parser = HarParser(data)
+    # We should have two pages. One is defined in the pages key of the har file
+    # but has no entries. The other should be our unknown page, with a single
+    # entry
+    assert len(har_parser.pages) == 2
+    import pdb
+    pdb.set_trace()
+    page = har_parser.pages[0]
 
 def test_match_headers(har_data):
 
@@ -196,7 +210,6 @@ def test_create_asset_timeline(har_data):
         for key, value in iteritems(entry):
             assert asset_timeline[time_key][0][key] == entry[key]
         time_key = time_key + datetime.timedelta(milliseconds=1)
-
 
 def _headers_test(parser, entry, test_data, expects, regex):
     """
