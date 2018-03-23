@@ -44,9 +44,8 @@ def test_init_entry_with_no_pageref(har_data):
     # but has no entries. The other should be our unknown page, with a single
     # entry
     assert len(har_parser.pages) == 2
-    import pdb
-    pdb.set_trace()
-    page = har_parser.pages[0]
+    page = [p for p in har_parser.pages if p.page_id == 'unknown'][0]
+    assert len(page.entries) == 1
 
 def test_match_headers(har_data):
 
