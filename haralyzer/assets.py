@@ -290,7 +290,7 @@ class HarPage(object):
             # TODO - should we return a slightly fake total load time to
             # accomodate HAR data that cannot understand things like JS
             # rendering or just throw a warning?
-            #return self.get_load_time(request_type='.*',content_type='.*', status_code='.*', async=False)
+            #return self.get_load_time(request_type='.*',content_type='.*', status_code='.*', asynchronous=False)
         else:
             return self.get_load_time(
                 content_type=self.asset_types[asset_type])
@@ -341,12 +341,12 @@ class HarPage(object):
         return results
 
     def get_load_time(self, request_type=None, content_type=None,
-                      status_code=None, async=True):
+                      status_code=None, asynchronous=True):
         """
         This method can return the TOTAL load time for the assets or the ACTUAL
         load time, the difference being that the actual load time takes
-        asyncronys transactions into account. So, if you want the total load
-        time, set async=False.
+        asynchronous transactions into account. So, if you want the total load
+        time, set asynchronous=False.
 
         EXAMPLE:
 
@@ -355,13 +355,13 @@ class HarPage(object):
         them at the same time.
 
         self.get_load_time(content_types=['image']) (returns 2)
-        self.get_load_time(content_types=['image'], async=False) (returns 4)
+        self.get_load_time(content_types=['image'], asynchronous=False) (returns 4)
         """
         entries = self.filter_entries(request_type=request_type,
                                       content_type=content_type,
                                       status_code=status_code)
 
-        if not async:
+        if not asynchronous:
             time = 0
             for entry in entries:
                 time += entry['time']
