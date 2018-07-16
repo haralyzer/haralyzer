@@ -90,7 +90,7 @@ def test_get_load_time(har_data):
     page = HarPage(PAGE_ID, har_data=init_data)
 
     assert page.get_load_time(request_type='GET') == 463
-    assert page.get_load_time(request_type='GET', asynchronous=False) == 843
+    assert page.get_load_time(request_type='GET', **{'async':False}) == 843 # mitigate py3.7 async keyword
     assert page.get_load_time(content_type='image.*') == 304
     assert page.get_load_time(status_code='2.*') == 463
 

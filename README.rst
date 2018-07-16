@@ -201,7 +201,7 @@ easily produced using the public methods of ``HarParser`` and ``HarPage``::
     load_time = har_page.get_load_time(content_type='image.*', status_code='2.*')
 
     # Get the TOTAL load time for all images in the 2XX status code range #
-    load_time = har_page.get_load_time(content_type='image.*', status_code='2.*', asynchronous=False)
+    load_time = har_page.get_load_time(content_type='image.*', status_code='2.*', async=False)
 
 This could potentially be out of date, so please check out the sphinx docs.
 

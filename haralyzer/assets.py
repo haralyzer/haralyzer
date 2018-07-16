@@ -341,12 +341,12 @@ class HarPage(object):
         return results
 
     def get_load_time(self, request_type=None, content_type=None,
-                      status_code=None, asynchronous=True):
+                      status_code=None, **kwargs):
         """
         This method can return the TOTAL load time for the assets or the ACTUAL
         load time, the difference being that the actual load time takes
         asynchronous transactions into account. So, if you want the total load
-        time, set asynchronous=False.
+        time, set async=False.
 
         EXAMPLE:
 
@@ -355,11 +355,14 @@ class HarPage(object):
         them at the same time.
 
         self.get_load_time(content_types=['image']) (returns 2)
-        self.get_load_time(content_types=['image'], asynchronous=False) (returns 4)
+        self.get_load_time(content_types=['image'], async=False) (returns 4)
         """
         entries = self.filter_entries(request_type=request_type,
                                       content_type=content_type,
                                       status_code=status_code)
+        asynchronous = True
+        if "async" in kwargs:
+            asynchronous = kwargs['async']
 
         if not asynchronous:
             time = 0
