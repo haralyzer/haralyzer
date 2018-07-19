@@ -3,6 +3,14 @@
 History
 -------
 
+1.5.00 (2018-07-18)
+++++++++++++++++++
+
+* python 3.7 compatibility. Specifically, removing the keyword `async` which is now a reserved keyword
+  argument. As of right now, we are still maintaining backwards compatability, but it is deprecated and
+  will be removed in a future version. You should now use `asynchronous` instead. Many thanks to
+  NickPancakes for hooking it up.
+
 1.4.11 (2017-11-14)
 +++++++++++++++++++
 
