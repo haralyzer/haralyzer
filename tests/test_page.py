@@ -181,8 +181,8 @@ def test_load_times(har_data):
     assert page.html_load_time == 153
     assert page.page_load_time == 567
     # TODO - Need to get sample data for these types
-    assert page.audio_load_time == None
-    assert page.video_load_time == None
+    assert page.audio_load_time == 0
+    assert page.video_load_time == 0
 
 
 def test_time_to_first_byte(har_data):

@@ -8,7 +8,7 @@ def test_init(har_data):
     data = _load_test_data(har_data, num_test_files=4)
     # Test the default of it only caring about one page
     har_parser = MultiHarParser(har_data=data)
-    assert len(har_parser.pages) == 8
+    assert len(har_parser.pages) == 4
     for page in har_parser.pages:
         assert isinstance(page, HarPage)
     har_parser = MultiHarParser(har_data=data, page_id=PAGE_ID)

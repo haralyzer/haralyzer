@@ -50,11 +50,6 @@ class MultiHarParser(object):
             val = getattr(har_page, search_str, None)
             if val is not None:
                 load_times.append(val)
-        # If no matching load times are found we should be returning 0. However.
-        # other methods might be using the result to get the mean or stdev, so
-        # we just return [0, 0] to let it come up with 0 on it's own
-        if not load_times:
-            return [0, 0]
         return load_times
 
     def get_stdev(self, asset_type):

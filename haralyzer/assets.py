@@ -176,8 +176,11 @@ class HarParser(object):
         This is a list of HarPage objects, each of which represents a page
         from the HAR file.
         """
-        # Start with a page object for unknown entries
-        pages = [HarPage('unknown', har_parser=self)]
+        # Start with a page object for unknown entries if the HAR data has
+        # any entries with no page ID
+        pages = []
+        if any('pageref' not in entry for entry in self.har_data['entries']):
+            pages.append(HarPage('unknown', har_parser=self))
         for har_page in self.har_data['pages']:
             page = HarPage(har_page['id'], har_parser=self)
             pages.append(page)
@@ -299,7 +302,8 @@ class HarPage(object):
             #return self.get_load_time(request_type='.*',content_type='.*', status_code='.*', async=False)
         else:
             return self.get_load_time(
-                content_type=self.asset_types[asset_type])
+                content_type=self.asset_types[asset_type]
+            )
 
     def filter_entries(self, request_type=None, content_type=None,
                        status_code=None, http_version=None, regex=True):
@@ -363,12 +367,11 @@ class HarPage(object):
         self.get_load_time(content_types=['image']) (returns 2)
         self.get_load_time(content_types=['image'], async=False) (returns 4)
         """
-        entries = self.filter_entries(request_type=request_type,
-                                      content_type=content_type,
-                                      status_code=status_code)
+        entries = self.filter_entries(
+            request_type=request_type, content_type=content_type,
+            status_code=status_code
+        )
 
-        if not entries:
-            return None
         if not async:
             time = 0
             for entry in entries:
@@ -419,7 +422,7 @@ class HarPage(object):
         """
         The absolute URL of the initial request.
         """
-        if self.entries and 'request' in self.entries[0] and 'url' in self.entries[0]['request']:
+        if 'request' in self.entries[0] and 'url' in self.entries[0]['request']:
             return self.entries[0]['request']['url']
         return None
 
