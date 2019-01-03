@@ -9,7 +9,9 @@ python:
   - "3.2"
   - "3.3"
   - "3.4"
-  - "nightly"
+  - "3.5"
+  - "3.6"
+  - "3.7"
 install:
   - "pip install ."
   - "pip install -r requirements_dev.txt"
