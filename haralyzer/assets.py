@@ -447,6 +447,8 @@ class HarPage(object):
         """
         Time to first byte of the page request in ms
         """
+        # The unknown page is just a placeholder for entries with no page ID.
+        # As such, it would not have a TTFB
         if self.page_id == 'unknown':
             return None
         ttfb = 0
