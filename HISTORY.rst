@@ -3,6 +3,14 @@
 History
 -------
 
+1.6.00 (2019-01-05)
+++++++++++++++++++
+
+* Resolved issue with entries in HAR files which do not belong to a page. The
+  new behavior will create a "fake" HarPage with an ID of "unknown" if one or
+  more of these entries exist, and add them to it. Ths will allow the overall
+  HarParser to still take these entries into account for timings.
+
 1.5.00 (2018-07-18)
 ++++++++++++++++++
 
