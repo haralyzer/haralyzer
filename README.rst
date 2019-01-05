@@ -106,6 +106,12 @@ file (see example above) with `har_data=har_data`::
     har_page.audio_size_trans
     har_page.video_size_trans
 
+*IMPORTANT NOTE* - Technically, the `page_id` attribute of a single entry in a
+HAR file is optional. As such, if your HAR file contains entries that do not map
+to a page, an additional page will be created with an ID of `unknown`. This
+"fake page" will contain all such entries. Since it is not a real page, it does
+not have attributes for things like time to first byte or page load, and will
+return `None`.
 
 MultiHarParser
 ++++++++++++++
