@@ -243,7 +243,8 @@ class HarPage(object):
         for page in raw_data['pages']:
             if page['id'] == self.page_id:
                 valid = True
-                self.title = page['title']
+                if 'title' in page:
+                    self.title = page['title']
                 self.startedDateTime = page['startedDateTime']
                 self.pageTimings = page['pageTimings']
 
