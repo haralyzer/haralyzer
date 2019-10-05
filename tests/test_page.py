@@ -224,4 +224,4 @@ def test_duplicate_urls_count(har_data):
     """
     init_data = har_data('humanssuck.net_duplicate_url.har')
     page = HarPage(PAGE_ID, har_data=init_data)
-    assert len(page.duplicate_url_request.keys())==1
+    assert page.duplicate_url_request == {'http://humanssuck.net/jquery-1.7.1.min.js': 2}
