@@ -218,7 +218,7 @@ def _correct_file_type(entry, file_types):
             return any(ft in header['value'] for ft in file_types)
 
 
-def validate_duplicate_urls_count(har_data):
+def test_duplicate_urls_count(har_data):
     """
     Makes sure that the correct number of urls that appear more than once in har is displayed.
     """
