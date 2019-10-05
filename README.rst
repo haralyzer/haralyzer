@@ -99,7 +99,7 @@ file (see example above) with `har_data=har_data`::
 
     # Get duplicate requests if any
     har_page.duplicate_url_request
-    # Returns a list of urls if any request is made more than once
+    # Returns a dict of urls and its number of repetitions if any request is made more than once
 
     # Get the transferred sizes (works only with HAR files, generated with Chrome)
     har_page.page_size_trans

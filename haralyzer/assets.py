@@ -497,11 +497,11 @@ class HarPage(object):
     @cached_property
     def duplicate_url_request(self):
         """
-        Returns a list of urls that are sent more than once
+        Returns a dict of urls and its number of repetitions that are sent more than once
         """
 
         urls = {}
-        url_list = []
+        url_list1 = {}
         for entry in self.entries:
             url = entry.get('request').get('url')
             if urls.get(url) is None:
@@ -511,8 +511,8 @@ class HarPage(object):
 
         for url, count in urls.items():
             if count > 1:
-                url_list.append(url)
-        return url_list
+                url_list1.update({url:count})
+        return url_list1
 
     # Convenience properties. Easy accessible through the API, but even easier
     # to use as properties
