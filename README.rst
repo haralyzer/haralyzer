@@ -97,9 +97,11 @@ file (see example above) with `har_data=har_data`::
     # prints 733488
     # We could do this with 'css', 'js', 'html', 'audio', or 'video'
 
-    # Get duplicate requests if any
+    # Get duplicate requests (requests to the same URL 2 or more times) if any
     har_page.duplicate_url_request
-    # Returns a dict of urls and its number of repetitions if any request is made more than once
+    # Returns a dict where the key is a string of the URL and the value is an int of the number
+    # of requests to that URL. Only requests with 2 or more are included.
+    # {'https://test.com/': 3}
 
     # Get the transferred sizes (works only with HAR files, generated with Chrome)
     har_page.page_size_trans
