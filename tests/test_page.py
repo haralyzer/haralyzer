@@ -40,6 +40,14 @@ def test_init(har_data):
                 page.entries[index + 1]['startedDateTime'])
             assert current_date <= next_date
 
+def test_no_title(har_data):
+    '''
+    A page with no title should set the title property as an empty string
+    instead of throwing an exeption.
+    '''
+    init_data = har_data('no_title.har')
+    page = HarPage(PAGE_ID, har_data=init_data)
+    assert page.title == ''
 
 def test_filter_entries(har_data):
     """
