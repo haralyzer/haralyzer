@@ -3,7 +3,6 @@ matrix:
   fast_finish: true
   allow_failures:
   - python: "nightly"
->>>>>>> master
 python:
   - "2.7"
   - "3.4"
