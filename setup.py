@@ -19,7 +19,7 @@ readme = open('README.rst').read()
 
 setup(
         name='haralyzer',
-        version='1.7.0',
+        version='1.7.1',
         description='A python framework for getting useful stuff out of HAR files',
         long_description=readme,
         author='Justin Crown',

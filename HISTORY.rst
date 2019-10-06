@@ -3,6 +3,12 @@
 History
 -------
 
+1.7.1 (2019-10-06)
+++++++++++++++++++
+
+* BUGFIX - Default to empty string if a page has not title.
+  Provided by @pckizer.
+
 1.7.00 (2019-10-06)
 ++++++++++++++++++
 
