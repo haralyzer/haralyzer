@@ -224,3 +224,12 @@ def _correct_file_type(entry, file_types):
     for header in entry['response']['headers']:
         if header['name'] == 'Content-Type':
             return any(ft in header['value'] for ft in file_types)
+
+
+def test_duplicate_urls_count(har_data):
+    """
+    Makes sure that the correct number of urls that appear more than once in har is displayed.
+    """
+    init_data = har_data('humanssuck.net_duplicate_url.har')
+    page = HarPage(PAGE_ID, har_data=init_data)
+    assert page.duplicate_url_request == {'http://humanssuck.net/jquery-1.7.1.min.js': 2}

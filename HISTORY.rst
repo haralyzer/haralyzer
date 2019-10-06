@@ -3,6 +3,11 @@
 History
 -------
 
+1.7.00 (2019-10-06)
+++++++++++++++++++
+
+* Added `duplicate_url_requests` method provided by @gowthamraj198.
+
 1.6.00 (2019-01-05)
 ++++++++++++++++++
 

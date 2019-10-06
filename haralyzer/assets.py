@@ -5,6 +5,7 @@ Provides all of the main functional classes for analyzing HAR files
 import datetime
 
 import dateutil
+from collections import Counter
 from cached_property import cached_property
 
 # I know this import is stupid, but I cannot use dateutil.parser without it
@@ -493,6 +494,15 @@ class HarPage(object):
             if not (entry['response']['status'] >= 300 and
                             entry['response']['status'] <= 399):
                 return entry
+
+    @cached_property
+    def duplicate_url_request(self):
+        """
+        Returns a dict of urls and its number of repetitions that are sent more than once
+        """
+        urls = [entry.get('request').get('url') for entry in self.entries]
+        counted_urls = Counter(urls)
+        return {k:v for k,v in counted_urls.items() if v > 1}
 
     # Convenience properties. Easy accessible through the API, but even easier
     # to use as properties
