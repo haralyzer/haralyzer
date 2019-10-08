@@ -103,6 +103,12 @@ file (see example above) with `har_data=har_data`::
     # of requests to that URL. Only requests with 2 or more are included.
     # {'https://test.com/': 3}
 
+    # Get urls that take more time than expected
+    har_page.urls_with_more_time(1)
+    # Pass the time in seconds as an argument (har_page.urls_with_more_time(.1), har_page.urls_with_more_time(1.5))
+    # Returns a dict where the key is a string of the URL and the value is the time taken by the url
+    # {'https://test.com/': 153}
+
     # Get the transferred sizes (works only with HAR files, generated with Chrome)
     har_page.page_size_trans
     har_page.image_size_trans
