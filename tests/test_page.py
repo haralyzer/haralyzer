@@ -233,3 +233,21 @@ def test_duplicate_urls_count(har_data):
     init_data = har_data('humanssuck.net_duplicate_url.har')
     page = HarPage(PAGE_ID, har_data=init_data)
     assert page.duplicate_url_request == {'http://humanssuck.net/jquery-1.7.1.min.js': 2}
+
+
+def test_urls_with_more_time_less_than_1_sec(har_data):
+    """
+    validate corrct dict of urls and its time to load if the urls have taken more time than expected is returned
+    """
+    init_data = har_data('humanssuck.net_duplicate_url.har')
+    page = HarPage(PAGE_ID, har_data=init_data)
+    assert page.urls_with_more_time(.1) == {'http://humanssuck.net/': 153, 'http://humanssuck.net/screen_login.gif': 304, 'http://humanssuck.net/jquery-1.7.1.min.js': 310}
+
+def test_urls_with_more_time_without_any_urls(har_data):
+    """
+    validate corrct dict of urls and its time to load if the urls have taken more time than expected is returned
+    """
+    init_data = har_data('humanssuck.net_duplicate_url.har')
+    page = HarPage(PAGE_ID, har_data=init_data)
+    assert page.urls_with_more_time(2) == {}
+

@@ -504,6 +504,17 @@ class HarPage(object):
         counted_urls = Counter(urls)
         return {k:v for k,v in counted_urls.items() if v > 1}
 
+    def urls_with_more_time(self, seconds):
+        """
+        Returns a dict of urls and its time to load if the urls have taken more time than expected
+        give time in seconds
+        """
+        url_list = {}
+        for entry in self.entries:
+            if entry.get('time') > seconds*1000:
+                url_list.update({entry.get('request').get('url'): entry.get('time')})
+        return url_list
+
     # Convenience properties. Easy accessible through the API, but even easier
     # to use as properties
     @cached_property
