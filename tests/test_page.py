@@ -241,7 +241,7 @@ def test_urls_with_more_time_less_than_1_sec(har_data):
     """
     init_data = har_data('humanssuck.net_duplicate_url.har')
     page = HarPage(PAGE_ID, har_data=init_data)
-    assert page.urls_with_more_time(.1) == {'http://humanssuck.net/': 153, 'http://humanssuck.net/screen_login.gif': 304, 'http://humanssuck.net/jquery-1.7.1.min.js': 310}
+    assert page.urls_with_more_time_with_filter(.1) == {'http://humanssuck.net/': 153, 'http://humanssuck.net/screen_login.gif': 304, 'http://humanssuck.net/jquery-1.7.1.min.js': 310}
 
 def test_urls_with_more_time_without_any_urls(har_data):
     """
@@ -249,5 +249,24 @@ def test_urls_with_more_time_without_any_urls(har_data):
     """
     init_data = har_data('humanssuck.net_duplicate_url.har')
     page = HarPage(PAGE_ID, har_data=init_data)
-    assert page.urls_with_more_time(2) == {}
+    assert page.urls_with_more_time_with_filter(2) == {}
+
+def test_urls_with_more_time_with_img_filters(har_data):
+    """
+    validate corrct dict of urls and its time to load if the urls have taken more time than expected is returned
+    """
+    init_data = har_data('humanssuck.net_duplicate_url.har')
+    page = HarPage(PAGE_ID, har_data=init_data)
+    assert page.urls_with_more_time_with_filter(0, content_type='image.*') == {'http://humanssuck.net/screen_login.gif': 304}
+
+
+def test_urls_with_more_time_with_img_filters(har_data):
+    """
+    validate corrct dict of urls and its time to load if the urls have taken more time than expected is returned
+    """
+    init_data = har_data('humanssuck.net_duplicate_url.har')
+    page = HarPage(PAGE_ID, har_data=init_data)
+    assert page.urls_with_more_time_with_filter(1, content_type='image.*') == {}
+
+
 
