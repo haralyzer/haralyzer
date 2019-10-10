@@ -306,8 +306,10 @@ class HarPage(object):
                 content_type=self.asset_types[asset_type]
             )
 
-    def filter_entries(self, request_type=None, content_type=None,
-                       status_code=None, http_version=None, regex=True):
+    def filter_entries(
+        self, request_type=None, content_type=None,  status_code=None,
+        http_version=None, load_time__gt=None, regex=True
+    ):
         """
         Returns a ``list`` of entry objects based on the filter criteria.
 
@@ -315,6 +317,9 @@ class HarPage(object):
         :param content_type: ``str`` of regex to use for finding content type
         :param status_code: ``int`` of the desired status code
         :param http_version: ``str`` of HTTP version of request
+        :param load_time__gt: ``int`` of a load time in milliseconds. If
+            provided, an entry whose load time is less than this value will
+            be excluded from the results.
         :param regex: ``bool`` indicating whether to use regex or exact match.
         """
         results = []
@@ -344,6 +349,8 @@ class HarPage(object):
                 valid_entry = False
             if http_version is not None and not p.match_http_version(
                     entry, http_version, regex=regex):
+                valid_entry = False
+            if load_time__gt is not None and entry.get('time') < load_time__gt:
                 valid_entry = False
 
             if valid_entry:

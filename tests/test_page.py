@@ -89,6 +89,20 @@ def test_filter_entries(har_data):
     entries = page.filter_entries(request_type='.*ET', content_type='image.*',
                                   status_code='3.*')
 
+def test_filter_entries_load_time(har_data):
+    """
+    Tests ability to filter entries by load time
+    """
+    init_data = har_data('humanssuck.net_duplicate_url.har')
+    page = HarPage(PAGE_ID, har_data=init_data)
+
+    entries = page.filter_entries(load_time__gt=100)
+    assert len(entries) == 4
+    entries = page.filter_entries(load_time__gt=300)
+    assert len(entries) == 3
+    entries = page.filter_entries(load_time__gt=500)
+    assert len(entries) == 0
+
 
 def test_get_load_time(har_data):
     """
