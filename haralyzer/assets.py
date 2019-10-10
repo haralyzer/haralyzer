@@ -3,6 +3,7 @@ Provides all of the main functional classes for analyzing HAR files
 """
 
 import datetime
+import re
 
 import dateutil
 from collections import Counter
@@ -12,7 +13,6 @@ from cached_property import cached_property
 from dateutil import parser
 
 assert parser
-import re
 
 from .compat import iteritems
 from .errors import PageNotFoundError
@@ -510,27 +510,6 @@ class HarPage(object):
         urls = [entry.get('request').get('url') for entry in self.entries]
         counted_urls = Counter(urls)
         return {k:v for k,v in counted_urls.items() if v > 1}
-
-    def urls_with_more_time_with_filter(self, seconds, request_type=None, content_type=None,
-                       status_code=None, http_version=None, regex=True):
-        """
-        Returns a dict of urls and its time to load if the urls have taken more time than expected
-        give time in seconds
-        Add necessary filters
-        """
-        entries_list = self.filter_entries(request_type=request_type, content_type=content_type,
-                                   status_code=status_code, http_version=http_version, regex=regex)
-        urls = {entry.get('request').get('url'): 0 for entry in entries_list}
-        url_list1 = {}
-        print(urls)
-        for entry in self.entries:
-            for url in urls:
-                if entry.get('request').get('url') == url:
-                    if entry.get('time') > seconds * 1000:
-                        url_list1.update({entry.get('request').get('url'): entry.get('time')})
-                        break
-
-        return url_list1
 
     # Convenience properties. Easy accessible through the API, but even easier
     # to use as properties
