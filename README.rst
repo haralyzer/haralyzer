@@ -198,7 +198,10 @@ easily produced using the public methods of ``HarParser`` and ``HarPage``::
     # * status_code ('200' for example)
     # * request_type ('GET' for example)
     # * http_version ('HTTP/1.1' for example)
-    # It will use a regex by default, but you can also force a literal string match by passing regex=False
+    # * load_time__gt (Takes an int representing load time in milliseconds.
+    #   Entries with a load time greater than this will be included in the
+    #   results.)
+    # Parameters that accept a string use a regex by default, but you can also force a literal string match by passing regex=False
 
     # Get the size of the collection we just made #
     collection_size = har_page.get_total_size(entries)
