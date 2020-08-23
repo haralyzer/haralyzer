@@ -77,12 +77,17 @@ class HarParser(object):
     def match_content_type(entry, content_type, regex=True):
         """
         Matches the content type of a request using the mimeType metadata.
+        Entries with no mimeType are filtered out.
 
         :param entry: ``dict`` of a single entry from a HarPage
         :param content_type: ``str`` of regex to use for finding content type
         :param regex: ``bool`` indicating whether to use regex or exact match.
         """
-        mimeType = entry['response']['content']['mimeType']
+        content = entry['response']['content']
+        if 'mimeType' not in content:
+        	return False
+
+        mimeType = content['mimeType']
 
         if regex and re.search(content_type, mimeType, flags=re.IGNORECASE):
             return True
