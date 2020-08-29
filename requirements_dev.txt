@@ -1,5 +1,6 @@
 -r requirements.txt
 bumpversion
+coverage==4.5.4
 pytest
 pytest-cov
 python-coveralls
