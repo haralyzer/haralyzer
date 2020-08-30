@@ -57,7 +57,7 @@ def test_stdev(har_data):
     assert har_parser.get_stdev('audio') == 0
 
 
-def _load_test_data(har_data, num_test_files: int = 3):
+def _load_test_data(har_data, num_test_files=3):
     """
     Loads the test files we need and returns them in the proper format.
 

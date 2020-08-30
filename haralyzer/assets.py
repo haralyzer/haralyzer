@@ -260,7 +260,7 @@ class HarPage(object):
     def __repr__(self):
         return 'ID: {0}, URL: {1}'.format(self.page_id, self.url)
 
-    def _get_asset_files(self, asset_type: str):
+    def _get_asset_files(self, asset_type):
         """
         Returns a list of all files of a certain type.
         """
@@ -658,7 +658,7 @@ class HarEntry(object):
     @cached_property
     def startTime(self) -> [datetime.datetime, None]:
         try:
-            return datetime.datetime.strptime(self.raw_entry["startedDateTime"], '%Y-%m-%dT%H:%M:%S.%f%z')
+            return parser.parse(self.raw_entry["startedDateTime"])
         except KeyError:
             return None
 
