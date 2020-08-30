@@ -154,7 +154,7 @@ class HarParser(object):
         """
         results = dict()
         for asset in asset_list:
-            time_key =asset.startTime
+            time_key = asset.startTime
             load_time = asset.time
             # Add the start time and asset to the results dict
             if time_key in results:
@@ -449,11 +449,10 @@ class HarPage(object):
             elif entry['pageref'] == self.page_id:
                 page_entries.append(HarEntry(entry))
         # Make sure the entries are sorted chronologically
-        # if all('startedDateTime' in x for x in page_entries):
-        #     return sorted(page_entries,
-        #                 key=lambda entry: entry['startedDateTime'])
-        # else:
-        return page_entries
+        if all(x.startTime for x in page_entries):
+            return sorted(page_entries, key=lambda entry: entry.startTime)
+        else:
+            return page_entries
 
     @cached_property
     def time_to_first_byte(self):
@@ -657,8 +656,11 @@ class HarEntry(object):
         return self.raw_entry.response
 
     @cached_property
-    def startTime(self) -> datetime.datetime:
-        return datetime.datetime.strptime(self.raw_entry["startedDateTime"], '%Y-%m-%dT%H:%M:%S.%f%z')
+    def startTime(self) -> [datetime.datetime, None]:
+        try:
+            return datetime.datetime.strptime(self.raw_entry["startedDateTime"], '%Y-%m-%dT%H:%M:%S.%f%z')
+        except KeyError:
+            return None
 
     @cached_property
     def time(self) -> int:

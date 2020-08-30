@@ -206,8 +206,10 @@ def test_create_asset_timeline(har_data):
         assert time_key in asset_timeline
         assert len(asset_timeline[time_key]) == 1
         # Compare the dicts
-        for key, value in iteritems(entry):
-            assert asset_timeline[time_key][0][key] == entry[key]
+        for key, _ in iteritems(asset_timeline):
+            assert datetime.datetime.strptime(
+                asset_timeline[time_key][0].raw_entry["startedDateTime"],
+                '%Y-%m-%dT%H:%M:%S.%f%z') == entry.startTime
         time_key = time_key + datetime.timedelta(milliseconds=1)
 
 
