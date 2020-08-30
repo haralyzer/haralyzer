@@ -12,10 +12,9 @@ from cached_property import cached_property
 # I know this import is stupid, but I cannot use dateutil.parser without it
 from dateutil import parser
 
-assert parser
-
 from .compat import iteritems
 from .errors import PageNotFoundError
+from .sub_classes import Request, Response
 
 DECIMAL_PRECISION = 0
 
@@ -60,12 +59,13 @@ class HarParser(object):
 
         :returns: a ``bool`` indicating whether a match was found
         """
-        if header_type not in entry:
+        entry = HarEntry(entry)
+        if header_type not in ["request", "response"]:
             raise ValueError('Invalid header_type, should be either:\n\n'
                              '* \'request\'\n*\'response\'')
 
         # TODO - headers are empty in some HAR data.... need fallbacks here
-        for h in entry[header_type]['headers']:
+        for h in getattr(entry, header_type).headers:
             if h['name'].lower() == header.lower() and h['value'] is not None:
                 if regex and re.search(value, h['value'], flags=re.IGNORECASE):
                     return True
@@ -74,7 +74,7 @@ class HarParser(object):
         return False
 
     @staticmethod
-    def match_content_type(entry, content_type, regex=True):
+    def match_content_type(entry: "HarEntry", content_type, regex=True):
         """
         Matches the content type of a request using the mimeType metadata.
 
@@ -82,12 +82,11 @@ class HarParser(object):
         :param content_type: ``str`` of regex to use for finding content type
         :param regex: ``bool`` indicating whether to use regex or exact match.
         """
-        mimeType = entry['response']['content']['mimeType']
+        mime_type = entry.response.mimeType
 
-        if regex and re.search(content_type, mimeType, flags=re.IGNORECASE):
+        if regex and re.search(content_type, mime_type, flags=re.IGNORECASE):
             return True
-
-        elif content_type == mimeType:
+        elif content_type == mime_type:
             return True
 
         return False
@@ -101,11 +100,13 @@ class HarParser(object):
         :param request_type: ``str`` of request type to match
         :param regex: ``bool`` indicating whether to use a regex or string match
         """
+        if type(entry) != HarEntry:
+            entry = HarEntry(entry)
         if regex:
-            return re.search(request_type, entry['request']['method'],
+            return re.search(request_type, entry.request.method,
                              flags=re.IGNORECASE) is not None
         else:
-            return entry['request']['method'] == request_type
+            return entry.request.method == request_type
 
     @staticmethod
     def match_http_version(entry, http_version, regex=True):
@@ -114,17 +115,17 @@ class HarParser(object):
         matching the given `request_type` argument.
 
         :param entry: entry object to analyze
-        :param request_type: ``str`` of request type to match
+        :param http_version: ``str`` of HTTP version type to match
         :param regex: ``bool`` indicating whether to use a regex or string match
         """
-        response_version = entry['response']['httpVersion']
+        response_version = entry.response.httpVersion
         if regex:
             return re.search(http_version, response_version,
                              flags=re.IGNORECASE) is not None
         else:
             return response_version == http_version
 
-    def match_status_code(self, entry, status_code, regex=True):
+    def match_status_code(self, entry: dict, status_code: str, regex=True):
         """
         Helper function that returns entries with a status code matching
         then given `status_code` argument.
@@ -133,13 +134,14 @@ class HarParser(object):
 
         :param entry: entry object to analyze
         :param status_code: ``str`` of status code to search for
-        :param request_type: ``regex`` of request type to match
+        :param regex: ``bool`` indicating whether to use a regex or string match
         """
+        har_date = HarEntry(entry)
         if regex:
             return re.search(status_code,
-                             str(entry['response']['status'])) is not None
+                             str(har_date.response.status)) is not None
         else:
-            return str(entry['response']['status']) == status_code
+            return str(har_date.response.status) == status_code
 
     def create_asset_timeline(self, asset_list):
         """
@@ -152,8 +154,8 @@ class HarParser(object):
         """
         results = dict()
         for asset in asset_list:
-            time_key = dateutil.parser.parse(asset['startedDateTime'])
-            load_time = int(asset['time'])
+            time_key =asset.startTime
+            load_time = asset.time
             # Add the start time and asset to the results dict
             if time_key in results:
                 results[time_key].append(asset)
@@ -214,7 +216,7 @@ class HarPage(object):
     def __init__(self, page_id, har_parser=None, har_data=None):
         """
         :param page_id: ``str`` of the page ID
-        :param parser: a HarParser object
+        :param har_parser: a HarParser object
         :param har_data: ``dict`` of a file HAR file
         """
         self.page_id = page_id
@@ -258,7 +260,7 @@ class HarPage(object):
     def __repr__(self):
         return 'ID: {0}, URL: {1}'.format(self.page_id, self.url)
 
-    def _get_asset_files(self, asset_type):
+    def _get_asset_files(self, asset_type: str):
         """
         Returns a list of all files of a certain type.
         """
@@ -290,7 +292,7 @@ class HarPage(object):
         value is in ms.
         """
         if asset_type == 'initial':
-            return self.actual_page['time']
+            return self.actual_page.time
         elif asset_type == 'content':
             return self.pageTimings['onContentLoad']
         elif asset_type == 'page':
@@ -350,7 +352,7 @@ class HarPage(object):
             if http_version is not None and not p.match_http_version(
                     entry, http_version, regex=regex):
                 valid_entry = False
-            if load_time__gt is not None and entry.get('time') < load_time__gt:
+            if load_time__gt is not None and entry.time < load_time__gt:
                 valid_entry = False
 
             if valid_entry:
@@ -386,7 +388,7 @@ class HarPage(object):
         if not asynchronous:
             time = 0
             for entry in entries:
-                time += entry['time']
+                time += entry.time
             return time
         else:
             return len(self.parser.create_asset_timeline(entries))
@@ -399,8 +401,8 @@ class HarPage(object):
         """
         size = 0
         for entry in entries:
-            if entry['response']['bodySize'] > 0:
-                size += entry['response']['bodySize']
+            if entry.response.bodySize > 0:
+                size += entry.response.bodySize
         return size
 
     def get_total_size_trans(self, entries):
@@ -413,8 +415,8 @@ class HarPage(object):
         """
         size = 0
         for entry in entries:
-            if entry['response']['_transferSize'] > 0:
-                size += entry['response']['_transferSize']
+            if entry.response.raw_entry['_transferSize'] > 0:
+                size += entry.response.raw_entry['_transferSize']
         return size
 
     # BEGIN PROPERTIES #
@@ -424,7 +426,7 @@ class HarPage(object):
         """
         Hostname of the initial request
         """
-        for header in self.entries[0]['request']['headers']:
+        for header in self.entries[0].request.headers:
             if header['name'] == 'Host':
                 return header['value']
 
@@ -433,8 +435,8 @@ class HarPage(object):
         """
         The absolute URL of the initial request.
         """
-        if 'request' in self.entries[0] and 'url' in self.entries[0]['request']:
-            return self.entries[0]['request']['url']
+        if 'request' in self.entries[0].raw_entry and 'url' in self.entries[0].request.raw_entry:
+            return self.entries[0].request.url
         return None
 
     @cached_property
@@ -443,15 +445,15 @@ class HarPage(object):
         for entry in self.parser.har_data['entries']:
             if 'pageref' not in entry:
                 if self.page_id == 'unknown':
-                    page_entries.append(entry)
+                    page_entries.append(HarEntry(entry))
             elif entry['pageref'] == self.page_id:
-                page_entries.append(entry)
+                page_entries.append(HarEntry(entry))
         # Make sure the entries are sorted chronologically
-        if all('startedDateTime' in x for x in page_entries):
-            return sorted(page_entries,
-                        key=lambda entry: entry['startedDateTime'])
-        else:
-            return page_entries
+        # if all('startedDateTime' in x for x in page_entries):
+        #     return sorted(page_entries,
+        #                 key=lambda entry: entry['startedDateTime'])
+        # else:
+        return page_entries
 
     @cached_property
     def time_to_first_byte(self):
@@ -464,14 +466,14 @@ class HarPage(object):
             return None
         ttfb = 0
         for entry in self.entries:
-            if entry['response']['status'] == 200:
-                for k, v in iteritems(entry['timings']):
+            if entry.response.status == 200:
+                for k, v in iteritems(entry.timings):
                     if k != 'receive':
                         if v > 0:
                             ttfb += v
                 break
             else:
-                ttfb += entry['time']
+                ttfb += entry.time
 
         return ttfb
 
@@ -498,8 +500,7 @@ class HarPage(object):
         indicating that it is the actual page we care about (after redirects).
         """
         for entry in self.entries:
-            if not (entry['response']['status'] >= 300 and
-                            entry['response']['status'] <= 399):
+            if not (300 <= entry.response.status <= 399):
                 return entry
 
     @cached_property
@@ -507,9 +508,9 @@ class HarPage(object):
         """
         Returns a dict of urls and its number of repetitions that are sent more than once
         """
-        urls = [entry.get('request').get('url') for entry in self.entries]
+        urls = [entry.request.url for entry in self.entries]
         counted_urls = Counter(urls)
-        return {k:v for k,v in counted_urls.items() if v > 1}
+        return {k: v for k, v in counted_urls.items() if v > 1}
 
     # Convenience properties. Easy accessible through the API, but even easier
     # to use as properties
@@ -632,3 +633,61 @@ class HarPage(object):
     @cached_property
     def html_load_time(self):
         return self._get_asset_load('html')
+
+
+class HarEntry(object):
+    """
+        HAR entry
+    """
+    def __init__(self, entry: dict):
+        self.raw_entry = entry
+
+    @cached_property
+    def headers(self) -> list:
+        return self.raw_entry["request"]["headers"] + self.raw_entry["response"]["headers"]
+
+    @cached_property
+    def request(self) -> "Request":
+        return Request(entry=self.raw_entry["request"])
+
+    @cached_property
+    def response(self) -> "Response":
+        if type(self.raw_entry) == dict:
+            return Response(entry=self.raw_entry["response"])
+        return self.raw_entry.response
+
+    @cached_property
+    def startTime(self) -> datetime.datetime:
+        return datetime.datetime.strptime(self.raw_entry["startedDateTime"], '%Y-%m-%dT%H:%M:%S.%f%z')
+
+    @cached_property
+    def time(self) -> int:
+        return self.raw_entry["time"]
+
+    @cached_property
+    def pageref(self) -> str:
+        return self.raw_entry["pageref"]
+
+    @cached_property
+    def server_address(self) -> str:
+        return self.raw_entry["serverIPAddress"]
+
+    @cached_property
+    def port(self) -> int:
+        return int(self.raw_entry["connection"])
+
+    @cached_property
+    def cookies(self) -> list:
+        return self.raw_entry["cookies"]
+
+    @cached_property
+    def secure(self) -> bool:
+        return self.raw_entry["_securityState"] == "secure"
+
+    @cached_property
+    def cache(self) -> dict:
+        return self.raw_entry["cache"]
+
+    @cached_property
+    def timings(self) -> dict:
+        return self.raw_entry["timings"]

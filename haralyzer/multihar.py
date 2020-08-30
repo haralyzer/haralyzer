@@ -52,7 +52,7 @@ class MultiHarParser(object):
                 load_times.append(val)
         return load_times
 
-    def get_stdev(self, asset_type):
+    def get_stdev(self, asset_type: str):
         """
         Returns the standard deviation for a set of a certain asset type.
 
@@ -126,6 +126,7 @@ class MultiHarParser(object):
         Returns aggregate javascript load time.
         """
         load_times = self.get_load_times('js')
+        print(load_times)
         return round(mean(load_times), self.decimal_precision)
 
     @cached_property
