@@ -3,6 +3,12 @@
 History
 -------
 
+1.8.0 (2019-10-11)
+++++++++++++++++++
+
+* FEATURE - Add load_time__gt to HarPage.filter_entries.
+  Provided by @gowthamraj198.
+
 1.7.1 (2019-10-06)
 ++++++++++++++++++
 
