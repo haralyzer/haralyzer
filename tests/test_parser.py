@@ -2,6 +2,7 @@ import datetime
 import pytest
 from haralyzer import HarParser, HarPage, HarEntry
 from haralyzer.compat import iteritems
+from dateutil import parser as du
 
 
 # This has two of each common content type as the values for each content-type
@@ -207,13 +208,11 @@ def test_create_asset_timeline(har_data):
         assert len(asset_timeline[time_key]) == 1
         # Compare the dicts
         for key, _ in iteritems(asset_timeline):
-            assert datetime.datetime.strptime(
-                asset_timeline[time_key][0].raw_entry["startedDateTime"],
-                '%Y-%m-%dT%H:%M:%S.%f%z') == entry.startTime
+            assert du.parse(asset_timeline[time_key][0].raw_entry["startedDateTime"]) == entry.startTime
         time_key = time_key + datetime.timedelta(milliseconds=1)
 
 
-def _headers_test(parser, entry, test_data: dict, expects: bool, regex: bool):
+def _headers_test(parser, entry, test_data, expects, regex):
     """
     Little helper function to test headers matches
 

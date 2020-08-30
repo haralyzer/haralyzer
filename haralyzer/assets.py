@@ -74,7 +74,7 @@ class HarParser(object):
         return False
 
     @staticmethod
-    def match_content_type(entry: "HarEntry", content_type, regex=True):
+    def match_content_type(entry, content_type, regex=True):
         """
         Matches the content type of a request using the mimeType metadata.
 
@@ -125,7 +125,7 @@ class HarParser(object):
         else:
             return response_version == http_version
 
-    def match_status_code(self, entry: dict, status_code: str, regex=True):
+    def match_status_code(self, entry, status_code, regex=True):
         """
         Helper function that returns entries with a status code matching
         then given `status_code` argument.
