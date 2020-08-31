@@ -6,6 +6,9 @@ PAGE_ID = 'page_3'
 
 
 def test_entry(har_data):
+    """
+        Tests that HarEntry class works
+    """
     init_data = har_data('humanssuck.net.har')
     single_entry = HarPage(PAGE_ID, har_data=init_data).entries[0]
     assert isinstance(single_entry, HarEntry)
@@ -20,11 +23,17 @@ def test_entry(har_data):
     assert single_entry.time == 153
     assert single_entry.timings == {'receive': 0, 'send': 0, 'connect': 0, 'dns': 0, 'wait': 76, 'blocked': 77}
 
+    assert single_entry.get_header_value("X-Accel-Version") == '0.01'
+
 
 def test_request(har_data):
+    """
+        Tests that HarEntry.request has the correct data
+    """
     init_data = har_data('humanssuck.net.har')
     request = HarPage(PAGE_ID, har_data=init_data).entries[0].request
     assert request.accept == "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+    assert request.cookies == []
     assert request.bodySize == -1
     assert request.cacheControl is None
     assert request.encoding == "gzip, deflate"
@@ -42,6 +51,9 @@ def test_request(har_data):
 
 
 def test_response(har_data):
+    """
+        Tests the HarEntry.response has the correct data
+    """
     init_data = har_data('humanssuck.net.har')
     response = HarPage(PAGE_ID, har_data=init_data).entries[0].response
     assert response.bodySize == 238

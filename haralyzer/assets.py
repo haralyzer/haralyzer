@@ -642,6 +642,11 @@ class HarEntry(object):
         self.raw_entry = entry
 
     def get_header_value(self, name):
+        """
+        Returns the header value of the header defined in ``name``
+
+        :param name: ``str`` name of the header to get the value of
+        """
         for x in self.headers:
             if x["name"].lower() == name.lower():
                 return x["value"]
