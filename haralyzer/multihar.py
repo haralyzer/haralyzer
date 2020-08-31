@@ -52,7 +52,7 @@ class MultiHarParser(object):
                 load_times.append(val)
         return load_times
 
-    def get_stdev(self, asset_type: str):
+    def get_stdev(self, asset_type):
         """
         Returns the standard deviation for a set of a certain asset type.
 
