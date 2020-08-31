@@ -49,7 +49,7 @@ def test_response(har_data):
     assert response.contentSecurityPolicy is None
     assert response.contentSize == 308
     assert response.contentType == "text/html; charset=UTF-8"
-    assert isinstance(response.date, str)
+    assert response.date == "Mon, 23 Feb 2015 03:28:12 GMT"
     assert len(response.headers) == 11
     assert response.headersSize == 338
     assert response.httpVersion == "HTTP/1.1"
