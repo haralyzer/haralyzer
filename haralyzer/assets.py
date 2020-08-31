@@ -636,10 +636,15 @@ class HarPage(object):
 
 class HarEntry(object):
     """
-        HAR entry
+        An object that represent one entry in a HAR Page
     """
-    def __init__(self, entry: dict):
+    def __init__(self, entry):
         self.raw_entry = entry
+
+    def get_header_value(self, name) -> str:
+        for x in self.headers:
+            if x["name"].lower() == name.lower():
+                return x["value"]
 
     @cached_property
     def headers(self) -> list:
@@ -660,7 +665,7 @@ class HarEntry(object):
         try:
             return parser.parse(self.raw_entry["startedDateTime"])
         except KeyError:
-            return None
+            return
 
     @cached_property
     def time(self) -> int:
@@ -693,3 +698,7 @@ class HarEntry(object):
     @cached_property
     def timings(self) -> dict:
         return self.raw_entry["timings"]
+
+    @cached_property
+    def status(self) -> int:
+        return self.raw_entry["response"]["status"]

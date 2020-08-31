@@ -3,15 +3,14 @@ from cached_property import cached_property
 
 
 class Request(object):
-    """Request Object for an entry"""
+    """Request object for an HarEntry"""
     def __init__(self, entry: dict):
         self.raw_entry = entry
 
-    def get_header_value(self, name: str) -> str:
+    def get_header_value(self, name) -> str:
         for x in self.raw_entry["headers"]:
-            if x["name"] == name:
+            if x["name"].lower() == name.lower():
                 return x["value"]
-        return ""
 
     # Root Level values
 
@@ -75,15 +74,14 @@ class Request(object):
 
 
 class Response(object):
-    """Entry Response"""
-    def __init__(self, entry: dict):
+    """Response object for a HarEntry"""
+    def __init__(self, entry):
         self.raw_entry = entry
 
-    def get_header_value(self, name: str) -> str:
+    def get_header_value(self, name) -> str:
         for x in self.raw_entry["headers"]:
-            if x["name"] == name:
+            if x["name"].lower() == name.lower():
                 return x["value"]
-        return ""
 
     # Root Level values
 
