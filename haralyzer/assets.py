@@ -641,64 +641,64 @@ class HarEntry(object):
     def __init__(self, entry):
         self.raw_entry = entry
 
-    def get_header_value(self, name) -> str:
+    def get_header_value(self, name):
         for x in self.headers:
             if x["name"].lower() == name.lower():
                 return x["value"]
 
     @cached_property
-    def headers(self) -> list:
+    def headers(self):
         return self.raw_entry["request"]["headers"] + self.raw_entry["response"]["headers"]
 
     @cached_property
-    def request(self) -> "Request":
+    def request(self):
         return Request(entry=self.raw_entry["request"])
 
     @cached_property
-    def response(self) -> "Response":
+    def response(self):
         if type(self.raw_entry) == dict:
             return Response(entry=self.raw_entry["response"])
         return self.raw_entry.response
 
     @cached_property
-    def startTime(self) -> [datetime.datetime, None]:
+    def startTime(self):
         try:
             return parser.parse(self.raw_entry["startedDateTime"])
         except KeyError:
             return
 
     @cached_property
-    def time(self) -> int:
+    def time(self):
         return self.raw_entry["time"]
 
     @cached_property
-    def pageref(self) -> str:
+    def pageref(self):
         return self.raw_entry["pageref"]
 
     @cached_property
-    def server_address(self) -> str:
+    def server_address(self):
         return self.raw_entry["serverIPAddress"]
 
     @cached_property
-    def port(self) -> int:
+    def port(self):
         return int(self.raw_entry["connection"])
 
     @cached_property
-    def cookies(self) -> list:
+    def cookies(self):
         return self.raw_entry["cookies"]
 
     @cached_property
-    def secure(self) -> bool:
+    def secure(self):
         return self.raw_entry["_securityState"] == "secure"
 
     @cached_property
-    def cache(self) -> dict:
+    def cache(self):
         return self.raw_entry["cache"]
 
     @cached_property
-    def timings(self) -> dict:
+    def timings(self):
         return self.raw_entry["timings"]
 
     @cached_property
-    def status(self) -> int:
+    def status(self):
         return self.raw_entry["response"]["status"]

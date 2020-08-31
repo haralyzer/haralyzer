@@ -4,10 +4,10 @@ from cached_property import cached_property
 
 class Request(object):
     """Request object for an HarEntry"""
-    def __init__(self, entry: dict):
+    def __init__(self, entry):
         self.raw_entry = entry
 
-    def get_header_value(self, name) -> str:
+    def get_header_value(self, name):
         for x in self.raw_entry["headers"]:
             if x["name"].lower() == name.lower():
                 return x["value"]
@@ -15,61 +15,61 @@ class Request(object):
     # Root Level values
 
     @cached_property
-    def bodySize(self) -> int:
+    def bodySize(self):
         return self.raw_entry["bodySize"]
 
     @cached_property
-    def method(self) -> str:
+    def method(self):
         return self.raw_entry["method"]
 
     @cached_property
-    def url(self) -> str:
+    def url(self):
         return self.raw_entry["url"]
 
     @cached_property
-    def headers(self) -> list:
+    def headers(self):
         return self.raw_entry["headers"]
 
     @cached_property
-    def httpVersion(self) -> str:
+    def httpVersion(self):
         return self.raw_entry["httpVersion"]
 
     @cached_property
-    def queryString(self) -> list:
+    def queryString(self):
         return self.raw_entry["queryString"]
 
     @cached_property
-    def headersSize(self) -> int:
+    def headersSize(self):
         return self.raw_entry["headersSize"]
 
     @cached_property
-    def cookies(self) -> list:
+    def cookies(self):
         return self.raw_entry["cookies"]
 
     # Header Values
 
     @cached_property
-    def host(self) -> str:
+    def host(self):
         return self.get_header_value("Host")
 
     @cached_property
-    def userAgent(self) -> str:
+    def userAgent(self):
         return self.get_header_value("User-Agent")
 
     @cached_property
-    def accept(self) -> str:
+    def accept(self):
         return self.get_header_value("Accept")
 
     @cached_property
-    def language(self) -> str:
+    def language(self):
         return self.get_header_value("Accept-Language")
 
     @cached_property
-    def encoding(self) -> str:
+    def encoding(self):
         return self.get_header_value("Accept-Encoding")
 
     @cached_property
-    def cacheControl(self) -> str:
+    def cacheControl(self):
         return self.get_header_value("Cache-Control")
 
 
@@ -78,7 +78,7 @@ class Response(object):
     def __init__(self, entry):
         self.raw_entry = entry
 
-    def get_header_value(self, name) -> str:
+    def get_header_value(self, name):
         for x in self.raw_entry["headers"]:
             if x["name"].lower() == name.lower():
                 return x["value"]
@@ -86,43 +86,42 @@ class Response(object):
     # Root Level values
 
     @cached_property
-    def status(self) -> int:
+    def status(self):
         return self.raw_entry["status"]
 
     @cached_property
-    def statusText(self) -> str:
+    def statusText(self):
         return self.raw_entry["statusText"]
 
     @cached_property
-    def httpVersion(self) -> str:
+    def httpVersion(self):
         return self.raw_entry["httpVersion"]
 
     @cached_property
-    def headers(self) -> list:
+    def headers(self):
         return self.raw_entry["headers"]
 
     @cached_property
-    def redirectURL(self) -> [str, None]:
+    def redirectURL(self):
         if self.raw_entry["redirectURL"]:
             return self.raw_entry["redirectURL"]
-        return None
 
     @cached_property
-    def headersSize(self) -> int:
+    def headersSize(self):
         return self.raw_entry["headersSize"]
 
     @cached_property
-    def bodySize(self) -> int:
+    def bodySize(self):
         return self.raw_entry["bodySize"]
 
     # Header Values
 
     @cached_property
-    def date(self) -> str:
+    def date(self):
         return self.get_header_value("date")
 
     @cached_property
-    def contentType(self) -> str:
+    def contentType(self):
         return self.get_header_value("content-type")
 
     @cached_property
@@ -130,7 +129,7 @@ class Response(object):
         return self.get_header_value("cache-control")
 
     @cached_property
-    def lastModified(self) -> str:
+    def lastModified(self):
         return self.get_header_value("last-modified")
 
     @cached_property
@@ -138,15 +137,15 @@ class Response(object):
         return self.get_header_value("content-security-policy")
 
     @cached_property
-    def contentSize(self) -> int:
+    def contentSize(self):
         return self.raw_entry["content"]["size"]
 
     @cached_property
-    def mimeType(self) -> str:
+    def mimeType(self):
         return self.raw_entry['content']['mimeType']
 
     @cached_property
-    def text(self) -> str:
+    def text(self):
         return self.raw_entry['content']['text']
 
 
