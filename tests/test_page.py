@@ -1,6 +1,5 @@
-import dateutil
 import pytest
-from haralyzer import HarPage, HarParser, HarEntry
+from haralyzer import HarPage, HarParser
 from haralyzer.compat import iteritems
 from haralyzer.errors import PageNotFoundError
 import re
@@ -40,10 +39,10 @@ def test_init(har_data):
 
 
 def test_no_title(har_data):
-    '''
+    """
     A page with no title should set the title property as an empty string
-    instead of throwing an exeption.
-    '''
+    instead of throwing an exception.
+    """
     init_data = har_data('no_title.har')
     page = HarPage(PAGE_ID, har_data=init_data)
     assert page.title == ''
@@ -89,6 +88,7 @@ def test_filter_entries(har_data):
     entries = page.filter_entries(request_type='.*ET', content_type='image.*',
                                   status_code='3.*')
     assert len(entries) == 0
+
 
 def test_filter_entries_load_time(har_data):
     """

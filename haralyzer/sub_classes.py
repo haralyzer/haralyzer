@@ -125,7 +125,7 @@ class Response(object):
         return self.get_header_value("content-type")
 
     @cached_property
-    def cacheControl(self) -> str:
+    def cacheControl(self):
         return self.get_header_value("cache-control")
 
     @cached_property

@@ -685,11 +685,17 @@ class HarEntry(object):
 
     @cached_property
     def cookies(self):
-        return self.raw_entry["cookies"]
+        try:
+            return self.raw_entry["cookies"]
+        except KeyError:
+            return []
 
     @cached_property
     def secure(self):
-        return self.raw_entry["_securityState"] == "secure"
+        try:
+            return self.raw_entry["_securityState"] == "secure"
+        except KeyError:
+            return
 
     @cached_property
     def cache(self):
