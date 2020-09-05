@@ -11,6 +11,9 @@ class Request(GetHeaders, MimicDict, object):
     def __str__(self):
         return "HarEntry.Request for %s" % self.raw_entry["url"]
 
+    def __repr__(self):
+        return "HarEntry.Request for %s" % self.raw_entry["url"]
+
     # Root Level values
 
     @cached_property
