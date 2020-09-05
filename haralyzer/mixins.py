@@ -1,4 +1,4 @@
-"""Mixin Objects"""
+"""Mixin Objects that allow for shared methods"""
 
 
 class GetHeaders(object):
@@ -22,3 +22,21 @@ class MimicDict(object):
 
     def __len__(self):
         return len(self.raw_entry)
+
+    def get(self, item, default=None):
+        """
+            Mimics dict.get()
+        """
+        return self.raw_entry.get(item, default)
+
+    def keys(self):
+        """
+            Mimics dict.keys()
+        """
+        return self.raw_entry.keys()
+
+    def items(self):
+        """
+            Mimics dict.items()
+        """
+        return self.raw_entry.items()
