@@ -5,7 +5,6 @@ Provides all of the main functional classes for analyzing HAR files
 import datetime
 import re
 
-import dateutil
 from collections import Counter
 from cached_property import cached_property
 
@@ -14,7 +13,8 @@ from dateutil import parser
 
 from .compat import iteritems
 from .errors import PageNotFoundError
-from .sub_classes import Request, Response
+from .http import Request, Response
+from .mixins import MimicDict
 
 DECIMAL_PRECISION = 0
 
@@ -100,7 +100,7 @@ class HarParser(object):
         :param request_type: ``str`` of request type to match
         :param regex: ``bool`` indicating whether to use a regex or string match
         """
-        if type(entry) != HarEntry:
+        if not isinstance(entry, HarEntry):
             entry = HarEntry(entry)
         if regex:
             return re.search(request_type, entry.request.method,
@@ -634,26 +634,18 @@ class HarPage(object):
         return self._get_asset_load('html')
 
 
-class HarEntry(object):
+class HarEntry(MimicDict, object):
     """
         An object that represent one entry in a HAR Page
     """
     def __init__(self, entry):
         self.raw_entry = entry
 
-    def get_header_value(self, name):
-        """
-        Returns the header value of the header defined in ``name``
+    def __str__(self):
+        return "HarEntry for %s" % self.raw_entry["request"]["url"]
 
-        :param name: ``str`` name of the header to get the value of
-        """
-        for x in self.headers:
-            if x["name"].lower() == name.lower():
-                return x["value"]
-
-    @cached_property
-    def headers(self):
-        return self.raw_entry["request"]["headers"] + self.raw_entry["response"]["headers"]
+    def __repr__(self):
+        return "HarEntry for %s" % self.raw_entry["request"]["url"]
 
     @cached_property
     def request(self):
@@ -661,55 +653,53 @@ class HarEntry(object):
 
     @cached_property
     def response(self):
-        if type(self.raw_entry) == dict:
+        if isinstance(self.raw_entry, dict):
             return Response(entry=self.raw_entry["response"])
         return self.raw_entry.response
 
     @cached_property
     def startTime(self):
         try:
-            return parser.parse(self.raw_entry["startedDateTime"])
-        except KeyError:
-            return
-
-    @cached_property
-    def time(self):
-        return self.raw_entry["time"]
-
-    @cached_property
-    def pageref(self):
-        return self.raw_entry["pageref"]
-
-    @cached_property
-    def server_address(self):
-        return self.raw_entry["serverIPAddress"]
-
-    @cached_property
-    def port(self):
-        return int(self.raw_entry["connection"])
-
-    @cached_property
-    def cookies(self):
-        try:
-            return self.raw_entry["cookies"]
-        except KeyError:
-            return []
-
-    @cached_property
-    def secure(self):
-        try:
-            return self.raw_entry["_securityState"] == "secure"
-        except KeyError:
-            return
+            return parser.parse(self.raw_entry.get("startedDateTime", ""))
+        except parser._parser.ParserError:
+            return None
 
     @cached_property
     def cache(self):
         return self.raw_entry["cache"]
 
     @cached_property
-    def timings(self):
-        return self.raw_entry["timings"]
+    def cookies(self):
+        return self.raw_entry.get("cookies", [])
+
+    @cached_property
+    def pageref(self):
+        return self.raw_entry["pageref"]
+
+    @cached_property
+    def port(self):
+        return int(self.raw_entry["connection"])
+
+    @cached_property
+    def secure(self):
+        return self.raw_entry.get('_securityState', '') == 'secure'
+
+    @cached_property
+    def serverAddress(self):
+        return self.raw_entry["serverIPAddress"]
 
     @cached_property
     def status(self):
         return self.raw_entry["response"]["status"]
+
+    @cached_property
+    def time(self):
+        return self.raw_entry["time"]
+
+    @cached_property
+    def timings(self):
+        return self.raw_entry["timings"]
+
+    @cached_property
+    def url(self):
+        return self.raw_entry["request"]["url"]

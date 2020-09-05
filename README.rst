@@ -141,7 +141,7 @@ Each entry also contains a ``Request()`` and ``Response()`` which are styled off
 
     ### GET LIST OF ENTRIES
     print(har_page.entries)
-    # [<haralyzer.assets.HarEntry object at >, ...]
+    # [HarEntry object for http://humanssuck.net/, HarEntry object for http://humanssuck.net/test.css, ...]
 
     ### WORKING WITH ENTRIES
     single_entry = har_page.entries[0]
@@ -158,15 +158,7 @@ Each entry also contains a ``Request()`` and ``Response()`` which are styled off
     print(single_entry.response.status)
     # 200
 
-    ### COMBINED REQUEST AND RESPONSE HEADERS
-    print(single_entry.headers)
-    # [{'name': 'Host', 'value': 'humanssuck.net'}, {'name': 'User-Agent', 'value': 'Mozilla/5.0 (X11; Linux i686 on x86_64; rv:25.0) Gecko/20100101 Firefox/25.0'},, ...]
-
-    ### GET THE VALUE OF A HEADER
-    print(single_entry.get_header_value("server"))
-    # nginx
-
-    # CAN ALSO BE DONE FOR A REQUEST OR RESPONSE
+    # GET THE VALUE OF A REQUEST OR RESPONSE HEADER
     print(single_entry.request.get_header_value("accept"))
     # text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
 
@@ -184,6 +176,7 @@ Each entry also contains a ``Request()`` and ``Response()`` which are styled off
     single_entry.startTime -> Datetime of the start time
     single_entry.time -> Int of total time for entry
     single_entry.timings -> Dictionary of the timings for a request
+    single_entry.url -> String of the request url
 
     # ALL ATTRIBUTES OF A REQUEST
 
@@ -218,6 +211,11 @@ Each entry also contains a ``Request()`` and ``Response()`` which are styled off
     single_entry.response.status -> Int of th HTTP status code
     single_entry.response.statusText -> String of HTTP staus
     single_entry.response.text -> String of content received
+
+    ** You are still able to access items like a dictionary.
+    print(single_entry["connection"])
+    # 80
+
 
 MultiHarParser
 ++++++++++++++

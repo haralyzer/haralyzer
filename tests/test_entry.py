@@ -1,5 +1,5 @@
+import pytest
 from haralyzer import HarPage, HarEntry
-from datetime import datetime
 
 
 PAGE_ID = 'page_3'
@@ -12,18 +12,18 @@ def test_entry(har_data):
     init_data = har_data('humanssuck.net.har')
     single_entry = HarPage(PAGE_ID, har_data=init_data).entries[0]
     assert isinstance(single_entry, HarEntry)
+    assert str(single_entry) == "HarEntry for http://humanssuck.net/"
+
     assert single_entry.cache == {}
     assert len(single_entry.cookies) == 0
-    assert len(single_entry.headers) == 17
     assert single_entry.pageref == "page_3"
     assert single_entry.port == 80
     assert single_entry.status == 200
-    assert single_entry.secure is None
-    assert single_entry.server_address == "216.70.110.121"
+    assert single_entry.secure is False
+    assert single_entry.serverAddress == "216.70.110.121"
     assert single_entry.time == 153
     assert single_entry.timings == {'receive': 0, 'send': 0, 'connect': 0, 'dns': 0, 'wait': 76, 'blocked': 77}
-
-    assert single_entry.get_header_value("X-Accel-Version") == '0.01'
+    assert single_entry.url == "http://humanssuck.net/"
 
 
 def test_request(har_data):
@@ -32,6 +32,8 @@ def test_request(har_data):
     """
     init_data = har_data('humanssuck.net.har')
     request = HarPage(PAGE_ID, har_data=init_data).entries[0].request
+    assert str(request) == "HarEntry.Request for http://humanssuck.net/"
+
     assert request.accept == "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
     assert request.cookies == []
     assert request.bodySize == -1
@@ -73,3 +75,24 @@ def test_response(har_data):
     assert len(response.text) == 308
 
     assert response.get_header_value("Server") == "nginx"
+
+
+def test_backwards(har_data):
+    """
+        Tests that HarEntry class works if expecting dictionary.
+        Made so it is a non-breaking change
+    """
+    init_data = har_data('humanssuck.net.har')
+    single_entry = HarPage(PAGE_ID, har_data=init_data).entries[0]
+    assert single_entry["cache"] == {}
+    assert single_entry["pageref"] == "page_3"
+    assert single_entry["connection"] == "80"
+    with pytest.raises(KeyError):
+        single_entry["_securityState"]
+    assert single_entry["serverIPAddress"] == "216.70.110.121"
+    assert single_entry["time"] == 153
+    assert single_entry["timings"] == {'receive': 0, 'send': 0, 'connect': 0, 'dns': 0, 'wait': 76, 'blocked': 77}
+    assert len(single_entry) == 9
+
+    assert single_entry.request["method"] == "GET"
+    assert single_entry.response["status"] == 200

@@ -126,7 +126,6 @@ class MultiHarParser(object):
         Returns aggregate javascript load time.
         """
         load_times = self.get_load_times('js')
-        print(load_times)
         return round(mean(load_times), self.decimal_precision)
 
     @cached_property
