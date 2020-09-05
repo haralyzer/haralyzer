@@ -92,10 +92,11 @@ def test_backwards(har_data):
     assert single_entry["serverIPAddress"] == "216.70.110.121"
     assert single_entry["time"] == 153
     assert single_entry["timings"] == {'receive': 0, 'send': 0, 'connect': 0, 'dns': 0, 'wait': 76, 'blocked': 77}
+    
     assert len(single_entry) == 9
-
-    assert list(single_entry.keys()) == ['serverIPAddress', 'cache', 'startedDateTime', 'pageref', 'request', 'timings', 'connection', 'time', 'response']
+    assert len(single_entry.keys()) == 9
     assert len(single_entry.items()) == 9
+
     assert single_entry.get("time") == 153
     assert single_entry.get("NothingHere", "Default") == "Default"
 
