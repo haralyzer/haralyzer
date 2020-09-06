@@ -1,7 +1,5 @@
 """Mixin Objects that allow for shared methods"""
-from abc import ABC
 from cached_property import cached_property
-
 from six.moves.collections_abc import MutableMapping
 
 
@@ -18,7 +16,7 @@ class GetHeaders(object):
                 return x["value"]
 
 
-class MimicDict(MutableMapping, ABC):
+class MimicDict(MutableMapping):
     """Mixin for functions to mimic a dictionary for backward compatibility"""
 
     def __getitem__(self, item):
