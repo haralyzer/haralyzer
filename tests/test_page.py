@@ -19,11 +19,12 @@ def test_init(har_data):
 
     # Throws PageNotFoundException with bad page ID
     with pytest.raises(PageNotFoundError):
-        page = HarPage(BAD_PAGE_ID, har_data=init_data)
+        assert HarPage(BAD_PAGE_ID, har_data=init_data)
 
     # Make sure it can load with either har_data or a parser
     page = HarPage(PAGE_ID, har_data=init_data)
     assert isinstance(page, HarPage)
+    assert repr(page) == "ID: page_3, URL: http://humanssuck.net/"
     parser = HarParser(init_data)
     page = HarPage(PAGE_ID, har_parser=parser)
     assert isinstance(page, HarPage)

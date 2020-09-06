@@ -23,10 +23,6 @@ class Request(HttpTransaction):
         return self.raw_entry["cookies"]
 
     @cached_property
-    def headers(self):
-        return self.raw_entry["headers"]
-
-    @cached_property
     def headersSize(self):
         return self.raw_entry["headersSize"]
 
@@ -81,10 +77,6 @@ class Response(HttpTransaction):
     @cached_property
     def bodySize(self):
         return self.raw_entry["bodySize"]
-
-    @cached_property
-    def headers(self):
-        return self.raw_entry["headers"]
 
     @cached_property
     def headersSize(self):
