@@ -1,7 +1,8 @@
 """Mixin Objects that allow for shared methods"""
 from abc import ABC
-from collections.abc import MutableMapping
 from cached_property import cached_property
+
+from six.moves.collections_abc import MutableMapping
 
 
 class GetHeaders(object):
