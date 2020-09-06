@@ -90,7 +90,7 @@ def test_backwards(har_data):
     assert single_entry["pageref"] == "page_3"
     assert single_entry["connection"] == "80"
     with pytest.raises(KeyError):
-        single_entry["_securityState"]
+        assert single_entry["_securityState"]
     assert single_entry["serverIPAddress"] == "216.70.110.121"
     assert single_entry["time"] == 153
     assert single_entry["timings"] == {'receive': 0, 'send': 0, 'connect': 0, 'dns': 0, 'wait': 76, 'blocked': 77}
@@ -103,8 +103,12 @@ def test_backwards(har_data):
     assert single_entry.get("time") == 153
     assert single_entry.get("NothingHere", "Default") == "Default"
 
-    assert single_entry.request["method"] == "GET"
-    assert single_entry.request.get("method") == "GET"
+    assert single_entry.request["method"] == single_entry.request.get("method") == "GET"
 
-    assert single_entry.response["status"] == 200
-    assert single_entry.response.get("status") == 200
+    assert single_entry.response["status"] == single_entry.response.get("status") == 200
+
+    # MISC TESTS FOR DICT COMPATIBILITY/COVERAGE
+    single_entry["Testing"] = "HelloWorld"
+    assert "Testing" in single_entry
+    del single_entry["Testing"]
+    assert iter(single_entry)

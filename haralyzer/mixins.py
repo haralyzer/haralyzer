@@ -1,4 +1,7 @@
 """Mixin Objects that allow for shared methods"""
+from abc import ABC
+from collections.abc import MutableMapping
+from cached_property import cached_property
 
 
 class GetHeaders(object):
@@ -14,7 +17,7 @@ class GetHeaders(object):
                 return x["value"]
 
 
-class MimicDict(object):
+class MimicDict(MutableMapping, ABC):
     """Mixin for functions to mimic a dictionary for backward compatibility"""
 
     def __getitem__(self, item):
@@ -23,20 +26,21 @@ class MimicDict(object):
     def __len__(self):
         return len(self.raw_entry)
 
-    def get(self, item, default=None):
-        """
-            Mimics dict.get()
-        """
-        return self.raw_entry.get(item, default)
+    def __delitem__(self, key):
+        del self.raw_entry[key]
 
-    def keys(self):
-        """
-            Mimics dict.keys()
-        """
-        return self.raw_entry.keys()
+    def __iter__(self):
+        return iter(self.raw_entry)
 
-    def items(self):
-        """
-            Mimics dict.items()
-        """
-        return self.raw_entry.items()
+    def __setitem__(self, key, value):
+        self.raw_entry[key] = value
+
+
+class HttpTransaction(GetHeaders, MimicDict):
+    def __init__(self, entry):
+        self.raw_entry = entry
+
+    # Base class gets properties that belong to both request/response
+    @cached_property
+    def headers(self):
+        return self.raw_entry["headers"]

@@ -1,12 +1,10 @@
 """Creates the Request and Response sub class that are used by each entry"""
 from cached_property import cached_property
-from .mixins import GetHeaders, MimicDict
+from .mixins import HttpTransaction
 
 
-class Request(GetHeaders, MimicDict, object):
+class Request(HttpTransaction):
     """Request object for an HarEntry"""
-    def __init__(self, entry):
-        self.raw_entry = entry
 
     def __str__(self):
         return "HarEntry.Request for %s" % self.raw_entry["url"]
@@ -75,10 +73,8 @@ class Request(GetHeaders, MimicDict, object):
         return self.get_header_value("User-Agent")
 
 
-class Response(GetHeaders, MimicDict, object):
+class Response(HttpTransaction):
     """Response object for a HarEntry"""
-    def __init__(self, entry):
-        self.raw_entry = entry
 
     # Root Level values
 

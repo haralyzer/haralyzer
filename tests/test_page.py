@@ -13,7 +13,7 @@ def test_init(har_data):
     Test the object loading
     """
     with pytest.raises(ValueError):
-        page = HarPage(PAGE_ID)
+        assert HarPage(PAGE_ID)
 
     init_data = har_data('humanssuck.net.har')
 
@@ -59,13 +59,13 @@ def test_filter_entries(har_data):
     entries = page.filter_entries(request_type='.*ET')
     assert len(entries) == 4
     for entry in entries:
-        assert entry.request.method == 'GET'
+        assert entry.request.method == entry["request"]["method"] == 'GET'
 
     # Filter by request type and content_type
     entries = page.filter_entries(request_type='.*ET', content_type='image.*')
     assert len(entries) == 1
     for entry in entries:
-        assert entry.request.method == 'GET'
+        assert entry.request.method == entry["request"]["method"] == 'GET'
         for header in entry.request.headers:
             if header['name'] == 'Content-Type':
                 assert re.search('image.*', header['value'])
@@ -75,9 +75,12 @@ def test_filter_entries(har_data):
                                   status_code='2.*')
     assert len(entries) == 1
     for entry in entries:
-        assert entry.request.method == 'GET'
+        assert entry.request.method == entry["request"]["method"] == 'GET'
         assert re.search('2.*', str(entry.response.status))
         for header in entry.response.headers:
+            if header['name'] == 'Content-Type':
+                assert re.search('image.*', header['value'])
+        for header in entry["response"]["headers"]:
             if header['name'] == 'Content-Type':
                 assert re.search('image.*', header['value'])
 
@@ -123,7 +126,7 @@ def test_entries(har_data):
     page = HarPage(PAGE_ID, har_data=init_data)
 
     for entry in page.entries:
-        assert entry.pageref == page.page_id
+        assert entry.pageref == entry["pageref"] == page.page_id
 
 
 def test_file_types(har_data):
@@ -152,10 +155,10 @@ def test_request_types(har_data):
 
     # Check request type lists
     for req in page.get_requests:
-        assert req.request.method == 'GET'
+        assert req.request.method == req["request"]["method"] == 'GET'
 
     for req in page.post_requests:
-        assert req.request.method == 'POST'
+        assert req.request.method == req["request"]["method"]  == 'POST'
 
 
 def test_sizes_trans(har_data):
