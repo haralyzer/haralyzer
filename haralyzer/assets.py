@@ -136,12 +136,12 @@ class HarParser(object):
         :param status_code: ``str`` of status code to search for
         :param regex: ``bool`` indicating whether to use a regex or string match
         """
-        har_date = HarEntry(entry)
+        entry_data = HarEntry(entry)
         if regex:
             return re.search(status_code,
-                             str(har_date.response.status)) is not None
+                             str(entry_data.response.status)) is not None
         else:
-            return str(har_date.response.status) == status_code
+            return str(entry_data.response.status) == status_code
 
     def create_asset_timeline(self, asset_list):
         """
@@ -634,7 +634,7 @@ class HarPage(object):
         return self._get_asset_load('html')
 
 
-class HarEntry(MimicDict, object):
+class HarEntry(MimicDict):
     """
         An object that represent one entry in a HAR Page
     """

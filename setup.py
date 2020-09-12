@@ -8,7 +8,7 @@ except ImportError:
 
 install_reqs = ['cached-property',
                 'python-dateutil',
-                "six == 1.15.0"]
+                "six >= 1.13.0"]
 
 if sys.version_info < (3, 4):
     install_reqs.extend([
