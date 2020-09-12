@@ -2,6 +2,7 @@
 Provides all of the main functional classes for analyzing HAR files
 """
 
+import functools
 import datetime
 import re
 
@@ -17,6 +18,21 @@ from .http import Request, Response
 from .mixins import MimicDict
 
 DECIMAL_PRECISION = 0
+
+
+def convert_to_entry(func):
+    @functools.wraps(func)
+    def inner(*args, **kwargs):
+        # Changed to list because tuple does not support item assignment
+        changed_args = list(args)
+        # Convert the dict (first argument) to HarEntry
+        if isinstance(changed_args[0], dict):
+            changed_args[0] = HarEntry(changed_args[0])
+        # For some cases have HarParser as the first type with the Entry and second
+        if isinstance(changed_args[0], HarParser):
+            changed_args[1] = HarEntry(changed_args[1])
+        return func(*tuple(changed_args), **kwargs)
+    return inner
 
 
 class HarParser(object):
@@ -37,6 +53,7 @@ class HarParser(object):
                 ' to instantiate this class. Please RTFM.')
         self.har_data = har_data['log']
 
+    @convert_to_entry
     def match_headers(self, entry, header_type, header, value, regex=True):
         """
         Function to match headers.
@@ -47,7 +64,7 @@ class HarParser(object):
 
         This function is case-insensitive
 
-        :param entry: entry object
+        :param entry: ``HarEntry`` object to analyze
         :param header_type: ``str`` of header type. Valid values:
 
             * 'request'
@@ -59,7 +76,6 @@ class HarParser(object):
 
         :returns: a ``bool`` indicating whether a match was found
         """
-        entry = HarEntry(entry)
         if header_type not in ["request", "response"]:
             raise ValueError('Invalid header_type, should be either:\n\n'
                              '* \'request\'\n*\'response\'')
@@ -74,11 +90,12 @@ class HarParser(object):
         return False
 
     @staticmethod
+    @convert_to_entry
     def match_content_type(entry, content_type, regex=True):
         """
         Matches the content type of a request using the mimeType metadata.
 
-        :param entry: ``dict`` of a single entry from a HarPage
+        :param entry: ``HarEntry`` object to analyze
         :param content_type: ``str`` of regex to use for finding content type
         :param regex: ``bool`` indicating whether to use regex or exact match.
         """
@@ -91,17 +108,16 @@ class HarParser(object):
 
         return False
 
+    @convert_to_entry
     def match_request_type(self, entry, request_type, regex=True):
         """
         Helper function that returns entries with a request type
         matching the given `request_type` argument.
 
-        :param entry: entry object to analyze
+        :param entry: ``HarEntry`` object to analyze
         :param request_type: ``str`` of request type to match
         :param regex: ``bool`` indicating whether to use a regex or string match
         """
-        if not isinstance(entry, HarEntry):
-            entry = HarEntry(entry)
         if regex:
             return re.search(request_type, entry.request.method,
                              flags=re.IGNORECASE) is not None
@@ -109,12 +125,13 @@ class HarParser(object):
             return entry.request.method == request_type
 
     @staticmethod
+    @convert_to_entry
     def match_http_version(entry, http_version, regex=True):
         """
         Helper function that returns entries with a request type
         matching the given `request_type` argument.
 
-        :param entry: entry object to analyze
+        :param entry: ``HarEntry`` object to analyze
         :param http_version: ``str`` of HTTP version type to match
         :param regex: ``bool`` indicating whether to use a regex or string match
         """
@@ -125,6 +142,7 @@ class HarParser(object):
         else:
             return response_version == http_version
 
+    @convert_to_entry
     def match_status_code(self, entry, status_code, regex=True):
         """
         Helper function that returns entries with a status code matching
@@ -136,12 +154,11 @@ class HarParser(object):
         :param status_code: ``str`` of status code to search for
         :param regex: ``bool`` indicating whether to use a regex or string match
         """
-        entry_data = HarEntry(entry)
         if regex:
             return re.search(status_code,
-                             str(entry_data.response.status)) is not None
+                             str(entry.response.status)) is not None
         else:
-            return str(entry_data.response.status) == status_code
+            return str(entry.response.status) == status_code
 
     def create_asset_timeline(self, asset_list):
         """
