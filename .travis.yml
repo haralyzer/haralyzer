@@ -9,8 +9,8 @@ python:
   - "3.7"
   - "3.8"
 install:
-  - "pip install ."
-  - "pip install -r requirements_dev.txt"
-script: py.test --cov haralyzer tests/ -vv
+  - "pip install tox"
+  #- "pip install -r requirements_dev.txt"
+script: tox
 after_success:
   - coveralls

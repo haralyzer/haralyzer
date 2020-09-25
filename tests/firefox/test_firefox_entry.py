@@ -1,4 +1,3 @@
-import pytest
 from haralyzer import HarPage, HarEntry
 
 
@@ -78,7 +77,7 @@ def test_response(har_data):
     assert response.status == 200
     assert response.statusText == "OK"
     # It needs to be able to be two values as locally you need 18989 but travis.ci get 18960
-    assert len(response.text) in [18989, 18960]
+    assert len(response.text) == 18989
 
     assert response.get_header_value("Server") == "cloudflare"
 
