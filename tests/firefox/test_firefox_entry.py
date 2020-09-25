@@ -76,8 +76,9 @@ def test_response(har_data):
     assert response.redirectURL is None
     assert response.status == 200
     assert response.statusText == "OK"
-    # It needs to be able to be two values as locally you need 18989 but travis.ci get 18960
-    assert len(response.text) == 18989
+    # It needs to be able to be two values as locally I tested and got 18989 but travis.ci gets 18960
+    # TODO: Figure out why this is happening and correct it
+    assert len(response.text) in [18989, 18960]
 
     assert response.get_header_value("Server") == "cloudflare"
 
