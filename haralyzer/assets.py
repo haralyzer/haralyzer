@@ -172,7 +172,7 @@ class HarParser(object):
         results = dict()
         for asset in asset_list:
             time_key = asset.startTime
-            load_time = asset.time
+            load_time = int(asset.time)
             # Add the start time and asset to the results dict
             if time_key in results:
                 results[time_key].append(asset)
