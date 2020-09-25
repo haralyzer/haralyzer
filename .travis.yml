@@ -11,6 +11,6 @@ python:
 install:
   - "pip install ."
   - "pip install -r requirements_dev.txt"
-script: py.test --cov haralyzer tests/
+script: py.test --cov haralyzer tests/ -vv
 after_success:
   - coveralls
