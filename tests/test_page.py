@@ -1,5 +1,5 @@
 import pytest
-from haralyzer import HarPage, HarParser
+from haralyzer import HarPage, HarParser, HarEntry
 from haralyzer.compat import iteritems
 from haralyzer.errors import PageNotFoundError
 import re
@@ -133,7 +133,14 @@ def test_entries(har_data):
 def test_iteration(har_data):
     init_data = har_data('humanssuck.net.har')
     page = HarPage(PAGE_ID, har_data=init_data)
-    assert len([x for x in page]) == 4
+    entries = [x for x in page]
+    assert len(entries) == 4
+    assert str(next(page)) == 'HarEntry for http://humanssuck.net/'
+    assert str(next(page)) == 'HarEntry for http://humanssuck.net/test.css'
+    assert str(next(page)) == 'HarEntry for http://humanssuck.net/screen_login.gif'
+    assert str(next(page)) == 'HarEntry for http://humanssuck.net/jquery-1.7.1.min.js'
+    with pytest.raises(StopIteration):
+        assert next(page)
 
 
 def test_file_types(har_data):
