@@ -3,6 +3,7 @@ from haralyzer import HarPage, HarParser, HarEntry
 from haralyzer.compat import iteritems
 from haralyzer.errors import PageNotFoundError
 import re
+import six
 
 BAD_PAGE_ID = 'sup_dawg'
 PAGE_ID = 'page_3'
@@ -130,7 +131,23 @@ def test_entries(har_data):
         assert entry.pageref == entry["pageref"] == page.page_id
 
 
-def test_iteration(har_data):
+@pytest.mark.skipif(six.PY3, reason="Runs with Python 2")
+def test_iteration_python2(har_data):
+    init_data = har_data('humanssuck.net.har')
+    page = HarPage(PAGE_ID, har_data=init_data)
+    entries = [x for x in page]
+    assert len(entries) == 4
+    iter_object = iter(page)
+    assert str(next(iter_object)) == 'HarEntry for http://humanssuck.net/'
+    assert str(next(iter_object)) == 'HarEntry for http://humanssuck.net/test.css'
+    assert str(next(iter_object)) == 'HarEntry for http://humanssuck.net/screen_login.gif'
+    assert str(next(iter_object)) == 'HarEntry for http://humanssuck.net/jquery-1.7.1.min.js'
+    with pytest.raises(StopIteration):
+        assert next(iter_object)
+
+
+@pytest.mark.skipif(six.PY2, reason="Runs with Python 3")
+def test_iteration_python2(har_data):
     init_data = har_data('humanssuck.net.har')
     page = HarPage(PAGE_ID, har_data=init_data)
     entries = [x for x in page]
