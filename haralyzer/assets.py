@@ -237,6 +237,7 @@ class HarPage(object):
         :param har_data: ``dict`` of a file HAR file
         """
         self.page_id = page_id
+        self._index = 0
         if har_parser is None and har_data is None:
             raise ValueError('Either parser or har_data is required')
         if har_parser:
@@ -276,6 +277,17 @@ class HarPage(object):
 
     def __repr__(self):
         return 'ID: {0}, URL: {1}'.format(self.page_id, self.url)
+
+    def __iter__(self):
+        return iter(self.entries)
+
+    def __next__(self):
+        try:
+            result = self.entries[self._index]
+        except IndexError:
+            raise StopIteration
+        self._index += 1
+        return result
 
     def _get_asset_files(self, asset_type):
         """

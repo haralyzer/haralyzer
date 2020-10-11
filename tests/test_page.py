@@ -130,6 +130,12 @@ def test_entries(har_data):
         assert entry.pageref == entry["pageref"] == page.page_id
 
 
+def test_iteration(har_data):
+    init_data = har_data('humanssuck.net.har')
+    page = HarPage(PAGE_ID, har_data=init_data)
+    assert len([x for x in page]) == 4
+
+
 def test_file_types(har_data):
     """
     Test file type properties

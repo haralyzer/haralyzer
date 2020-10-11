@@ -1,11 +1,7 @@
 # -*- coding: utf-8; -*-
 # Contains compatibility functions extracted from the 'six' project.
 
-import sys
-
-
-PY2 = sys.version_info[0] == 2
-PY3 = sys.version_info[0] == 3
+from six import PY3
 
 if PY3:
     def iteritems(d, **kw):
