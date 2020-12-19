@@ -32,27 +32,23 @@ jobs:
       if: startsWith(runner.os, 'Linux')
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt', '**/requirements-dev.txts') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
+        key: ${{ runner.os }}-$${{ matrix.python-version}}-${{ hashFiles('**/requirements.txt', '**/requirements-dev.txts') }}
 
     - name: MacOS Cache
       uses: actions/cache@v2
       if: startsWith(runner.os, 'macOS')
       with:
         path: ~/Library/Caches/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt', '**/requirements-dev.txts') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
+        key: ${{ runner.os }}-$${{ matrix.python-version}}-${{ hashFiles('**/requirements.txt', '**/requirements-dev.txts') }}
+
 
     - name: Windows Cache
       uses: actions/cache@v2
       if: startsWith(runner.os, 'Windows')
       with:
         path: ~\AppData\Local\pip\Cache
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt', '**/requirements-dev.txts') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
+        key: ${{ runner.os }}-$${{ matrix.python-version}}-${{ hashFiles('**/requirements.txt', '**/requirements-dev.txts') }}
+
 
     - name: Install Dependencies
       run: |
