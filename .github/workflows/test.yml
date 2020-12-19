@@ -55,9 +55,6 @@ jobs:
         pip install --upgrade pip wheel
         pip install . -r requirements_dev.txt
 
-    - name: Bandit
-      run: bandit -r haralyzer
-
     - name: Tests
       run: py.test --cov haralyzer tests/ -vv
 
