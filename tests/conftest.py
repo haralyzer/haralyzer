@@ -4,7 +4,7 @@ import os
 
 
 @pytest.fixture
-def har_data(request):
+def har_data():
     """
     Given a HAR file name, returns a ``dict`` of this data from the
     corresponding file name in tests/data
@@ -19,7 +19,7 @@ def har_data(request):
 
 
 @pytest.fixture
-def header_types(request):
+def header_types():
     """
     Just returns all the headers we need to test
     """

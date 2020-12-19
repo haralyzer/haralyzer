@@ -1,2 +1,3 @@
 cached-property
 python-dateutil
+six >= 1.13.0

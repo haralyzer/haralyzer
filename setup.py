@@ -7,7 +7,9 @@ except ImportError:
     from distutils.core import setup
 
 install_reqs = ['cached-property',
-                'python-dateutil', ]
+                'python-dateutil',
+                "six >= 1.13.0"]
+
 if sys.version_info < (3, 4):
     install_reqs.extend([
         "backports.statistics",

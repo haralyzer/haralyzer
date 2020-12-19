@@ -1,4 +1,5 @@
 language: python
+cache: pip
 matrix:
   fast_finish: true
   allow_failures:
@@ -6,9 +7,12 @@ matrix:
 python:
   - "2.7"
   - "3.6"
+  - "3.7"
+  - "3.8"
+  - "pypy3.6-7.3.1"
 install:
   - "pip install ."
   - "pip install -r requirements_dev.txt"
-script: py.test --cov haralyzer tests/
+script: py.test --cov haralyzer tests/ -vv
 after_success:
   - coveralls

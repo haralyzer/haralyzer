@@ -1,10 +1,8 @@
 import datetime
-import dateutil
-from dateutil import parser
-assert parser
 import pytest
-from haralyzer import HarParser, HarPage
+from haralyzer import HarParser, HarPage, HarEntry
 from haralyzer.compat import iteritems
+from dateutil import parser as du
 
 
 # This has two of each common content type as the values for each content-type
@@ -33,6 +31,7 @@ def test_init(har_data):
     assert har_parser.creator == {'name': 'Firebug', 'version': '1.12'}
     assert har_parser.hostname == 'humanssuck.net'
 
+
 def test_init_entry_with_no_pageref(har_data):
     '''
     If we find an entry with no pageref it should end up in a HarPage object
@@ -46,6 +45,7 @@ def test_init_entry_with_no_pageref(har_data):
     assert len(har_parser.pages) == 2
     page = [p for p in har_parser.pages if p.page_id == 'unknown'][0]
     assert len(page.entries) == 1
+
 
 def test_match_headers(har_data):
 
@@ -174,7 +174,7 @@ def test_http_version(har_data):
     init_data = har_data('humanssuck.net.har')
     har_parser = HarParser(init_data)
 
-    entry = har_data('single_entry.har')
+    entry = HarEntry(har_data('single_entry.har'))
 
     # TEST THE REGEX FEATURE FIRST #
     assert har_parser.match_http_version(entry, '.*1.1')
@@ -182,6 +182,7 @@ def test_http_version(har_data):
     # TEST LITERAL STRING MATCH #
     assert har_parser.match_http_version(entry, 'HTTP/1.1', regex=False)
     assert not har_parser.match_http_version(entry, 'HTTP/2.0', regex=False)
+
 
 def test_create_asset_timeline(har_data):
     """
@@ -191,11 +192,11 @@ def test_create_asset_timeline(har_data):
     init_data = har_data('humanssuck.net.har')
     har_parser = HarParser(init_data)
 
-    entry = har_data('single_entry.har')
+    entry = HarEntry(har_data('single_entry.har'))
 
     # Get the datetime object of the start time and total load time
-    time_key = dateutil.parser.parse(entry['startedDateTime'])
-    load_time = int(entry['time'])
+    time_key = entry.startTime
+    load_time = entry.time
 
     asset_timeline = har_parser.create_asset_timeline([entry])
 
@@ -206,9 +207,10 @@ def test_create_asset_timeline(har_data):
         assert time_key in asset_timeline
         assert len(asset_timeline[time_key]) == 1
         # Compare the dicts
-        for key, value in iteritems(entry):
-            assert asset_timeline[time_key][0][key] == entry[key]
+        for key, _ in iteritems(asset_timeline):
+            assert du.parse(asset_timeline[time_key][0].raw_entry["startedDateTime"]) == entry.startTime
         time_key = time_key + datetime.timedelta(milliseconds=1)
+
 
 def _headers_test(parser, entry, test_data, expects, regex):
     """
@@ -224,8 +226,8 @@ def _headers_test(parser, entry, test_data, expects, regex):
     """
     for req_type, data in iteritems(test_data):
         for header, value in iteritems(data):
-            is_match = parser.match_headers(entry, req_type,
-                                                header, value, regex=regex)
+            is_match = parser.match_headers(
+                entry, req_type, header, value, regex=regex)
             if expects:
                 assert is_match
             else:

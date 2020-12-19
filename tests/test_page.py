@@ -1,9 +1,9 @@
-import dateutil
 import pytest
-from haralyzer import HarPage, HarParser
+from haralyzer import HarPage, HarParser, HarEntry
 from haralyzer.compat import iteritems
 from haralyzer.errors import PageNotFoundError
 import re
+import six
 
 BAD_PAGE_ID = 'sup_dawg'
 PAGE_ID = 'page_3'
@@ -14,17 +14,18 @@ def test_init(har_data):
     Test the object loading
     """
     with pytest.raises(ValueError):
-        page = HarPage(PAGE_ID)
+        assert HarPage(PAGE_ID)
 
     init_data = har_data('humanssuck.net.har')
 
     # Throws PageNotFoundException with bad page ID
     with pytest.raises(PageNotFoundError):
-        page = HarPage(BAD_PAGE_ID, har_data=init_data)
+        assert HarPage(BAD_PAGE_ID, har_data=init_data)
 
     # Make sure it can load with either har_data or a parser
     page = HarPage(PAGE_ID, har_data=init_data)
     assert isinstance(page, HarPage)
+    assert repr(page) == "ID: page_3, URL: http://humanssuck.net/"
     parser = HarParser(init_data)
     page = HarPage(PAGE_ID, har_parser=parser)
     assert isinstance(page, HarPage)
@@ -34,20 +35,20 @@ def test_init(har_data):
     # old school here.
     for index in range(0, len(page.entries)):
         if index != len(page.entries) - 1:
-            current_date = dateutil.parser.parse(
-                page.entries[index]['startedDateTime'])
-            next_date = dateutil.parser.parse(
-                page.entries[index + 1]['startedDateTime'])
+            current_date = page.entries[index].startTime
+            next_date = page.entries[index + 1].startTime
             assert current_date <= next_date
 
+
 def test_no_title(har_data):
-    '''
+    """
     A page with no title should set the title property as an empty string
-    instead of throwing an exeption.
-    '''
+    instead of throwing an exception.
+    """
     init_data = har_data('no_title.har')
     page = HarPage(PAGE_ID, har_data=init_data)
     assert page.title == ''
+
 
 def test_filter_entries(har_data):
     """
@@ -60,14 +61,14 @@ def test_filter_entries(har_data):
     entries = page.filter_entries(request_type='.*ET')
     assert len(entries) == 4
     for entry in entries:
-        assert entry['request']['method'] == 'GET'
+        assert entry.request.method == entry["request"]["method"] == 'GET'
 
     # Filter by request type and content_type
     entries = page.filter_entries(request_type='.*ET', content_type='image.*')
     assert len(entries) == 1
     for entry in entries:
-        assert entry['request']['method'] == 'GET'
-        for header in entry['response']['headers']:
+        assert entry.request.method == entry["request"]["method"] == 'GET'
+        for header in entry.request.headers:
             if header['name'] == 'Content-Type':
                 assert re.search('image.*', header['value'])
 
@@ -76,9 +77,12 @@ def test_filter_entries(har_data):
                                   status_code='2.*')
     assert len(entries) == 1
     for entry in entries:
-        assert entry['request']['method'] == 'GET'
-        assert re.search('2.*', str(entry['response']['status']))
-        for header in entry['response']['headers']:
+        assert entry.request.method == entry["request"]["method"] == 'GET'
+        assert re.search('2.*', str(entry.response.status))
+        for header in entry.response.headers:
+            if header['name'] == 'Content-Type':
+                assert re.search('image.*', header['value'])
+        for header in entry["response"]["headers"]:
             if header['name'] == 'Content-Type':
                 assert re.search('image.*', header['value'])
 
@@ -88,6 +92,8 @@ def test_filter_entries(har_data):
     assert len(entries) == 0
     entries = page.filter_entries(request_type='.*ET', content_type='image.*',
                                   status_code='3.*')
+    assert len(entries) == 0
+
 
 def test_filter_entries_load_time(har_data):
     """
@@ -122,7 +128,36 @@ def test_entries(har_data):
     page = HarPage(PAGE_ID, har_data=init_data)
 
     for entry in page.entries:
-        assert entry['pageref'] == page.page_id
+        assert entry.pageref == entry["pageref"] == page.page_id
+
+
+@pytest.mark.skipif(six.PY3, reason="Runs with Python 2")
+def test_iteration_python2(har_data):
+    init_data = har_data('humanssuck.net.har')
+    page = HarPage(PAGE_ID, har_data=init_data)
+    entries = [x for x in page]
+    assert len(entries) == 4
+    iter_object = iter(page)
+    assert str(next(iter_object)) == 'HarEntry for http://humanssuck.net/'
+    assert str(next(iter_object)) == 'HarEntry for http://humanssuck.net/test.css'
+    assert str(next(iter_object)) == 'HarEntry for http://humanssuck.net/screen_login.gif'
+    assert str(next(iter_object)) == 'HarEntry for http://humanssuck.net/jquery-1.7.1.min.js'
+    with pytest.raises(StopIteration):
+        assert next(iter_object)
+
+
+@pytest.mark.skipif(six.PY2, reason="Runs with Python 3")
+def test_iteration_python2(har_data):
+    init_data = har_data('humanssuck.net.har')
+    page = HarPage(PAGE_ID, har_data=init_data)
+    entries = [x for x in page]
+    assert len(entries) == 4
+    assert str(next(page)) == 'HarEntry for http://humanssuck.net/'
+    assert str(next(page)) == 'HarEntry for http://humanssuck.net/test.css'
+    assert str(next(page)) == 'HarEntry for http://humanssuck.net/screen_login.gif'
+    assert str(next(page)) == 'HarEntry for http://humanssuck.net/jquery-1.7.1.min.js'
+    with pytest.raises(StopIteration):
+        assert next(page)
 
 
 def test_file_types(har_data):
@@ -151,10 +186,11 @@ def test_request_types(har_data):
 
     # Check request type lists
     for req in page.get_requests:
-        assert req['request']['method'] == 'GET'
+        assert req.request.method == req["request"]["method"] == 'GET'
 
     for req in page.post_requests:
-        assert req['request']['method'] == 'POST'
+        assert req.request.method == req["request"]["method"]  == 'POST'
+
 
 def test_sizes_trans(har_data):
     init_data = har_data('cnn-chrome.har')
@@ -168,6 +204,7 @@ def test_sizes_trans(har_data):
     # TODO - Get test data for audio and video
     assert page.audio_size_trans == 0
     assert page.video_size_trans == 0
+
 
 def test_sizes(har_data):
     init_data = har_data('humanssuck.net.har')
@@ -191,7 +228,7 @@ def test_load_times(har_data):
     init_data = har_data('humanssuck.net.har')
     page = HarPage(PAGE_ID, har_data=init_data)
     # Check initial page load
-    assert page.actual_page['request']['url'] == 'http://humanssuck.net/'
+    assert page.actual_page.request.url == 'http://humanssuck.net/'
 
     # Check initial page load times
     assert page.initial_load_time == 153
@@ -235,7 +272,7 @@ def test_url(har_data):
 
 
 def _correct_file_type(entry, file_types):
-    for header in entry['response']['headers']:
+    for header in entry.response.headers:
         if header['name'] == 'Content-Type':
             return any(ft in header['value'] for ft in file_types)
 

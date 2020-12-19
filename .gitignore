@@ -8,6 +8,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
+.venv
 build/
 develop-eggs/
 dist/
@@ -57,3 +58,6 @@ target/
 
 # Vim stuff
 .ropeproject/
+
+# Pycharm settings
+.idea
