@@ -59,7 +59,7 @@ jobs:
       run: py.test --cov haralyzer tests/ -vv
 
     - name: Report to Coveralls
-      run: COVERALLS_PARALLEL=true coveralls
+      run: COVERALLS_REPO_TOKEN=${{ secrets.COVERALLS }} COVERALLS_PARALLEL=true coveralls
 
   Finish:
     needs: Lint
@@ -67,5 +67,5 @@ jobs:
     steps:
       - name: Coveralls Finished
         run: |
-          curl https://coveralls.io/webhook -d "payload[build_num]=${{ github.sha }}&payload[status]=done"
+          curl https://coveralls.io/webhook?repo_token=${{ secrets.COVERALLS }} -d "payload[build_num]=${{ github.sha }}&payload[status]=done"
 
