@@ -59,7 +59,11 @@ jobs:
       run: py.test --cov haralyzer tests/ -vv
 
     - name: Report to Coveralls
-      run: COVERALLS_REPO_TOKEN=${{ secrets.COVERALLS }} COVERALLS_PARALLEL=true coveralls
+      run: coveralls
+      env:
+        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS }}
+        COVERALLS_PARALLEL: true
+
 
   Finish:
     needs: Lint
