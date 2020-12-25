@@ -3,5 +3,5 @@ bumpversion
 coverage==4.5.4
 pytest
 pytest-cov
-python-coveralls
+coveralls<2.0.0
 sphinx

@@ -61,7 +61,8 @@ jobs:
     - name: Report to Coveralls
       run: coveralls
       env:
-        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        COVERALLS_FLAG_NAME: ${{ matrix.os }}-${{ matrix.python-version }}
         COVERALLS_PARALLEL: true
 
 
@@ -69,7 +70,8 @@ jobs:
     needs: Lint
     runs-on: ubuntu-latest
     steps:
-      - name: Coveralls Finished
-        run: |
-          curl https://coveralls.io/webhook?repo_token=${{ secrets.COVERALLS }} -d "payload[build_num]=${{ github.sha }}&payload[status]=done"
+    - name:
+      run: coveralls --finish
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
