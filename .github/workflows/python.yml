@@ -61,7 +61,7 @@ jobs:
     - name: Report to Coveralls
       run: coveralls
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS }}
         COVERALLS_FLAG_NAME: ${{ matrix.os }}-${{ matrix.python-version }}
         COVERALLS_PARALLEL: true
 
@@ -73,5 +73,5 @@ jobs:
     - name:
       run: coveralls --finish
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS }}
 
