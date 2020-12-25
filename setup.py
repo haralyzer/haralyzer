@@ -37,7 +37,7 @@ setup(
         extras_require={
         },
         project_urls={
-            "Changelog": "hhttps://github.com/haralyzer/haralyzer/blob/master/HISTORY.rst",
+            "Changelog": "https://github.com/haralyzer/haralyzer/blob/master/HISTORY.rst",
             "Issues": "https://github.com/haralyzer/haralyzer/issues"
         },
         license='MIT',
