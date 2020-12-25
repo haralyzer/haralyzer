@@ -76,9 +76,12 @@ jobs:
   Finish:
     needs: Lint
     runs-on: ubuntu-latest
+    container: python:3-slim
     steps:
-    - name:
-      run: coveralls --finish
+    - name: Finish Coveralls
+      run: |
+        pip3 install --upgrade coveralls
+        coveralls --finish
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS }}
 
