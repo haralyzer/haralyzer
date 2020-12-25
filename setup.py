@@ -27,7 +27,7 @@ setup(
         author='Justin Crown',
         author_email='justincrown1@gmail.com',
         url='https://github.com/haralyzer/haralyzer',
-        download_url='https://github.com/haralyzer/haralyzer/tarball/1.9.0',
+        download_url='https://github.com/haralyzer/haralyzer/releases/latest',
         packages=[
             'haralyzer'
         ],
@@ -35,6 +35,10 @@ setup(
         tests_require=test_requirements,
         install_requires=install_reqs,
         extras_require={
+        },
+        project_urls={
+            "Changelog": "hhttps://github.com/haralyzer/haralyzer/blob/master/HISTORY.rst",
+            "Issues": "https://github.com/haralyzer/haralyzer/issues"
         },
         license='MIT',
         zip_safe=False,

@@ -81,15 +81,4 @@ jobs:
         run: |
           curl https://coveralls.io/webhook?repo_token=${{ secrets.COVERALLS }} -d "payload[build_num]=${{ github.sha }}&payload[status]=done"
 
-#  Finish:
-#    needs: Lint
-#    runs-on: ubuntu-latest
-#    container: python:3-slim
-#    steps:
-#    - name: Finish Coveralls
-#      run: |
-#        pip3 install --upgrade coveralls
-#        coveralls --finish
-#      env:
-#        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS }}
 
