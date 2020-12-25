@@ -26,8 +26,8 @@ setup(
         long_description=readme,
         author='Justin Crown',
         author_email='justincrown1@gmail.com',
-        url='https://github.com/mrname/haralyzer',
-        download_url='https://github.com/mrname/haralyzer/tarball/1.0',
+        url='https://github.com/haralyzer/haralyzer',
+        download_url='https://github.com/haralyzer/haralyzer/releases/latest',
         packages=[
             'haralyzer'
         ],
@@ -35,6 +35,10 @@ setup(
         tests_require=test_requirements,
         install_requires=install_reqs,
         extras_require={
+        },
+        project_urls={
+            "Changelog": "hhttps://github.com/haralyzer/haralyzer/blob/master/HISTORY.rst",
+            "Issues": "https://github.com/haralyzer/haralyzer/issues"
         },
         license='MIT',
         zip_safe=False,
@@ -46,5 +50,9 @@ setup(
             'Natural Language :: English',
             'Programming Language :: Python :: 3',
             'Programming Language :: Python :: 2.7',
+            'Programming Language :: Python :: 3.6',
+            'Programming Language :: Python :: 3.7',
+            'Programming Language :: Python :: 3.8',
+            'Programming Language :: Python :: 3.9',
         ],
 )

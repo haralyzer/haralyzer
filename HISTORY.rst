@@ -3,6 +3,16 @@
 History
 -------
 
+1.9.0 (2020-12-24)
+++++++++++++++++++
+
+* Feature - Creation of HarEntry class to get all the entries from a HarPage.
+  Provided by @Cyb3r-Jak3
+
+* Switched from Travis-CI to GitHub Actions.
+  Provided by @Cyb3r-Jak3
+
+
 1.8.0 (2019-10-11)
 ++++++++++++++++++
 
