@@ -346,7 +346,7 @@ class HarPage(object):
 
         :param request_type: ``str`` of request type (i.e. - GET or POST)
         :param content_type: ``str`` of regex to use for finding content type
-        :param status_code: ``int`` of the desired status code
+        :param status_code: ``str`` of the desired status code
         :param http_version: ``str`` of HTTP version of request
         :param load_time__gt: ``int`` of a load time in milliseconds. If
             provided, an entry whose load time is less than this value will
