@@ -6,6 +6,7 @@ Haralyzer
     :target: http://badge.fury.io/py/haralyzer
 
 .. image:: https://img.shields.io/pypi/dm/haralyzer
+   :target: https://pypi.org/project/haralyzer/
     :alt: PyPI - Downloads
 
 .. image:: https://img.shields.io/pypi/pyversions/haralyzer
@@ -37,3 +38,10 @@ on a HAR file. ``HarParser()`` represents a full file (which might have
 multiple pages). ``HarPage()`` represents a single page from said file.
 ``HarEntry()`` represents an entry in a ``HarPage()``, and there are are multiple entries per page.
 Each ``HarEntry`` has a request and response that contains items such as the headers, status code, timings, etc
+
+
+Contributing
+------------
+
+We are always looking for new people to get involved. If you are looking to get involved, then fork this repo and start making changes that you would like to see.
+If you are making any coding changes, then please create tests (we use pytest) for your code. Documentation should also be created for your additions. You can then submit a PR and we will review it.
