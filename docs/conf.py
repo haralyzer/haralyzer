@@ -250,7 +250,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'haralyzer', u'haralyzer Documentation',
-   u'Justin Crown', 'haralyzer', 'One line description of project.',
+   u'Justin Crown', 'haralyzer', 'A Python framework for getting useful stuff out of HAR files.',
    'Miscellaneous'),
 ]
 
