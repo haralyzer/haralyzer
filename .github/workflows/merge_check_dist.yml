@@ -1,0 +1,28 @@
+name: Dist Checking
+
+on:
+  pull_request:
+    branches:
+      - master
+
+
+jobs:
+  Lint:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Linux Cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: dist-check
+        restore-keys: dist-check
+
+    - name: Check Build
+      run: make check-dist
