@@ -63,8 +63,10 @@ jobs:
         pip install . -r requirements_dev.txt
 
     - name: Lint
-      if: contains(matrix.python-version, "3)
-      run: make lint
+      if: contains(matrix.python-version,'3')
+      run: |
+        pip install bandit black>=20.8b1
+        make lint
 
     - name: Tests
       run: make test
