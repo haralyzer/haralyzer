@@ -63,6 +63,7 @@ jobs:
         pip install . -r requirements_dev.txt
 
     - name: Lint
+      if: contains(matrix.python-version, "3)
       run: make lint
 
     - name: Tests
