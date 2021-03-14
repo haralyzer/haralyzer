@@ -9,7 +9,7 @@ on:
     paths:
       - tests/**
       - haralyzer/**
-      - .github/workflows
+      - .github/workflows/**
   pull_request:
     branches:
       - master
