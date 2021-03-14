@@ -6,6 +6,9 @@ on:
       - '**'
     tags-ignore:
       - '**'
+    paths:
+      - tests/**
+      - haralyzer/**
   pull_request:
     branches:
       - master
@@ -63,7 +66,7 @@ jobs:
         pip install . -r requirements_dev.txt
 
     - name: Lint
-      if: contains(matrix.python-version,'3')
+      if: startsWith(matrix.python-version,'3')
       run: |
         pip install bandit black>=20.8b1
         make lint
