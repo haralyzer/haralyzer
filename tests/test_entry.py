@@ -71,7 +71,7 @@ def test_response(har_data):
     assert response.httpVersion == "HTTP/1.1"
     assert response.lastModified == "Mon, 23 Feb 2015 03:22:35 GMT"
     assert response.mimeType == "text/html"
-    assert response.redirectURL is None
+    assert response.redirectURL == ""
     assert response.status == 200
     assert response.statusText == "OK"
     assert len(response.text) == 308

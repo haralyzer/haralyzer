@@ -347,7 +347,11 @@ class HarPage(object):
             # TODO - should we return a slightly fake total load time to
             # accommodate HAR data that cannot understand things like JS
             # rendering or just throw a warning?
-            # return self.get_load_time(request_type='.*',content_type='.*', status_code='.*', asynchronous=False)
+            # return self.get_load_time(
+            #   request_type='.*',
+            #   content_type='.*',
+            #   status_code='.*',
+            #   asynchronous=False)
         return self.get_load_time(content_type=self.asset_types[asset_type])
 
     def filter_entries(
@@ -480,6 +484,7 @@ class HarPage(object):
 
     @cached_property
     def hostname(self):
+        # pylint: disable=R1710
         """
         Hostname of the initial request
         """
@@ -553,6 +558,7 @@ class HarPage(object):
 
     @cached_property
     def actual_page(self):
+        # pylint: disable=R1710
         """
         Returns the first entry object that does not have a redirect status,
         indicating that it is the actual page we care about (after redirects).
