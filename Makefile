@@ -20,4 +20,11 @@ docs:
 	$(MAKE) -C docs html
 
 test:
-	py.test tests/
+	py.test --cov haralyzer tests/ -vv
+
+
+lint:
+	black --check haralyzer
+	pylint --disable=R0205,E0401,C0103,E1101,R0904,R1725,W0511,E0611 haralyzer
+	flake8 --statistics --show-source --count haralyzer
+	bandit -r haralyzer
