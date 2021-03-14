@@ -1,4 +1,7 @@
+"""Contains the mutlihar parse object"""
 import sys
+from cached_property import cached_property
+from .assets import HarParser
 
 if sys.version_info < (3, 4):
     from backports.statistics import stdev
@@ -7,8 +10,6 @@ else:
     from statistics import stdev
     from statistics import mean
 
-from cached_property import cached_property
-from .assets import HarParser
 
 DECIMAL_PRECISION = 0
 
@@ -21,8 +22,7 @@ class MultiHarParser(object):
     testing.
     """
 
-    def __init__(self, har_data, page_id=None,
-                 decimal_precision=DECIMAL_PRECISION):
+    def __init__(self, har_data, page_id=None, decimal_precision=DECIMAL_PRECISION):
         """
         :param har_data: A ``list`` of ``dict`` representing the JSON
         of a HAR file. See the docstring of HarParser.__init__ for more detail.
@@ -45,7 +45,7 @@ class MultiHarParser(object):
         :param asset_type: ``str`` of the asset type to return load times for
         """
         load_times = []
-        search_str = '{0}_load_time'.format(asset_type)
+        search_str = "{0}_load_time".format(asset_type)
         for har_page in self.pages:
             val = getattr(har_page, search_str, None)
             if val is not None:
@@ -63,20 +63,22 @@ class MultiHarParser(object):
         """
         load_times = []
         # Handle edge cases like TTFB
-        if asset_type == 'ttfb':
+        if asset_type == "ttfb":
             for page in self.pages:
                 if page.time_to_first_byte is not None:
                     load_times.append(page.time_to_first_byte)
-        elif asset_type not in self.asset_types and asset_type != 'page':
-            raise ValueError('asset_type must be one of:\nttfb\n{0}'.format(
-                    '\n'.join(self.asset_types)))
+        elif asset_type not in self.asset_types and asset_type != "page":
+            raise ValueError(
+                "asset_type must be one of:\nttfb\n{0}".format(
+                    "\n".join(self.asset_types)
+                )
+            )
         else:
             load_times = self.get_load_times(asset_type)
 
         if not load_times or not sum(load_times):
             return 0
-        return round(stdev(load_times),
-                     self.decimal_precision)
+        return round(stdev(load_times), self.decimal_precision)
 
     @property
     def pages(self):
@@ -117,7 +119,7 @@ class MultiHarParser(object):
         """
         The average total load time for all runs (not weighted).
         """
-        load_times = self.get_load_times('page')
+        load_times = self.get_load_times("page")
         return round(mean(load_times), self.decimal_precision)
 
     @cached_property
@@ -125,7 +127,7 @@ class MultiHarParser(object):
         """
         Returns aggregate javascript load time.
         """
-        load_times = self.get_load_times('js')
+        load_times = self.get_load_times("js")
         return round(mean(load_times), self.decimal_precision)
 
     @cached_property
@@ -133,7 +135,7 @@ class MultiHarParser(object):
         """
         Returns aggregate css load time for all pages.
         """
-        load_times = self.get_load_times('css')
+        load_times = self.get_load_times("css")
         return round(mean(load_times), self.decimal_precision)
 
     @cached_property
@@ -141,7 +143,7 @@ class MultiHarParser(object):
         """
         Returns aggregate image load time for all pages.
         """
-        load_times = self.get_load_times('image')
+        load_times = self.get_load_times("image")
         return round(mean(load_times), self.decimal_precision)
 
     @cached_property
@@ -149,7 +151,7 @@ class MultiHarParser(object):
         """
         Returns aggregate html load time for all pages.
         """
-        load_times = self.get_load_times('html')
+        load_times = self.get_load_times("html")
         return round(mean(load_times), self.decimal_precision)
 
     @cached_property
@@ -157,7 +159,7 @@ class MultiHarParser(object):
         """
         Returns aggregate audio load time for all pages.
         """
-        load_times = self.get_load_times('audio')
+        load_times = self.get_load_times("audio")
         return round(mean(load_times), self.decimal_precision)
 
     @cached_property
@@ -165,5 +167,5 @@ class MultiHarParser(object):
         """
         Returns aggregate video load time for all pages.
         """
-        load_times = self.get_load_times('video')
+        load_times = self.get_load_times("video")
         return round(mean(load_times), self.decimal_precision)

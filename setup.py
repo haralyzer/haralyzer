@@ -15,7 +15,12 @@ if sys.version_info < (3, 4):
         "backports.statistics",
     ])
 test_requirements = ['pytest-cov',
-                     'python-coveralls', ]
+                     'python-coveralls',
+                     "bandit",
+                     "black>=20.8b1",
+                     "flake8",
+                     "pylint",
+                     ]
 
 readme = open('README.rst').read()
 
@@ -38,7 +43,8 @@ setup(
         },
         project_urls={
             "Changelog": "https://github.com/haralyzer/haralyzer/blob/master/HISTORY.rst",
-            "Issues": "https://github.com/haralyzer/haralyzer/issues"
+            "Issues": "https://github.com/haralyzer/haralyzer/issues",
+            "Releases": "https://github.com/haralyzer/haralyzer/releases"
         },
         license='MIT',
         zip_safe=False,

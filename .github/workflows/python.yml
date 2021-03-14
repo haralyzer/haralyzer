@@ -62,8 +62,11 @@ jobs:
         pip install --upgrade pip wheel
         pip install . -r requirements_dev.txt
 
+    - name: Lint
+      run: make lint
+
     - name: Tests
-      run: py.test --cov haralyzer tests/ -vv
+      run: make test
 
     - name: Report to Coveralls
       run: coveralls

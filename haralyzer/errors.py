@@ -4,4 +4,4 @@ Custom exceptions for good ol haralyzer.
 
 
 class PageNotFoundError(AttributeError):
-    pass
+    """Error raised in the Page is not found"""

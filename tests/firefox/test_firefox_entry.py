@@ -73,7 +73,7 @@ def test_response(har_data):
     assert response.httpVersion == "HTTP/2"
     assert response.lastModified == "Sat, 29 Aug 2020 20:36:06 GMT"
     assert response.mimeType == "text/html; charset=utf-8"
-    assert response.redirectURL is None
+    assert response.redirectURL == ""
     assert response.status == 200
     assert response.statusText == "OK"
     # It needs to be able to be two values as locally I tested and got 18989 but travis.ci gets 18960

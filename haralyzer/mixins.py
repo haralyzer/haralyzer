@@ -4,16 +4,18 @@ from six.moves.collections_abc import MutableMapping
 
 
 class GetHeaders(object):
+    # pylint: disable=R0903
     """Mixin to get a header"""
+
     def get_header_value(self, name):
         """
         Returns the header value of the header defined in ``name``
 
         :param name: ``str`` name of the header to get the value of
         """
-        for x in self.raw_entry["headers"]:
-            if x["name"].lower() == name.lower():
-                return x["value"]
+        for header in self.raw_entry["headers"]:
+            if header["name"].lower() == name.lower():
+                return header["value"]
 
 
 class MimicDict(MutableMapping):
@@ -36,10 +38,14 @@ class MimicDict(MutableMapping):
 
 
 class HttpTransaction(GetHeaders, MimicDict):
+    """Class the represents a request or response"""
+
     def __init__(self, entry):
         self.raw_entry = entry
+        super(HttpTransaction, self).__init__()
 
     # Base class gets properties that belong to both request/response
     @cached_property
     def headers(self):
+        """Get headers from the entry"""
         return self.raw_entry["headers"]
