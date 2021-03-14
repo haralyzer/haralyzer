@@ -298,10 +298,11 @@ class HarPage(object):
         return iter(self.entries)
 
     def __next__(self):
+        # pylint: disable=W0707
         try:
             result = self.entries[self._index]
-        except IndexError as err:
-            raise StopIteration from err
+        except IndexError:
+            raise StopIteration
         self._index += 1
         return result
 
