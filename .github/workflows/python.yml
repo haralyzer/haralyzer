@@ -22,12 +22,12 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-16.04, ubuntu-18.04, ubuntu-20.04, macos-10.15, windows-2016, windows-2019]
-        python-version: [2.7, 3.6, 3.7, 3.8, 3.9, 3.10.0-alpha.5, pypy-2.7, pypy-3.6, pypy-3.7]
+        python-version: [2.7, 3.6, 3.7, 3.8, 3.9, pypy-2.7, pypy-3.6, pypy-3.7]
         exclude:
           - os: macos-10.15
             python-version: pypy-2.7
           - os: windows-2016
-            python-version: pypy-2.7
+            python-version: pypy-2.7,
           - os: windows-2019
             python-version: pypy-2.7
     steps:
@@ -69,7 +69,6 @@ jobs:
     - name: Lint
       if: startsWith(matrix.python-version,'3')
       run: |
-        echo ${{ matrix.python-version }}
         pip install bandit black>=20.8b1
         make lint
 
