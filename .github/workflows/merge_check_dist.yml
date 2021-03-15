@@ -26,3 +26,12 @@ jobs:
 
     - name: Check Build
       run: make check-dist
+  Doc_Check:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Check Documentation
+        run: |
+          cd docs
+          make doctest
