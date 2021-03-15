@@ -2,7 +2,7 @@ HarEntry
 ++++++++
 
 The ``HarEntry()`` object contains useful information for each request. The main purpose is to have easy of use as it has a lot of attributes.
-Each entry also contains a ``Request()`` and ``Response()`` which are styled off of the requests library. ::
+Each entry also contains a ``Request()`` and ``Response()`` which are styled off of the requests library.::
 
     import json
     from haralyzer import HarPage
