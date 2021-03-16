@@ -1,37 +1,67 @@
 name: Dist Checking
+#
+#on:
+#  pull_request:
+#    branches:
+#      - master
 
 on:
-  pull_request:
+  push:
     branches:
-      - master
+      - '**'
+    tags-ignore:
+      - '**'
+    paths:
+      - tests/**
+      - haralyzer/**
+      - .github/workflows/**
 
 
 jobs:
   Lint:
-    runs-on: ubuntu-20.04
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-16.04, ubuntu-18.04, ubuntu-20.04, macos-10.15, windows-2016, windows-2019]
+        python-version: [2.7, 3.6, 3.7, 3.8, 3.9, pypy-2.7, pypy-3.6, pypy-3.7]
+        exclude:
+          - os: macos-10.15
+            python-version: pypy-2.7
+          - os: windows-2016
+            python-version: pypy-2.7
+          - os: windows-2019
+            python-version: pypy-2.7
     steps:
     - uses: actions/checkout@v2
 
-    - name: Set up Python
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
-        python-version: 3.8
+        python-version: ${{ matrix.python-version }}
 
     - name: Linux Cache
       uses: actions/cache@v2
+      if: startsWith(runner.os, 'Linux')
       with:
         path: ~/.cache/pip
-        key: dist-check
-        restore-keys: dist-check
+        key: ${{ runner.os }}-${{ matrix.python-version}}-${{ hashFiles('**/requirements.txt', '**/requirements-dev.txts') }}
+
+    - name: MacOS Cache
+      uses: actions/cache@v2
+      if: startsWith(runner.os, 'macOS')
+      with:
+        path: ~/Library/Caches/pip
+        key: ${{ runner.os }}-${{ matrix.python-version}}-${{ hashFiles('**/requirements.txt', '**/requirements-dev.txts') }}
+
+
+    - name: Windows Cache
+      uses: actions/cache@v2
+      if: startsWith(runner.os, 'Windows')
+      with:
+        path: ~\AppData\Local\pip\Cache
+        key: ${{ runner.os }}-${{ matrix.python-version}}-${{ hashFiles('**/requirements.txt', '**/requirements-dev.txts') }}
 
     - name: Check Build
       run: make check-dist
-  Doc_Check:
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v2
 
-      - name: Check Documentation
-        run: |
-          cd docs
-          make doctest
