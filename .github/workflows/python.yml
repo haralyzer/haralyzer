@@ -9,11 +9,7 @@ on:
     paths:
       - tests/**
       - haralyzer/**
-      - .github/workflows/**
-  pull_request:
-    branches:
-      - master
-
+      - .github/workflows/python.yml
 
 jobs:
   Lint:

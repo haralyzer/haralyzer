@@ -11,10 +11,6 @@ on:
       - '**'
     tags-ignore:
       - '**'
-    paths:
-      - tests/**
-      - haralyzer/**
-      - .github/workflows/**
 
 
 jobs:
