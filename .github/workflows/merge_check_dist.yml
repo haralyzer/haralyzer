@@ -1,0 +1,52 @@
+name: Dist Checking
+
+on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - .github/workflows/merge_check_dist.yml
+
+
+
+jobs:
+  Lint:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-16.04, ubuntu-18.04, ubuntu-20.04, macos-10.15, windows-2016, windows-2019]
+        python-version: [3.6, 3.7, 3.8, 3.9, pypy-3.6, pypy-3.7]
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Linux Cache
+      uses: actions/cache@v2
+      if: startsWith(runner.os, 'Linux')
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-${{ matrix.python-version}}-${{ hashFiles('**/requirements.txt', '**/requirements-dev.txts') }}
+
+    - name: MacOS Cache
+      uses: actions/cache@v2
+      if: startsWith(runner.os, 'macOS')
+      with:
+        path: ~/Library/Caches/pip
+        key: ${{ runner.os }}-${{ matrix.python-version}}-${{ hashFiles('**/requirements.txt', '**/requirements-dev.txts') }}
+
+
+    - name: Windows Cache
+      uses: actions/cache@v2
+      if: startsWith(runner.os, 'Windows')
+      with:
+        path: ~\AppData\Local\pip\Cache
+        key: ${{ runner.os }}-${{ matrix.python-version}}-${{ hashFiles('**/requirements.txt', '**/requirements-dev.txts') }}
+
+    - name: Check Build
+      run: make check-dist
+

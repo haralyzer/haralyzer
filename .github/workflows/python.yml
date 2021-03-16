@@ -6,10 +6,10 @@ on:
       - '**'
     tags-ignore:
       - '**'
-  pull_request:
-    branches:
-      - master
-
+    paths:
+      - tests/**
+      - haralyzer/**
+      - .github/workflows/python.yml
 
 jobs:
   Lint:
@@ -62,8 +62,14 @@ jobs:
         pip install --upgrade pip wheel
         pip install . -r requirements_dev.txt
 
+    - name: Lint
+      if: startsWith(matrix.python-version,'3')
+      run: |
+        pip install bandit black>=20.8b1
+        make lint
+
     - name: Tests
-      run: py.test --cov haralyzer tests/ -vv
+      run: make test
 
     - name: Report to Coveralls
       run: coveralls

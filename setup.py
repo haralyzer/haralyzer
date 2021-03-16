@@ -8,14 +8,19 @@ except ImportError:
 
 install_reqs = ['cached-property',
                 'python-dateutil',
-                "six >= 1.13.0"]
+                'six >= 1.13.0']
 
 if sys.version_info < (3, 4):
     install_reqs.extend([
-        "backports.statistics",
+        'backports.statistics',
     ])
 test_requirements = ['pytest-cov',
-                     'python-coveralls', ]
+                     'coveralls',
+                     'bandit',
+                     'black>=20.8b1',
+                     'flake8',
+                     'pylint',
+                     ]
 
 readme = open('README.rst').read()
 
@@ -24,6 +29,7 @@ setup(
         version='1.9.0',
         description='A python framework for getting useful stuff out of HAR files',
         long_description=readme,
+        long_description_content_type="text/x-rst",
         author='Justin Crown',
         author_email='justincrown1@gmail.com',
         url='https://github.com/haralyzer/haralyzer',
@@ -37,8 +43,9 @@ setup(
         extras_require={
         },
         project_urls={
-            "Changelog": "https://github.com/haralyzer/haralyzer/blob/master/HISTORY.rst",
-            "Issues": "https://github.com/haralyzer/haralyzer/issues"
+            'Changelog': 'https://github.com/haralyzer/haralyzer/blob/master/HISTORY.rst',
+            'Issues': 'https://github.com/haralyzer/haralyzer/issues',
+            'Releases': 'https://github.com/haralyzer/haralyzer/releases'
         },
         license='MIT',
         zip_safe=False,

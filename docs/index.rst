@@ -44,6 +44,7 @@ Advanced
 
    advanced/harpage
    advanced/asset_timeline
+   haralyzer
 
 
 

@@ -20,4 +20,18 @@ docs:
 	$(MAKE) -C docs html
 
 test:
-	py.test tests/
+	py.test --cov haralyzer tests/ -vv
+
+
+lint:
+	black --check haralyzer
+	pylint --disable=R0205,E0401,C0103,E1101,R0904,R1725,W0511,E0611,R1710 haralyzer
+	flake8 --max-line-length 89 --statistics --show-source --count haralyzer
+	bandit -r haralyzer
+
+
+check-dist:
+	pip install twine wheel --quiet
+	python setup.py egg_info
+	python setup.py sdist bdist_wheel
+	twine check --strict dist/*

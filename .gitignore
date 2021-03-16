@@ -52,7 +52,6 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 docs/modules.rst
-docs/haralyzer.rst
 
 # PyBuilder
 target/
