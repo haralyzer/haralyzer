@@ -56,7 +56,8 @@ class MultiHarParser:
 
         :param asset_type: The asset type to calculate standard deviation for.
         :type asset_type: str
-        :returns: Standard deviation, which can be an `int` or `float` depending on the self.decimal_precision
+        :returns: Standard deviation, which can be an `int` or `float`
+            depending on the self.decimal_precision
         :rtype: int, float
         """
         load_times = []
@@ -79,7 +80,7 @@ class MultiHarParser:
         return round(stdev(load_times), self.decimal_precision)
 
     @property
-    def pages(self) -> List['HarPage']:
+    def pages(self) -> List["HarPage"]:  # noqa: F821
         """
         Aggregate pages of all the parser objects.
 

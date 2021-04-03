@@ -1,3 +1,4 @@
+# pylint: disable=C0302
 """
 Provides all of the main functional classes for analyzing HAR files
 """
@@ -60,7 +61,7 @@ class HarParser:
     @staticmethod
     @convert_to_entry
     def match_headers(
-        entry: 'HarEntry', header_type: str, header: str, value: str, regex: bool = True
+        entry: "HarEntry", header_type: str, header: str, value: str, regex: bool = True
     ) -> bool:
         # pylint: disable=R0913
         """
@@ -103,7 +104,7 @@ class HarParser:
     @staticmethod
     @convert_to_entry
     def match_content_type(
-        entry: 'HarEntry', content_type: str, regex: bool = True
+        entry: "HarEntry", content_type: str, regex: bool = True
     ) -> bool:
         """
         Matches the content type of a request using the mimeType metadata.
@@ -129,7 +130,7 @@ class HarParser:
     @staticmethod
     @convert_to_entry
     def match_request_type(
-        entry: 'HarEntry', request_type: str, regex: bool = True
+        entry: "HarEntry", request_type: str, regex: bool = True
     ) -> bool:
         """
         Helper function that returns entries with a request type
@@ -154,7 +155,7 @@ class HarParser:
     @staticmethod
     @convert_to_entry
     def match_http_version(
-        entry: 'HarEntry', http_version: str, regex: bool = True
+        entry: "HarEntry", http_version: str, regex: bool = True
     ) -> bool:
         """
         Helper function that returns entries with a request type
@@ -180,7 +181,7 @@ class HarParser:
     @staticmethod
     @convert_to_entry
     def match_status_code(
-        entry: 'HarEntry', status_code: str, regex: bool = True
+        entry: "HarEntry", status_code: str, regex: bool = True
     ) -> bool:
         """
         Helper function that returns entries with a status code matching
@@ -202,7 +203,7 @@ class HarParser:
         return str(entry.response.status) == status_code
 
     @staticmethod
-    def create_asset_timeline(asset_list: List['HarEntry']) -> dict:
+    def create_asset_timeline(asset_list: List["HarEntry"]) -> dict:
         """
         Returns a `dict` of the timeline for the requested assets. The key is
         a datetime object (down to the millisecond) of ANY time where at least
@@ -236,7 +237,7 @@ class HarParser:
         return results
 
     @property
-    def pages(self) -> List['HarPage']:
+    def pages(self) -> List["HarPage"]:
         """
         This is a list of HarPage objects, each of which represents a page
         from the HAR file.
@@ -370,7 +371,7 @@ class HarPage:
         self._index += 1
         return result
 
-    def _get_asset_files(self, asset_type: str) -> List['HarEntry']:
+    def _get_asset_files(self, asset_type: str) -> List["HarEntry"]:
         """
         Returns a list of all HarEntry object of a certain file type.
         :param asset_type: Asset type to filter for
@@ -443,7 +444,7 @@ class HarPage:
         http_version: str = None,
         load_time__gt: int = None,
         regex: bool = True,
-    ) -> List['HarEntry']:
+    ) -> List["HarEntry"]:
         # pylint: disable=R0913,W0105
         """
         Generate a list of entries with from criteria
@@ -553,7 +554,7 @@ class HarPage:
         return len(self.parser.create_asset_timeline(entries))
 
     @staticmethod
-    def get_total_size(entries: List['HarEntry']) -> int:
+    def get_total_size(entries: List["HarEntry"]) -> int:
         """
         Returns the total size of a collection of entries.
 
@@ -568,7 +569,7 @@ class HarPage:
         return size
 
     @staticmethod
-    def get_total_size_trans(entries: List['HarEntry']) -> int:
+    def get_total_size_trans(entries: List["HarEntry"]) -> int:
         """
         Returns the total size of a collection of entries - transferred.
 
@@ -612,7 +613,7 @@ class HarPage:
         return None
 
     @cached_property
-    def entries(self) -> List['HarEntry']:
+    def entries(self) -> List["HarEntry"]:
         """
         :return: All entries that make up the page
         :rtype: List[HarEntry]
@@ -652,7 +653,7 @@ class HarPage:
         return ttfb
 
     @cached_property
-    def get_requests(self) -> List['HarEntry']:
+    def get_requests(self) -> List["HarEntry"]:
         """
         Returns a list of GET requests, each of which is a HarEntry object
 
@@ -662,7 +663,7 @@ class HarPage:
         return self.filter_entries(request_type="get")
 
     @cached_property
-    def post_requests(self) -> List['HarEntry']:
+    def post_requests(self) -> List["HarEntry"]:
         """
         Returns a list of POST requests, each of which is an HarEntry object
 
@@ -674,7 +675,7 @@ class HarPage:
     # FILE TYPE PROPERTIES #
 
     @cached_property
-    def actual_page(self) -> 'HarEntry':  # pylint: disable=R1710
+    def actual_page(self) -> "HarEntry":  # pylint: disable=R1710
         """
         Returns the first entry object that does not have a redirect status,
         indicating that it is the actual page we care about (after redirects).
@@ -700,7 +701,7 @@ class HarPage:
     # Convenience properties. Easy accessible through the API, but even easier
     # to use as properties
     @cached_property
-    def image_files(self) -> List['HarEntry']:
+    def image_files(self) -> List["HarEntry"]:
         """
         All image files for a page
 
@@ -710,7 +711,7 @@ class HarPage:
         return self._get_asset_files("image")
 
     @cached_property
-    def css_files(self) -> List['HarEntry']:
+    def css_files(self) -> List["HarEntry"]:
         """
         All CSS files for a page
 
@@ -720,7 +721,7 @@ class HarPage:
         return self._get_asset_files("css")
 
     @cached_property
-    def text_files(self) -> List['HarEntry']:
+    def text_files(self) -> List["HarEntry"]:
         """
         All text files for a page
 
@@ -730,7 +731,7 @@ class HarPage:
         return self._get_asset_files("text")
 
     @cached_property
-    def js_files(self) -> List['HarEntry']:
+    def js_files(self) -> List["HarEntry"]:
         """
         All JS files for a page
 
@@ -740,7 +741,7 @@ class HarPage:
         return self._get_asset_files("js")
 
     @cached_property
-    def audio_files(self) -> List['HarEntry']:
+    def audio_files(self) -> List["HarEntry"]:
         """
         All audio file for a page
 
@@ -750,7 +751,7 @@ class HarPage:
         return self._get_asset_files("audio")
 
     @cached_property
-    def video_files(self) -> List['HarEntry']:
+    def video_files(self) -> List["HarEntry"]:
         """
         All video files for a page
 
@@ -760,7 +761,7 @@ class HarPage:
         return self._get_asset_files("video")
 
     @cached_property
-    def html_files(self) -> List['HarEntry']:
+    def html_files(self) -> List["HarEntry"]:
         """
         All HTML files for a page
 
