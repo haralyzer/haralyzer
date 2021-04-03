@@ -1,4 +1,5 @@
 """Creates the Request and Response sub class that are used by each entry"""
+from typing import Optional
 from cached_property import cached_property
 from .mixins import HttpTransaction
 
@@ -15,70 +16,109 @@ class Request(HttpTransaction):
     # Root Level values
 
     @cached_property
-    def bodySize(self):
-        """Body size of the request"""
+    def bodySize(self) -> int:
+        """
+        :return: Body size of the request
+        :rtype: int
+        """
         return self.raw_entry["bodySize"]
 
     @cached_property
-    def cookies(self):
-        """Cookies from the request"""
+    def cookies(self) -> list:
+        """
+        :return: Cookies from the request
+        :rtype: list
+        """
         return self.raw_entry["cookies"]
 
     @cached_property
-    def headersSize(self):
-        """Headers size from the request"""
+    def headersSize(self) -> int:
+        """
+        :return: Headers size from the request
+        :rtype: int
+        """
         return self.raw_entry["headersSize"]
 
     @cached_property
-    def httpVersion(self):
-        """HTTP version used in the request"""
+    def httpVersion(self) -> str:
+        """
+        :return: HTTP version used in the request
+        :rtype: str
+        """
         return self.raw_entry["httpVersion"]
 
     @cached_property
-    def method(self):
-        """HTTP method of the request"""
+    def method(self) -> str:
+        """
+        :return: HTTP method of the request
+        :rtype: str
+        """
         return self.raw_entry["method"]
 
     @cached_property
-    def queryString(self):
-        """Query string from the request"""
+    def queryString(self) -> list:
+        """
+        :return: Query string from the request
+        :rtype: list
+        """
         return self.raw_entry["queryString"]
 
     @cached_property
-    def url(self):
-        """URL of the request"""
+    def url(self) -> str:
+        """
+        :return: URL of the request
+        :rtype: str
+        """
         return self.raw_entry["url"]
 
     # Header Values
 
     @cached_property
-    def accept(self):
-        """HTTP Accept header"""
+    def accept(self) -> str:
+        """
+        :return: HTTP Accept header
+        :rtype: str
+        """
         return self.get_header_value("Accept")
 
     @cached_property
-    def cacheControl(self):
-        """HTTP CacheControl header"""
+    def cacheControl(self) -> str:
+        """
+        :return: HTTP CacheControl header
+        :rtype: str
+        """
         return self.get_header_value("Cache-Control")
 
     @cached_property
-    def encoding(self):
-        """HTTP Accept-Encoding Header"""
+    def encoding(self) -> str:
+        """
+        :return: HTTP Accept-Encoding Header
+        :rtype: str
+        """
         return self.get_header_value("Accept-Encoding")
 
     @cached_property
-    def host(self):
-        """HTTP Host header"""
+    def host(self) -> str:
+        """
+        :return: HTTP Host header
+        :rtype: str
+        """
         return self.get_header_value("Host")
 
     @cached_property
-    def language(self):
-        """HTTP language header"""
+    def language(self) -> str:
+        """
+        :return: HTTP language header
+        :rtype: str
+        """
         return self.get_header_value("Accept-Language")
 
     @cached_property
-    def userAgent(self):
-        """User Agent """
+    def userAgent(self) -> str:
+        """
+        :return: User Agent
+        :rtype: str
+        """
         return self.get_header_value("User-Agent")
 
 
@@ -94,73 +134,115 @@ class Response(HttpTransaction):
     # Root Level values
 
     @cached_property
-    def bodySize(self):
-        """Body Szie"""
+    def bodySize(self) -> int:
+        """
+        :return: Body Size
+        :rtype: int
+        """
         return self.raw_entry["bodySize"]
 
     @cached_property
-    def headersSize(self):
-        """Header size"""
+    def headersSize(self) -> int:
+        """
+        :return: Header size
+        :rtype: int
+        """
         return self.raw_entry["headersSize"]
 
     @cached_property
-    def httpVersion(self):
-        """HTTP Version"""
+    def httpVersion(self) -> str:
+        """
+        :return: HTTP Version
+        :rtype: str
+        """
         return self.raw_entry["httpVersion"]
 
     @cached_property
-    def redirectURL(self):
-        """Redirect URL"""
+    def redirectURL(self) -> Optional[str]:
+        """
+        :return: Redirect URL
+        :rtype: Optional[str]
+        """
         return self.raw_entry.get("redirectURL", None)
 
     @cached_property
-    def status(self):
-        """HTTP Status"""
+    def status(self) -> int:
+        """
+        :return:HTTP Status
+        :rtype: int
+        """
         return self.raw_entry["status"]
 
     @cached_property
-    def statusText(self):
-        """HTTP Status Text"""
+    def statusText(self) -> str:
+        """
+        :return: HTTP Status Text
+        :rtype: str
+        """
         return self.raw_entry["statusText"]
 
     # Header Values
 
     @cached_property
-    def cacheControl(self):
-        """Cache Control Header"""
+    def cacheControl(self) -> str:
+        """
+        :return: Cache Control Header
+        :rtype: str
+        """
         return self.get_header_value("cache-control")
 
     @cached_property
-    def contentSecurityPolicy(self):
-        """Content Security Policy Header"""
+    def contentSecurityPolicy(self) -> str:
+        """
+        :return: Content Security Policy Header
+        :rtype: str
+        """
         return self.get_header_value("content-security-policy")
 
     @cached_property
-    def contentSize(self):
-        """Content Size"""
+    def contentSize(self) -> int:
+        """
+        :return: Content Size
+        :rtype: int
+        """
         return self.raw_entry["content"]["size"]
 
     @cached_property
-    def contentType(self):
-        """Content Type"""
+    def contentType(self) -> str:
+        """
+        :return: Content Type
+        :rtype: str
+        """
         return self.get_header_value("content-type")
 
     @cached_property
-    def date(self):
-        """Date of response"""
+    def date(self) -> str:
+        """
+        :return:Date of response
+        :rtype: str
+        """
         return self.get_header_value("date")
 
     @cached_property
-    def lastModified(self):
-        """Last modified time"""
+    def lastModified(self) -> str:
+        """
+        :return: Last modified time
+        :rtype: str
+        """
         return self.get_header_value("last-modified")
 
     @cached_property
-    def mimeType(self):
-        """Mime Type of response"""
+    def mimeType(self) -> str:
+        """
+        :return: Mime Type of response
+        :rtype: str
+        """
         return self.raw_entry["content"]["mimeType"]
 
     @cached_property
-    def text(self):
-        """Response body"""
+    def text(self) -> str:
+        """
+        :return: Response body
+        :rtype: str
+        """
         return self.raw_entry["content"]["text"]

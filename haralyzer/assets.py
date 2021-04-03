@@ -5,6 +5,7 @@ Provides all of the main functional classes for analyzing HAR files
 import functools
 import datetime
 import re
+from typing import List, Optional
 
 from collections import Counter
 from cached_property import cached_property
@@ -12,7 +13,6 @@ from cached_property import cached_property
 # I know this import is stupid, but I cannot use dateutil.parser without it
 from dateutil import parser
 
-from .compat import iteritems
 from .errors import PageNotFoundError
 from .http import Request, Response
 from .mixins import MimicDict
@@ -38,13 +38,13 @@ def convert_to_entry(func):
     return inner
 
 
-class HarParser(object):
+class HarParser:
     """
     A Basic HAR parser that also adds helpful stuff for analyzing the
     performance of a web page.
     """
 
-    def __init__(self, har_data=None):
+    def __init__(self, har_data: dict = None):
         """
         :param har_data: a ``dict`` representing the JSON of a HAR file
         (i.e. - you need to load the HAR data into a string using json.loads or
@@ -59,7 +59,9 @@ class HarParser(object):
 
     @staticmethod
     @convert_to_entry
-    def match_headers(entry, header_type, header, value, regex=True):
+    def match_headers(
+        entry: 'HarEntry', header_type: str, header: str, value: str, regex: bool = True
+    ) -> bool:
         # pylint: disable=R0913
         """
         Function to match headers.
@@ -70,17 +72,19 @@ class HarParser(object):
 
         This function is case-insensitive
 
-        :param entry: ``HarEntry`` object to analyze
-        :param header_type: ``str`` of header type. Valid values:
+        :param entry: Entry to analyze
+        :type entry: HarEntry
+        :param header_type: Header type. Valid values: 'request', or 'response'
+        :type header_type: str
+        :param header: The header to search for
+        :type header: str
+        :param value: The value to search for
+        :type value: str
+        :param regex: Whether to use regex or exact match
+        :type regex: bool
 
-            * 'request'
-            * 'response'
-
-        :param header: ``str`` of the header to search for
-        :param value: ``str`` of value to search for
-        :param regex: ``bool`` indicating whether to use regex or exact match
-
-        :returns: a ``bool`` indicating whether a match was found
+        :returns: Whether a match was found
+        :rtype: bool
         """
         if header_type not in ["request", "response"]:
             raise ValueError(
@@ -98,13 +102,20 @@ class HarParser(object):
 
     @staticmethod
     @convert_to_entry
-    def match_content_type(entry, content_type, regex=True):
+    def match_content_type(
+        entry: 'HarEntry', content_type: str, regex: bool = True
+    ) -> bool:
         """
         Matches the content type of a request using the mimeType metadata.
 
-        :param entry: ``HarEntry`` object to analyze
-        :param content_type: ``str`` of regex to use for finding content type
-        :param regex: ``bool`` indicating whether to use regex or exact match.
+        :param entry: Entry to analyze
+        :type entry: HarEntry
+        :param content_type: Regex to use for finding content type
+        :type content_type: str
+        :param regex: Whether to use regex or exact match.
+        :type regex: bool
+        :return: Mime type matches
+        :rtype: bool
         """
         mime_type = entry.response.mimeType
 
@@ -117,14 +128,21 @@ class HarParser(object):
 
     @staticmethod
     @convert_to_entry
-    def match_request_type(entry, request_type, regex=True):
+    def match_request_type(
+        entry: 'HarEntry', request_type: str, regex: bool = True
+    ) -> bool:
         """
         Helper function that returns entries with a request type
         matching the given `request_type` argument.
 
-        :param entry: ``HarEntry`` object to analyze
-        :param request_type: ``str`` of request type to match
-        :param regex: ``bool`` indicating whether to use a regex or string match
+        :param entry: Entry to analyze
+        :type entry: HarEntry
+        :param request_type: Request type to match
+        :type request_type: str
+        :param regex: Whether to use a regex or string match
+        :type regex: bool
+        :return: Request method matches
+        :rtype: bool
         """
         if regex:
             return (
@@ -135,14 +153,21 @@ class HarParser(object):
 
     @staticmethod
     @convert_to_entry
-    def match_http_version(entry, http_version, regex=True):
+    def match_http_version(
+        entry: 'HarEntry', http_version: str, regex: bool = True
+    ) -> bool:
         """
         Helper function that returns entries with a request type
         matching the given `request_type` argument.
 
-        :param entry: ``HarEntry`` object to analyze
-        :param http_version: ``str`` of HTTP version type to match
-        :param regex: ``bool`` indicating whether to use a regex or string match
+        :param entry: Entry to analyze
+        :type entry: HarEntry
+        :param http_version: HTTP version type to match
+        :type http_version: str
+        :param regex: Whether to use a regex or string match
+        :type regex: bool
+        :return: HTTP version matches
+        :rtype: bool
         """
         response_version = entry.response.httpVersion
         if regex:
@@ -154,32 +179,42 @@ class HarParser(object):
 
     @staticmethod
     @convert_to_entry
-    def match_status_code(entry, status_code, regex=True):
+    def match_status_code(
+        entry: 'HarEntry', status_code: str, regex: bool = True
+    ) -> bool:
         """
         Helper function that returns entries with a status code matching
         then given `status_code` argument.
 
         NOTE: This is doing a STRING comparison NOT NUMERICAL
 
-        :param entry: entry object to analyze
-        :param status_code: ``str`` of status code to search for
-        :param regex: ``bool`` indicating whether to use a regex or string match
+        :param entry: Entry to analyze
+        :type entry: HarEntry
+        :param status_code: Status code to search for
+        :type status_code: str
+        :param regex: Whether to use a regex or string match
+        :type regex: bool
+        :return: Status code matches
+        :rtype: bool
         """
         if regex:
             return re.search(status_code, str(entry.response.status)) is not None
         return str(entry.response.status) == status_code
 
     @staticmethod
-    def create_asset_timeline(asset_list):
+    def create_asset_timeline(asset_list: List['HarEntry']) -> dict:
         """
-        Returns a ``dict`` of the timeline for the requested assets. The key is
+        Returns a `dict` of the timeline for the requested assets. The key is
         a datetime object (down to the millisecond) of ANY time where at least
-        one of the requested assets was loaded. The value is a ``list`` of ALL
+        one of the requested assets was loaded. The value is a `list` of ALL
         assets that were loading at that time.
 
-        :param asset_list: ``list`` of the assets to create a timeline for.
+        :param asset_list: The assets to create a timeline for.
+        :type asset_list: List[HarEntry]
+        :return: Milliseconds and assets that were loaded
+        :rtype: dict
         """
-        results = dict()
+        results = {}
         for asset in asset_list:
             time_key = asset.startTime
             load_time = int(asset.time)
@@ -201,10 +236,13 @@ class HarParser(object):
         return results
 
     @property
-    def pages(self):
+    def pages(self) -> List['HarPage']:
         """
         This is a list of HarPage objects, each of which represents a page
         from the HAR file.
+
+        :return: HarPages in the file
+        :rtype: List[HarPage]
         """
         # Start with a page object for unknown entries if the HAR data has
         # any entries with no page ID
@@ -218,37 +256,63 @@ class HarParser(object):
         return pages
 
     @property
-    def browser(self):
-        """Browser of Har File"""
+    def browser(self) -> str:
+        """
+        Browser of Har File
+
+        :return: Browser of the Har File
+        :rtype: str
+        """
         return self.har_data["browser"]
 
     @property
-    def version(self):
-        """HAR Version"""
+    def version(self) -> str:
+        """
+        HAR Version
+
+        :return: Version of HAR used
+        :rtype: str
+        """
         return self.har_data["version"]
 
     @property
-    def creator(self):
-        """Creator of Har File. Usually the same as the browser but not always"""
+    def creator(self) -> str:
+        """
+        Creator of Har File. Usually the same as the browser but not always
+
+        :return: Program that created the HarFile
+        :rtype: str
+        """
         return self.har_data["creator"]
 
     @cached_property
-    def hostname(self):
-        """Hostname of first page"""
+    def hostname(self) -> str:
+        """
+        Hostname of first page
+
+        :return: Hostname of the first known page
+        :rtype: str
+        """
         valid_pages = [p for p in self.pages if p.page_id != "unknown"]
         return valid_pages[0].hostname
 
 
-class HarPage(object):
+class HarPage:
+    # pylint: disable=R0904
     """
     An object representing one page of a HAR resource
     """
 
-    def __init__(self, page_id, har_parser=None, har_data=None):
+    def __init__(
+        self, page_id: str, har_parser: "HarParser" = None, har_data: dict = None
+    ):
         """
-        :param page_id: ``str`` of the page ID
-        :param har_parser: a HarParser object
-        :param har_data: ``dict`` of a file HAR file
+        :param page_id: Page ID
+        :type page_id: str
+        :param har_parser: HarParser object
+        :type har_parser: HarParser
+        :param har_data: HAR file
+        :type har_data: dict
         """
         self.page_id = page_id
         self._index = 0
@@ -306,15 +370,23 @@ class HarPage(object):
         self._index += 1
         return result
 
-    def _get_asset_files(self, asset_type):
+    def _get_asset_files(self, asset_type: str) -> List['HarEntry']:
         """
-        Returns a list of all files of a certain type.
+        Returns a list of all HarEntry object of a certain file type.
+        :param asset_type: Asset type to filter for
+        :type asset_type: str
+        :return: List of HarEntry objects that meet the
+        :rtype: List[HarEntry]
         """
         return self.filter_entries(content_type=self.asset_types[asset_type])
 
-    def _get_asset_size_trans(self, asset_type):
+    def _get_asset_size_trans(self, asset_type: str) -> int:
         """
         Helper function to dynamically create *_size properties.
+        :param asset_type: Asset type to filter for
+        :type asset_type: str
+        :return: Size of transferred data
+        :rtype: int
         """
         if asset_type == "page":
             assets = self.entries
@@ -322,9 +394,13 @@ class HarPage(object):
             assets = getattr(self, "{0}_files".format(asset_type), None)
         return self.get_total_size_trans(assets)
 
-    def _get_asset_size(self, asset_type):
+    def _get_asset_size(self, asset_type: str):
         """
         Helper function to dynamically create *_size properties.
+        :param asset_type: Asset type to filter for
+        :type asset_type: str
+        :return: Size of assets
+        :rtype: int
         """
         if asset_type == "page":
             assets = self.entries
@@ -332,10 +408,14 @@ class HarPage(object):
             assets = getattr(self, "{0}_files".format(asset_type), None)
         return self.get_total_size(assets)
 
-    def _get_asset_load(self, asset_type):
+    def _get_asset_load(self, asset_type: str) -> Optional[int]:
         """
         Helper function to dynamically create *_load_time properties. Return
         value is in ms.
+        :param asset_type: Asset type to filter for
+        :type asset_type: str
+        :return: Time of loading asset
+        :rtype: int
         """
         if asset_type == "initial":
             return self.actual_page.time
@@ -357,25 +437,33 @@ class HarPage(object):
 
     def filter_entries(
         self,
-        request_type=None,
-        content_type=None,
-        status_code=None,
-        http_version=None,
-        load_time__gt=None,
-        regex=True,
-    ):
+        request_type: str = None,
+        content_type: str = None,
+        status_code: str = None,
+        http_version: str = None,
+        load_time__gt: int = None,
+        regex: bool = True,
+    ) -> List['HarEntry']:
         # pylint: disable=R0913,W0105
         """
-        Returns a ``list`` of entry objects based on the filter criteria.
+        Generate a list of entries with from criteria
 
-        :param request_type: ``str`` of request type (i.e. - GET or POST)
-        :param content_type: ``str`` of regex to use for finding content type
-        :param status_code: ``str`` of the desired status code
-        :param http_version: ``str`` of HTTP version of request
-        :param load_time__gt: ``int`` of a load time in milliseconds. If
+        :param request_type: The request type (i.e. - GET or POST)
+        :type request_type: str
+        :param content_type: Regex to use for finding content type
+        :type content_type: str
+        :param status_code: The desired status code
+        :type status_code: str
+        :param http_version: HTTP version of request
+        :type http_version: str
+        :param load_time__gt: Load time in milliseconds. If
             provided, an entry whose load time is less than this value will
             be excluded from the results.
-        :param regex: ``bool`` indicating whether to use regex or exact match.
+        :type load_time__gt: int
+        :param regex: Whether to use regex or exact match.
+        :type regex: bool
+        :return: List of entry objects based on the filtered criteria.
+        :rtype: List[HarEntry]
         """
         results = []
 
@@ -417,12 +505,12 @@ class HarPage(object):
 
     def get_load_time(
         self,
-        request_type=None,
-        content_type=None,
-        status_code=None,
-        asynchronous=True,
+        request_type: str = None,
+        content_type: str = None,
+        status_code: str = None,
+        asynchronous: bool = True,
         **kwargs
-    ):
+    ) -> int:
         """
         This method can return the TOTAL load time for the assets or the ACTUAL
         load time, the difference being that the actual load time takes
@@ -437,6 +525,17 @@ class HarPage(object):
 
         self.get_load_time(content_types=['image']) (returns 2)
         self.get_load_time(content_types=['image'], asynchronous=False) (returns 4)
+
+        :param request_type: The request type (i.e. - GET or POST)
+        :type request_type: str
+        :param content_type: Regex to use for finding content type
+        :type content_type: str
+        :param status_code: The desired status code
+        :type status_code: str
+        :param asynchronous: Whether to separate load times
+        :type asynchronous: bool
+        :return: Total load time
+        :rtype: int
         """
         entries = self.filter_entries(
             request_type=request_type,
@@ -454,11 +553,13 @@ class HarPage(object):
         return len(self.parser.create_asset_timeline(entries))
 
     @staticmethod
-    def get_total_size(entries):
+    def get_total_size(entries: List['HarEntry']) -> int:
         """
         Returns the total size of a collection of entries.
 
         :param entries: ``list`` of entries to calculate the total size of.
+        :return: Total size of entries
+        :rtype: int
         """
         size = 0
         for entry in entries:
@@ -467,13 +568,15 @@ class HarPage(object):
         return size
 
     @staticmethod
-    def get_total_size_trans(entries):
+    def get_total_size_trans(entries: List['HarEntry']) -> int:
         """
         Returns the total size of a collection of entries - transferred.
 
         NOTE: use with har file generated with chrome-har-capturer
 
         :param entries: ``list`` of entries to calculate the total size of.
+        :return: Total size of entries that was transferred
+        :rtype: int
         """
         size = 0
         for entry in entries:
@@ -484,19 +587,22 @@ class HarPage(object):
     # BEGIN PROPERTIES #
 
     @cached_property
-    def hostname(self):
-        # pylint: disable=R1710
+    def hostname(self) -> str:  # pylint: disable=R1710
         """
-        Hostname of the initial request
+        :return: Hostname of the initial request
+        :rtype: str
         """
         for header in self.entries[0].request.headers:
             if header["name"] == "Host":
                 return header["value"]
 
     @cached_property
-    def url(self):
+    def url(self) -> Optional[str]:
         """
         The absolute URL of the initial request.
+
+        :return: URL of first request
+        :rtype: str
         """
         if (
             "request" in self.entries[0].raw_entry
@@ -506,8 +612,11 @@ class HarPage(object):
         return None
 
     @cached_property
-    def entries(self):
-        """List of all entries"""
+    def entries(self) -> List['HarEntry']:
+        """
+        :return: All entries that make up the page
+        :rtype: List[HarEntry]
+        """
         page_entries = []
         for entry in self.parser.har_data["entries"]:
             if "pageref" not in entry:
@@ -521,9 +630,10 @@ class HarPage(object):
         return page_entries
 
     @cached_property
-    def time_to_first_byte(self):
+    def time_to_first_byte(self) -> Optional[int]:
         """
-        Time to first byte of the page request in ms
+        :return: Time to first byte of the page request in ms
+        :rtype: int
         """
         # The unknown page is just a placeholder for entries with no page ID.
         # As such, it would not have a TTFB
@@ -532,7 +642,7 @@ class HarPage(object):
         ttfb = 0
         for entry in self.entries:
             if entry.response.status == 200:
-                for k, v in iteritems(entry.timings):
+                for k, v in entry.timings.items():
                     if k != "receive":
                         if v > 0:
                             ttfb += v
@@ -542,191 +652,351 @@ class HarPage(object):
         return ttfb
 
     @cached_property
-    def get_requests(self):
+    def get_requests(self) -> List['HarEntry']:
         """
-        Returns a list of GET requests, each of which is an 'entry' data object
+        Returns a list of GET requests, each of which is a HarEntry object
+
+        :return: All GET requests
+        :rtype: List[HarEntry]
         """
         return self.filter_entries(request_type="get")
 
     @cached_property
-    def post_requests(self):
+    def post_requests(self) -> List['HarEntry']:
         """
-        Returns a list of POST requests, each of which is an 'entry' data object
+        Returns a list of POST requests, each of which is an HarEntry object
+
+        :return: All POST requests
+        :rtype: List[HarEntry]
         """
         return self.filter_entries(request_type="post")
 
     # FILE TYPE PROPERTIES #
 
     @cached_property
-    def actual_page(self):
-        # pylint: disable=R1710
+    def actual_page(self) -> 'HarEntry':  # pylint: disable=R1710
         """
         Returns the first entry object that does not have a redirect status,
         indicating that it is the actual page we care about (after redirects).
+
+        :return: First entry of the page
+        :rtype: HarEntry
         """
         for entry in self.entries:
             if not 300 <= entry.response.status <= 399:
                 return entry
 
     @cached_property
-    def duplicate_url_request(self):
+    def duplicate_url_request(self) -> dict:
         """
         Returns a dict of urls and its number of repetitions that are sent more than once
+
+        :return: URLs and the amount of times they were duplicated
+        :rtype: dict
         """
-        urls = [entry.request.url for entry in self.entries]
-        counted_urls = Counter(urls)
+        counted_urls = Counter([entry.request.url for entry in self.entries])
         return {k: v for k, v in counted_urls.items() if v > 1}
 
     # Convenience properties. Easy accessible through the API, but even easier
     # to use as properties
     @cached_property
-    def image_files(self):
-        """Get all image files for a page"""
+    def image_files(self) -> List['HarEntry']:
+        """
+        All image files for a page
+
+        :return: Image entries for a page
+        :rtype: List[HarEntry]
+        """
         return self._get_asset_files("image")
 
     @cached_property
-    def css_files(self):
-        """Get all CSS files for a page"""
+    def css_files(self) -> List['HarEntry']:
+        """
+        All CSS files for a page
+
+        :return: CSS entries for a page
+        :rtype: List[HarEntry]
+        """
         return self._get_asset_files("css")
 
     @cached_property
-    def text_files(self):
-        """Get all text files for a page"""
+    def text_files(self) -> List['HarEntry']:
+        """
+        All text files for a page
+
+        :return: Text entries for a page
+        :rtype: List[HarEntry]
+        """
         return self._get_asset_files("text")
 
     @cached_property
-    def js_files(self):
-        """Get all JS files for a page"""
+    def js_files(self) -> List['HarEntry']:
+        """
+        All JS files for a page
+
+        :return: JS entries for a page
+        :rtype: List[HarEntry]
+        """
         return self._get_asset_files("js")
 
     @cached_property
-    def audio_files(self):
-        """Get all audio file for a page"""
+    def audio_files(self) -> List['HarEntry']:
+        """
+        All audio file for a page
+
+        :return: Audio entries for a page
+        :rtype: List[HarEntry]
+        """
         return self._get_asset_files("audio")
 
     @cached_property
-    def video_files(self):
-        """Get all video files for a page"""
+    def video_files(self) -> List['HarEntry']:
+        """
+        All video files for a page
+
+        :return: Video entries for a page
+        :rtype: List[HarEntry]
+        """
         return self._get_asset_files("video")
 
     @cached_property
-    def html_files(self):
-        """Get all HTML files for a page"""
+    def html_files(self) -> List['HarEntry']:
+        """
+        All HTML files for a page
+
+        :return: HTML entries for a page
+        :rtype: List[HarEntry]
+        """
         return self._get_asset_files("html")
 
     @cached_property
-    def page_size(self):
-        """Get size of the page"""
+    def page_size(self) -> int:
+        """
+        Size of the page
+
+        :return: Size of the page
+        :rtype: int
+        """
         return self._get_asset_size("page")
 
     @cached_property
-    def image_size(self):
-        """Get size of image files from the page"""
+    def image_size(self) -> int:
+        """
+        Size of image files from the page
+
+        :return: Size of image files on the page
+        :rtype: int
+        """
         return self._get_asset_size("image")
 
     @cached_property
-    def css_size(self):
-        """Get size of CSS files from the page"""
+    def css_size(self) -> int:
+        """
+        Size of CSS files from the page
+
+        :return: Size of CSS files on the page
+        :rtype: int
+        """
         return self._get_asset_size("css")
 
     @cached_property
-    def text_size(self):
-        """Get size of text files from the page"""
+    def text_size(self) -> int:
+        """
+        Size of text files from the page
+
+        :return: Size of text files on the page
+        :rtype: int
+        """
         return self._get_asset_size("text")
 
     @cached_property
-    def js_size(self):
-        """Get size of JS files from the page"""
+    def js_size(self) -> int:
+        """
+        Size of JS files from the page
+
+        :return: Size of JS files on the page
+        :rtype: int
+        """
         return self._get_asset_size("js")
 
     @cached_property
-    def audio_size(self):
-        """Get size of audio files from the page"""
+    def audio_size(self) -> int:
+        """
+        Size of audio files from the page
+
+        :return: Size of audio files on the page
+        :rtype: int
+        """
         return self._get_asset_size("audio")
 
     @cached_property
-    def video_size(self):
-        """Get size of video filse from the page"""
+    def video_size(self) -> int:
+        """
+        Size of video files from the page
+
+        :return: Size of video files on the page
+        :rtype: int
+        """
         return self._get_asset_size("video")
 
     @cached_property
-    def page_size_trans(self):
-        """Get the page transfer size"""
+    def page_size_trans(self) -> int:
+        """
+        Page transfer size
+
+        :return: Size of transfer data for the page
+        :rtype: int
+        """
         return self._get_asset_size_trans("page")
 
     @cached_property
-    def image_size_trans(self):
-        """Get the image transfer size"""
+    def image_size_trans(self) -> int:
+        """
+        Image transfer size
+
+        :return: Size of transfer data for images
+        :rtype: int
+        """
         return self._get_asset_size_trans("image")
 
     @cached_property
-    def css_size_trans(self):
-        """Get CSS transfer size"""
+    def css_size_trans(self) -> int:
+        """
+        CSS transfer size
+
+        :return: Size of transfer data for CSS
+        :rtype: int
+        """
         return self._get_asset_size_trans("css")
 
     @cached_property
-    def text_size_trans(self):
-        """Get text transfer size"""
+    def text_size_trans(self) -> int:
+        """
+        Text transfer size
+
+        :return: Size of transfer data for text
+        :rtype: int
+        """
         return self._get_asset_size_trans("text")
 
     @cached_property
-    def js_size_trans(self):
-        """Get JS transfer size"""
+    def js_size_trans(self) -> int:
+        """
+        JS transfer size
+
+        :return: Size of transfer data for JS
+        :rtype: int
+        """
         return self._get_asset_size_trans("js")
 
     @cached_property
-    def audio_size_trans(self):
-        """Get audio transfer size"""
+    def audio_size_trans(self) -> int:
+        """
+        Audio transfer size
+
+        :return: Size of transfer data for audio
+        :rtype: int
+        """
         return self._get_asset_size_trans("audio")
 
     @cached_property
-    def video_size_trans(self):
-        """Video transfer size"""
+    def video_size_trans(self) -> int:
+        """
+        Video transfer size
+
+        :return: Size of transfer data for images
+        :rtype: int
+        """
         return self._get_asset_size_trans("video")
 
     @cached_property
-    def initial_load_time(self):
-        """Initial load time"""
+    def initial_load_time(self) -> int:
+        """
+        Initial load time
+
+        :return: Initial load time of the page
+        :rtype: int
+        """
         return self._get_asset_load("initial")
 
     @cached_property
-    def content_load_time(self):
-        """Content load time"""
+    def content_load_time(self) -> int:
+        """
+        Content load time
+
+        :return: Load time for all content
+        :rtype: int
+        """
         return self._get_asset_load("content")
 
     @cached_property
-    def page_load_time(self):
-        """Load time"""
+    def page_load_time(self) -> int:
+        """
+        Load time of the page
+
+        :return: Load time for the page
+        :rtype: int
+        """
         return self._get_asset_load("page")
 
     @cached_property
-    def image_load_time(self):
-        """Image load time"""
+    def image_load_time(self) -> int:
+        """
+        Image load time
+
+        :return: Load time for images on a page
+        :rtype: int
+        """
         return self._get_asset_load("image")
 
     @cached_property
-    def css_load_time(self):
-        """CSS load time"""
+    def css_load_time(self) -> int:
+        """
+        CSS load time
+
+        :return: Load time for CSS on a page
+        :rtype: int
+        """
         return self._get_asset_load("css")
 
     @cached_property
-    def js_load_time(self):
-        """JS load time"""
+    def js_load_time(self) -> int:
+        """
+        JS load time
+
+        :return: Load time for JS on a page
+        :rtype: int
+        """
         return self._get_asset_load("js")
 
     @cached_property
-    def audio_load_time(self):
-        """Audio load time"""
+    def audio_load_time(self) -> int:
+        """
+        Audio load time
+
+        :return: Load time for audio on a page
+        :rtype: int
+        """
         return self._get_asset_load("audio")
 
     @cached_property
-    def video_load_time(self):
-        """Video load time"""
+    def video_load_time(self) -> int:
+        """
+        Video load time
+
+        :return: Load time for video on a page
+        :rtype: int
+        """
         return self._get_asset_load("video")
 
     @cached_property
-    def html_load_time(self):
-        """HTML load time"""
+    def html_load_time(self) -> int:
+        """
+        HTML load time
+
+        :return: Load time for HTML on a page
+        :rtype: int
+        """
         return self._get_asset_load("html")
 
 
@@ -735,9 +1005,9 @@ class HarEntry(MimicDict):
     An object that represent one entry in a HAR Page
     """
 
-    def __init__(self, entry):
+    def __init__(self, entry: dict):
         self.raw_entry = entry
-        super(HarEntry, self).__init__()
+        super().__init__()
 
     def __str__(self):
         return "HarEntry for %s" % self.raw_entry["request"]["url"]
@@ -746,72 +1016,112 @@ class HarEntry(MimicDict):
         return "HarEntry for %s" % self.raw_entry["request"]["url"]
 
     @cached_property
-    def request(self):
-        """Request Object"""
+    def request(self) -> Request:
+        """
+        :return: Request of the entry
+        :rtype: Request
+        """
         return Request(entry=self.raw_entry["request"])
 
     @cached_property
-    def response(self):
-        """Response Object"""
+    def response(self) -> Response:
+        """
+        :return: Response of the entry
+        :rtype: Response
+        """
         if isinstance(self.raw_entry, dict):
             return Response(entry=self.raw_entry["response"])
         return self.raw_entry.response
 
     @cached_property
-    def startTime(self):
+    def startTime(self) -> Optional[datetime.datetime]:
         # pylint: disable=W0212
-        """Start time and date"""
+        """
+        Start time and date
+
+        :return: Start time of entry
+        :rtype: Optional[datetime.datetime]
+        """
         try:
             return parser.parse(self.raw_entry.get("startedDateTime", ""))
         except parser._parser.ParserError:
             return None
 
     @cached_property
-    def cache(self):
-        """Cached objects"""
+    def cache(self) -> str:
+        """
+        :return: Cached objects
+        :rtype: str
+        """
         return self.raw_entry["cache"]
 
     @cached_property
-    def cookies(self):
-        """Request and Response Cookies"""
+    def cookies(self) -> list:
+        """
+        :return: Request and Response Cookies
+        :rtype: list
+        """
         return self.raw_entry.get("cookies", [])
 
     @cached_property
-    def pageref(self):
-        """Page for the entry"""
+    def pageref(self) -> str:
+        """
+        :return: Page for the entry
+        :rtype: str
+        """
         return self.raw_entry["pageref"]
 
     @cached_property
-    def port(self):
-        """Port connection was made to"""
+    def port(self) -> int:
+        """
+        :return: Port connection was made to
+        :rtype: int
+        """
         return int(self.raw_entry["connection"])
 
     @cached_property
-    def secure(self):
-        """Connection was secure"""
+    def secure(self) -> bool:
+        """
+        :return: Connection was secure
+        :rtype: bool
+        """
         return self.raw_entry.get("_securityState", "") == "secure"
 
     @cached_property
-    def serverAddress(self):
-        """IP Address of the server"""
+    def serverAddress(self) -> str:
+        """
+        :return: IP Address of the server
+        :rtype: str
+        """
         return self.raw_entry["serverIPAddress"]
 
     @cached_property
-    def status(self):
-        """HTTP Status Code"""
+    def status(self) -> int:
+        """
+        :return: HTTP Status Code
+        :rtype: int
+        """
         return self.raw_entry["response"]["status"]
 
     @cached_property
-    def time(self):
-        """Time taken to complete entry"""
+    def time(self) -> int:
+        """
+        :return: Time taken to complete entry
+        :rtype: int
+        """
         return self.raw_entry["time"]
 
     @cached_property
-    def timings(self):
-        """Timing of the page load"""
+    def timings(self) -> dict:
+        """
+        :return: Timing of the page load
+        :rtype: dict
+        """
         return self.raw_entry["timings"]
 
     @cached_property
-    def url(self):
-        """URL of Entry"""
+    def url(self) -> str:
+        """
+        :return: URL of Entry
+        :rtype: str"""
         return self.raw_entry["request"]["url"]

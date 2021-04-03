@@ -1,6 +1,5 @@
 import pytest
-from haralyzer import HarPage, HarParser, HarEntry
-from haralyzer.compat import iteritems
+from haralyzer import HarPage, HarParser
 from haralyzer.errors import PageNotFoundError
 import re
 import six
@@ -131,23 +130,7 @@ def test_entries(har_data):
         assert entry.pageref == entry["pageref"] == page.page_id
 
 
-@pytest.mark.skipif(six.PY3, reason="Runs with Python 2")
-def test_iteration_python2(har_data):
-    init_data = har_data('humanssuck.net.har')
-    page = HarPage(PAGE_ID, har_data=init_data)
-    entries = [x for x in page]
-    assert len(entries) == 4
-    iter_object = iter(page)
-    assert str(next(iter_object)) == 'HarEntry for http://humanssuck.net/'
-    assert str(next(iter_object)) == 'HarEntry for http://humanssuck.net/test.css'
-    assert str(next(iter_object)) == 'HarEntry for http://humanssuck.net/screen_login.gif'
-    assert str(next(iter_object)) == 'HarEntry for http://humanssuck.net/jquery-1.7.1.min.js'
-    with pytest.raises(StopIteration):
-        assert next(iter_object)
-
-
-@pytest.mark.skipif(six.PY2, reason="Runs with Python 3")
-def test_iteration_python2(har_data):
+def test_iteration(har_data):
     init_data = har_data('humanssuck.net.har')
     page = HarPage(PAGE_ID, har_data=init_data)
     entries = [x for x in page]
@@ -172,7 +155,7 @@ def test_file_types(har_data):
                   'video_files': ['video', 'flash'], 'text_files': ['text'],
                   'html_files': ['html']}
 
-    for k, v in iteritems(file_types):
+    for k, v in file_types.items():
         for asset in getattr(page, k, None):
             assert _correct_file_type(asset, v)
 
