@@ -15,10 +15,9 @@ jobs:
   Lint:
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
       matrix:
         os: [ubuntu-16.04, ubuntu-18.04, ubuntu-20.04, macos-10.15, windows-2016, windows-2019]
-        python-version: [3.6, 3.7, 3.8, 3.9, pypy-3.6, pypy-3.7]
+        python-version: [3.6, 3.7, 3.8, 3.9, 3.10.0-alpha.5, pypy-3.6, pypy-3.7]
     steps:
     - uses: actions/checkout@v2
 
@@ -56,10 +55,7 @@ jobs:
         pip install . -r requirements_dev.txt
 
     - name: Lint
-      if: startsWith(matrix.python-version,'3')
-      run: |
-        pip install bandit black>=20.8b1
-        make lint
+      run: make lint
 
     - name: Tests
       run: make test
