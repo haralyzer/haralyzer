@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-16.04, ubuntu-18.04, ubuntu-20.04, macos-10.15, windows-2016, windows-2019]
-        python-version: [3.6, 3.7, 3.8, 3.9, 3.10.0-alpha.6, pypy-3.6, pypy-3.7]
+        python-version: [3.6, 3.7, 3.8, 3.9, 3.10.0-alpha.5, pypy-3.6, pypy-3.7]
     steps:
     - uses: actions/checkout@v2
 
