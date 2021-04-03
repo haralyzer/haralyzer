@@ -8,10 +8,10 @@ class Request(HttpTransaction):
     """Request object for an HarEntry"""
 
     def __str__(self):
-        return "HarEntry.Request for %s" % self.raw_entry["url"]
+        return f"HarEntry.Request for {self.raw_entry['url']}"
 
     def __repr__(self):
-        return "HarEntry.Request for %s" % self.raw_entry["url"]
+        return f"HarEntry.Request for {self.raw_entry['url']}"
 
     # Root Level values
 
@@ -126,10 +126,10 @@ class Response(HttpTransaction):
     """Response object for a HarEntry"""
 
     def __str__(self):
-        return "HarEntry.Response for %s" % self.raw_entry["url"]
+        return f"HarEntry.Response for {self.raw_entry['url']}"
 
     def __repr__(self):
-        return "HarEntry.Response for %s" % self.raw_entry["url"]
+        return f"HarEntry.Response for {self.raw_entry['url']}"
 
     # Root Level values
 

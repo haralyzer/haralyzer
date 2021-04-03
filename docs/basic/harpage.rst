@@ -6,7 +6,7 @@ page. It has helper methods that are accessible, but most of the data you need i
 in properties for easy access. You can create a HarPage object directly by giving
 it the page ID (yes, I know it is stupid, it's just how HAR is organized), and either
 a ``HarParser`` with `har_parser=parser`, or a ``dict`` representing the JSON of a full HAR
-file (see example above) with `har_data=har_data`.::
+file (see example in HarParser) with `har_data=har_data`. ::
 
     import json
     from haralyzer import HarPage
@@ -18,13 +18,13 @@ file (see example above) with `har_data=har_data`.::
     har_page.hostname
     # 'humanssuck.net'
     har_page.url
-    $ 'http://humanssuck.net/about/'
+    # 'http://humanssuck.net/about/'
 
     ### WORK WITH LOAD TIMES (all load times are in ms) ###
 
     # Get image load time in milliseconds as rendered by the browser
     har_page.image_load_time
-    # prints 713
+    # 713
 
     # We could do this with 'css', 'js', 'html', 'audio', or 'video'
 
@@ -40,7 +40,7 @@ file (see example above) with `har_data=har_data`.::
     # We could do this with 'css', 'js', 'html', 'audio', or 'video'
 
     # Get duplicate requests (requests to the same URL 2 or more times) if any
-    har_page.duplicate_url_request
+    # har_page.duplicate_url_request
     # Returns a dict where the key is a string of the URL and the value is an int of the number
     # of requests to that URL. Only requests with 2 or more are included.
     # {'https://test.com/': 3}

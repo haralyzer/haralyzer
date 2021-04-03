@@ -43,7 +43,7 @@ class MultiHarParser:
         :rtype: list
         """
         load_times = []
-        search_str = "{0}_load_time".format(asset_type)
+        search_str = f"{asset_type}_load_time"
         for har_page in self.pages:
             val = getattr(har_page, search_str, None)
             if val is not None:
@@ -68,7 +68,7 @@ class MultiHarParser:
                     load_times.append(page.time_to_first_byte)
         elif asset_type not in self.asset_types and asset_type != "page":
             raise ValueError(
-                "asset_type must be one of:\nttfb\n{0}".format(
+                f"asset_type must be one of:\nttfb\n{0}".format(
                     "\n".join(self.asset_types)
                 )
             )

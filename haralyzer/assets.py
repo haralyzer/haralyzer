@@ -31,9 +31,6 @@ def convert_to_entry(func):
         # Convert the dict (first argument) to HarEntry
         if isinstance(changed_args[0], dict):
             changed_args[0] = HarEntry(changed_args[0])
-        # For some cases have HarParser as the first type with the Entry and second
-        if isinstance(changed_args[0], HarParser):
-            changed_args[1] = HarEntry(changed_args[1])
         return func(*tuple(changed_args), **kwargs)
 
     return inner
@@ -351,9 +348,7 @@ class HarPage:
         if not valid:
             page_ids = [page["id"] for page in raw_data["pages"]]
             raise PageNotFoundError(
-                "No page found with id {0}\n\nPage ID's are {1}".format(
-                    self.page_id, page_ids
-                )
+                f"No page found with id {self.page_id}\n\nPage ID's are {page_ids}"
             )
 
     def __repr__(self):
@@ -392,7 +387,7 @@ class HarPage:
         if asset_type == "page":
             assets = self.entries
         else:
-            assets = getattr(self, "{0}_files".format(asset_type), None)
+            assets = getattr(self, f"{asset_type}_files", None)
         return self.get_total_size_trans(assets)
 
     def _get_asset_size(self, asset_type: str):
@@ -406,7 +401,7 @@ class HarPage:
         if asset_type == "page":
             assets = self.entries
         else:
-            assets = getattr(self, "{0}_files".format(asset_type), None)
+            assets = getattr(self, f"{asset_type}_files", None)
         return self.get_total_size(assets)
 
     def _get_asset_load(self, asset_type: str) -> Optional[int]:
@@ -1011,10 +1006,10 @@ class HarEntry(MimicDict):
         super().__init__()
 
     def __str__(self):
-        return "HarEntry for %s" % self.raw_entry["request"]["url"]
+        return f"HarEntry for {self.url}"
 
     def __repr__(self):
-        return "HarEntry for %s" % self.raw_entry["request"]["url"]
+        return f"HarEntry for {self.url}"
 
     @cached_property
     def request(self) -> Request:
