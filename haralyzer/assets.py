@@ -505,7 +505,7 @@ class HarPage:
         content_type: str = None,
         status_code: str = None,
         asynchronous: bool = True,
-        **kwargs
+        **kwargs,
     ) -> int:
         """
         This method can return the TOTAL load time for the assets or the ACTUAL
