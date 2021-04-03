@@ -45,3 +45,8 @@ Contributing
 
 We are always looking for new people to get involved. If you are looking to get involved, then fork this repo and start making changes that you would like to see.
 If you are making any coding changes, then please create tests (we use pytest) for your code. Documentation should also be created for your additions. You can then submit a PR and we will review it.
+
+Python 2 Support
+++++++++++++++++
+
+1.9.0. is the last version that supports Python 2.7.
