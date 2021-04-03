@@ -8,10 +8,10 @@ class Request(HttpTransaction):
     """Request object for an HarEntry"""
 
     def __str__(self):
-        return f"HarEntry.Request for {self.raw_entry['url']}"
+        return f"HarEntry.Request for {self.url}"
 
     def __repr__(self):
-        return f"HarEntry.Request for {self.raw_entry['url']}"
+        return f"HarEntry.Request for {self.url}"
 
     # Root Level values
 
@@ -125,11 +125,21 @@ class Request(HttpTransaction):
 class Response(HttpTransaction):
     """Response object for a HarEntry"""
 
-    def __str__(self):
-        return f"HarEntry.Response for {self.raw_entry['url']}"
+    def __init__(self, url: str, entry: dict):
+        """
 
-    def __repr__(self):
-        return f"HarEntry.Response for {self.raw_entry['url']}"
+        :param url: Responses don't have a URL so need to get it passed
+        :type url: str
+        :param entry: Response data
+        """
+        super().__init__(entry)
+        self.url = url
+
+    def __str__(self) -> str:
+        return f"HarEntry.Response for {self.url}"
+
+    def __repr__(self) -> str:
+        return f"HarEntry.Response for {self.url}"
 
     # Root Level values
 

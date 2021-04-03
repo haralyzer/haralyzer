@@ -183,6 +183,13 @@ def test_http_version(har_data):
     assert not har_parser.match_http_version(entry, 'HTTP/2.0', regex=False)
 
 
+def test_match_content_type(har_data):
+    init_data = har_data('humanssuck.net.har')
+    har_parser = HarParser(init_data)
+    entry = HarEntry(har_data('single_entry.har'))
+    assert har_parser.match_content_type(entry, content_type="text/html", regex=False)
+
+
 def test_create_asset_timeline(har_data):
     """
     Tests the asset timeline function by making sure that it inserts one object

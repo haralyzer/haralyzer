@@ -1025,9 +1025,7 @@ class HarEntry(MimicDict):
         :return: Response of the entry
         :rtype: Response
         """
-        if isinstance(self.raw_entry, dict):
-            return Response(entry=self.raw_entry["response"])
-        return self.raw_entry.response
+        return Response(url=self.url, entry=self.raw_entry["response"])
 
     @cached_property
     def startTime(self) -> Optional[datetime.datetime]:
