@@ -41,57 +41,94 @@ Each entry also contains a ``Request()`` and ``Response()`` which are styled off
 
     # ALL ATTRIBUTES OF A ENTRY
 
-    single_entry.cache -> Dictionary of cached content
-    single_entry.cookies -> List of combined cookies for request and response
-    single_entry.pageref -> String of the pageref
-    single_entry.port -> Integer of the port number for the server
-    single_entry.request -> Request object
-    single_entry.response -> Response object
-    single_entry.secure -> Bool if secure is set
-    single_entry.serverAddress -> String of the server IP
-    single_entry.startTime -> Datetime of the start time
-    single_entry.time -> Integer of total time for entry
-    single_entry.timings -> Dictionary of the timings for a request
-    single_entry.url -> String of the request url
+    single_entry.cache
+    # Dictionary of cached content
+    single_entry.cookies
+    # List of combined cookies for request and response
+    single_entry.pageref
+    # String of the pageref
+    single_entry.port
+    # Integer of the port number for the server
+    single_entry.request
+    # Request object
+    single_entry.response
+    # Response object
+    single_entry.secure
+    # Bool if secure is set
+    single_entry.serverAddress
+    # String of the server IP
+    single_entry.startTime
+    # Datetime of the start time
+    single_entry.time
+    # Integer of total time for entry
+    single_entry.timings
+    # Dictionary of the timings for a request
+    single_entry.url
+    # String of the request url
 
     # ALL ATTRIBUTES OF A REQUEST
 
-    single_entry.request.accept -> String of the ``Accept`` header
-    single_entry.request.bodySize -> Integer of the body size for the request
-    single_entry.request.cacheControl -> String of the ``Cache-Control`` header
-    single_entry.request.cookies -> List of cookies
-    single_entry.request.encoding -> String of the ``Accept-Encoding`` header
-    single_entry.request.headers -> Dict of headers
-    single_entry.request.headersSize -> Integer of the size of the headers
-    single_entry.request.host -> String of the ``Host`` header
-    single_entry.request.httpVersion -> String of the http version used
-    single_entry.request.language -> String of the ``Accept-Language`` header
-    single_entry.request.method -> String of the HTTP method used
-    single_entry.request.queryString -> List of query string used
-    single_entry.request.url -> String of the URL
-    single_entry.request.userAgent -> String of the User-Agent
+    single_entry.request.accept
+    # String of the ``Accept`` header
+    single_entry.request.bodySize
+    # Integer of the body size for the request
+    single_entry.request.cacheControl
+    # String of the ``Cache-Control`` header
+    single_entry.request.cookies
+    # List of cookies
+    single_entry.request.encoding
+    # String of the ``Accept-Encoding`` header
+    single_entry.request.headers
+    # Dictionary of headers
+    single_entry.request.headersSize
+    # Integer of the size of the headers
+    single_entry.request.host
+    # String of the ``Host`` header
+    single_entry.request.httpVersion
+    # String of the http version used
+    single_entry.request.language
+    # String of the ``Accept-Language`` header
+    single_entry.request.method
+    # String of the HTTP method used
+    single_entry.request.queryString
+    # List of query string used
+    single_entry.request.url
+    # String of the URL
+    single_entry.request.userAgent
+    # String of the User-Agent
 
-    # To_request method
-    # The to_request method will return a requests.PrepareRequest that you can use
-    single_entry.request.to_request() -> requests.PrepareRequest
+    ### ALL ATTRIBUTES OF A RESPONSE
+    single_entry.response.bodySize
+    # Integer of the body size for the response
+    single_entry.response.cacheControl
+    # String of the `Cache-Control` header
+    single_entry.response.contentSecurityPolicy
+    # String of the `Content-Security-Policy`` header
+    single_entry.response.contentSize
+    # Integer of the content size
+    single_entry.response.contentType
+    # String of the ``content-type`` header
+    single_entry.response.date
+    # String of the ``date`` header
+    single_entry.response.headers
+    # Dictionary of headers
+    single_entry.response.headersSize
+    # Integer of the size of the headers
+    single_entry.response.httpVersion
+    # String of the http version used
+    single_entry.response.lastModified
+    # String of the ``last-modified`` header
+    single_entry.response.mimeType
+    # String of the mimeType of the content
+    single_entry.response.redirectURL
+    # String of the redirect URL or None
+    single_entry.response.status
+    # Integer of th HTTP status code
+    single_entry.response.statusText
+    # String of HTTP status
+    single_entry.response.text
+    # String of content received
 
-    # ALL ATTRIBUTES OF A RESPONSE
-    single_entry.response.bodySize -> Integer of the body size for the response
-    single_entry.response.cacheControl -> String of the ``Cache-Control`` header
-    single_entry.response.contentSecurityPolicy -> String of the `Content-Security-Policy`` header
-    single_entry.response.contentSize -> Integer of the content size
-    single_entry.response.contentType -> String of the ``content-type`` header
-    single_entry.response.date -> String of the ``date`` header
-    single_entry.response.headers -> Dict of headers
-    single_entry.response.headersSize -> Integer of the size of the headers
-    single_entry.response.httpVersion -> String of the http version used
-    single_entry.response.lastModified -> String of the ``last-modified`` header
-    single_entry.response.mimeType -> String of the mimeType of the content
-    single_entry.response.redirectURL -> String of the redirect URL or None
-    single_entry.response.status -> Integer of th HTTP status code
-    single_entry.response.statusText -> String of HTTP status
-    single_entry.response.text -> String of content received
-
-    ** You are still able to access items like a dictionary.
+    # You are still able to access items like a dictionary.
     print(single_entry["connection"])
     # "80"

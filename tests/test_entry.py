@@ -60,6 +60,8 @@ def test_response(har_data):
     """
     init_data = har_data('humanssuck.net.har')
     response = HarPage(PAGE_ID, har_data=init_data).entries[0].response
+    assert str(response) == "HarEntry.Response for http://humanssuck.net/"
+    assert repr(response) == "HarEntry.Response for http://humanssuck.net/"
     assert response.bodySize == 238
     assert response.cacheControl is None
     assert response.contentSecurityPolicy is None

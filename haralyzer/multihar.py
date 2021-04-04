@@ -1,20 +1,14 @@
 """Contains the mutlihar parse object"""
-import sys
+from statistics import stdev
+from statistics import mean
+from typing import Union, List
 from cached_property import cached_property
 from .assets import HarParser
-
-if sys.version_info < (3, 4):
-    from backports.statistics import stdev
-    from backports.statistics import mean
-else:
-    from statistics import stdev
-    from statistics import mean
-
 
 DECIMAL_PRECISION = 0
 
 
-class MultiHarParser(object):
+class MultiHarParser:
     """
     An object that represents multiple HAR files OF THE SAME CONTENT.
     It is used to gather overall statistical data in situations where you have
@@ -24,42 +18,47 @@ class MultiHarParser(object):
 
     def __init__(self, har_data, page_id=None, decimal_precision=DECIMAL_PRECISION):
         """
-        :param har_data: A ``list`` of ``dict`` representing the JSON
+        :param har_data: A list of dict representing the JSON
         of a HAR file. See the docstring of HarParser.__init__ for more detail.
-        :param page_id: IF a ``str`` of the page ID is provided, the
+        :type har_data: List[dict]
+        :param page_id: IF a the page ID is provided, the
         multiparser will return aggregate results for this specific page. If
         not, it will assume that there is only one page in the run (this was
         written specifically for that use case).
-        :param decimal_precision: ``int`` representing the precision of the
-        return values for the means and standard deviations provided by this
-        class.
+        :type page_id: str
+        :param decimal_precision: The precision of the.
+        :type decimal_precision: int
         """
         self.har_data = har_data
         self.page_id = page_id
         self.decimal_precision = decimal_precision
 
-    def get_load_times(self, asset_type):
+    def get_load_times(self, asset_type: str) -> list:
         """
-        Just a ``list`` of the load times of a certain asset type for each page
+        Just a list of the load times of a certain asset type for each page
 
-        :param asset_type: ``str`` of the asset type to return load times for
+        :param asset_type: The asset type to return load times for
+        :type asset_type: str
+        :return: List of load times
+        :rtype: list
         """
         load_times = []
-        search_str = "{0}_load_time".format(asset_type)
+        search_str = f"{asset_type}_load_time"
         for har_page in self.pages:
             val = getattr(har_page, search_str, None)
             if val is not None:
                 load_times.append(val)
         return load_times
 
-    def get_stdev(self, asset_type):
+    def get_stdev(self, asset_type: str) -> Union[int, float]:
         """
         Returns the standard deviation for a set of a certain asset type.
 
-        :param asset_type: ``str`` of the asset type to calculate standard
-        deviation for.
-        :returns: A ``int`` or ``float`` of standard deviation, depending on
-        the self.decimal_precision
+        :param asset_type: The asset type to calculate standard deviation for.
+        :type asset_type: str
+        :returns: Standard deviation, which can be an `int` or `float`
+            depending on the self.decimal_precision
+        :rtype: int, float
         """
         load_times = []
         # Handle edge cases like TTFB
@@ -69,7 +68,7 @@ class MultiHarParser(object):
                     load_times.append(page.time_to_first_byte)
         elif asset_type not in self.asset_types and asset_type != "page":
             raise ValueError(
-                "asset_type must be one of:\nttfb\n{0}".format(
+                f"asset_type must be one of:\nttfb\n{0}".format(
                     "\n".join(self.asset_types)
                 )
             )
@@ -81,9 +80,12 @@ class MultiHarParser(object):
         return round(stdev(load_times), self.decimal_precision)
 
     @property
-    def pages(self):
+    def pages(self) -> List["HarPage"]:  # noqa: F821
         """
-        The aggregate pages of all the parser objects.
+        Aggregate pages of all the parser objects.
+
+        :return: All the pages from parsers
+        :rtype: List[haralyzer.assets.HarPage]
         """
         pages = []
         for har_dict in self.har_data:
@@ -97,16 +99,21 @@ class MultiHarParser(object):
         return pages
 
     @cached_property
-    def asset_types(self):
+    def asset_types(self) -> dict:
         """
         Mimic the asset types stored in HarPage
+
+        :return: Asset types from HarPage
+        :rtype: dict
         """
         return self.pages[0].asset_types
 
     @cached_property
-    def time_to_first_byte(self):
+    def time_to_first_byte(self) -> Union[int, float]:
         """
-        The aggregate time to first byte for all pages.
+        :returns: The aggregate time to first byte for all pages.
+            Can be an `int` or `float` depending on the self.decimal_precision
+        :rtype: int, float
         """
         ttfb = []
         for page in self.pages:
@@ -115,57 +122,71 @@ class MultiHarParser(object):
         return round(mean(ttfb), self.decimal_precision)
 
     @cached_property
-    def page_load_time(self):
+    def page_load_time(self) -> Union[int, float]:
         """
-        The average total load time for all runs (not weighted).
+        :returns: Average total load time for all runs (not weighted).
+            Can be an `int` or `float` depending on the self.decimal_precision
+        :rtype: int, float
         """
         load_times = self.get_load_times("page")
         return round(mean(load_times), self.decimal_precision)
 
     @cached_property
-    def js_load_time(self):
+    def js_load_time(self) -> Union[int, float]:
         """
-        Returns aggregate javascript load time.
+        :returns: Aggregate javascript load time.
+            Can be an `int` or `float` depending on the self.decimal_precision
+        :rtype: int, float
         """
         load_times = self.get_load_times("js")
         return round(mean(load_times), self.decimal_precision)
 
     @cached_property
-    def css_load_time(self):
+    def css_load_time(self) -> Union[int, float]:
         """
-        Returns aggregate css load time for all pages.
+        :returns: Aggregate css load time for all pages.
+            Can be an `int` or `float` depending on the self.decimal_precision
+        :rtype: int, float
         """
         load_times = self.get_load_times("css")
         return round(mean(load_times), self.decimal_precision)
 
     @cached_property
-    def image_load_time(self):
+    def image_load_time(self) -> Union[int, float]:
         """
-        Returns aggregate image load time for all pages.
+        :returns: Aggregate image load time for all pages.
+            Can be an `int` or `float` depending on the self.decimal_precision
+        :rtype: int, float
         """
         load_times = self.get_load_times("image")
         return round(mean(load_times), self.decimal_precision)
 
     @cached_property
-    def html_load_time(self):
+    def html_load_time(self) -> Union[int, float]:
         """
-        Returns aggregate html load time for all pages.
+        :returns: Aggregate html load time for all pages.
+            Can be an `int` or `float` depending on the self.decimal_precision
+        :rtype: int, float
         """
         load_times = self.get_load_times("html")
         return round(mean(load_times), self.decimal_precision)
 
     @cached_property
-    def audio_load_time(self):
+    def audio_load_time(self) -> Union[int, float]:
         """
-        Returns aggregate audio load time for all pages.
+        :returns: Aggregate audio load time for all pages.
+            Can be an `int` or `float` depending on the self.decimal_precision
+        :rtype: int, float
         """
         load_times = self.get_load_times("audio")
         return round(mean(load_times), self.decimal_precision)
 
     @cached_property
-    def video_load_time(self):
+    def video_load_time(self) -> Union[int, float]:
         """
-        Returns aggregate video load time for all pages.
+        :returns: Aggregate video load time for all pages.
+            Can be an `int` or `float` depending on the self.decimal_precision
+        :rtype: int, float
         """
         load_times = self.get_load_times("video")
         return round(mean(load_times), self.decimal_precision)

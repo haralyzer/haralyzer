@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - master
+  push:
     paths:
       - .github/workflows/merge_check_dist.yml
 
