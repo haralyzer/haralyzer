@@ -178,7 +178,7 @@ class Response(HttpTransaction):
     @cached_property
     def status(self) -> int:
         """
-        :return:HTTP Status
+        :return: HTTP Status
         :rtype: int
         """
         return self.raw_entry["status"]
@@ -228,7 +228,7 @@ class Response(HttpTransaction):
     @cached_property
     def date(self) -> str:
         """
-        :return:Date of response
+        :return: Date of response
         :rtype: str
         """
         return self.get_header_value("date")

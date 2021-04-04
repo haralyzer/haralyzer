@@ -738,7 +738,7 @@ class HarPage:
     @cached_property
     def audio_files(self) -> List["HarEntry"]:
         """
-        All audio file for a page
+        All audio files for a page
 
         :return: Audio entries for a page
         :rtype: List[HarEntry]
