@@ -9,14 +9,6 @@ haralyzer.assets module
    :undoc-members:
    :show-inheritance:
 
-haralyzer.compat module
------------------------
-
-.. automodule:: haralyzer.compat
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 haralyzer.errors module
 -----------------------
 
@@ -49,10 +41,3 @@ haralyzer.multihar module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: haralyzer
-   :members:
-   :undoc-members:
-   :show-inheritance:

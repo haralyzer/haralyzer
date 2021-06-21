@@ -1,7 +1,6 @@
 import datetime
 import pytest
 from haralyzer import HarParser, HarPage, HarEntry
-from haralyzer.compat import iteritems
 from dateutil import parser as du
 
 
@@ -184,6 +183,13 @@ def test_http_version(har_data):
     assert not har_parser.match_http_version(entry, 'HTTP/2.0', regex=False)
 
 
+def test_match_content_type(har_data):
+    init_data = har_data('humanssuck.net.har')
+    har_parser = HarParser(init_data)
+    entry = HarEntry(har_data('single_entry.har'))
+    assert har_parser.match_content_type(entry, content_type="text/html", regex=False)
+
+
 def test_create_asset_timeline(har_data):
     """
     Tests the asset timeline function by making sure that it inserts one object
@@ -207,7 +213,7 @@ def test_create_asset_timeline(har_data):
         assert time_key in asset_timeline
         assert len(asset_timeline[time_key]) == 1
         # Compare the dicts
-        for key, _ in iteritems(asset_timeline):
+        for key, _ in asset_timeline.items():
             assert du.parse(asset_timeline[time_key][0].raw_entry["startedDateTime"]) == entry.startTime
         time_key = time_key + datetime.timedelta(milliseconds=1)
 
@@ -224,8 +230,8 @@ def _headers_test(parser, entry, test_data, expects, regex):
     :param regex: ``bool`` indicating whether we should be using regex
     search
     """
-    for req_type, data in iteritems(test_data):
-        for header, value in iteritems(data):
+    for req_type, data in test_data.items():
+        for header, value in data.items():
             is_match = parser.match_headers(
                 entry, req_type, header, value, regex=regex)
             if expects:

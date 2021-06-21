@@ -22,43 +22,18 @@ jobs:
         run: |
           python setup.py sdist bdist_wheel
           SDIST_PATH=$(ls dist/*.tar.gz)
-          SDIST_NAME=$(basename $SDIST_PATH)
           WHEEL_PATH=$(ls dist/*.whl)
-          WHEEL_NAME=$(basename $WHEEL_PATH)
-          echo "SDIST_NAME=${SDIST_NAME}" >> $GITHUB_ENV
           echo "SDIST_PATH=${SDIST_PATH}" >> $GITHUB_ENV
           echo "WHEEL_PATH=${WHEEL_PATH}" >> $GITHUB_ENV
-          echo "WHEEL_NAME=${WHEEL_NAME}" >> $GITHUB_ENV
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/v')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
           draft: True
-          prerelease: false
-
-      - name: Upload Tar Asset
-        id: upload-tar-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ env.SDIST_PATH}}
-          asset_name: ${{ env.SDIST_NAME}}
-          asset_content_type: application/zip
-
-      - name: Upload Wheel Asset
-        id: upload-wheel-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ env.WHEEL_PATH}}
-          asset_name: ${{ env.WHEEL_NAME}}
-          asset_content_type: application/zip
+          fail_on_unmatched_files: True
+          files: |
+            ${{ env.SDIST_PATH}}
+            ${{ env.WHEEL_PATH}}
