@@ -3,7 +3,7 @@ Haralyzer
 =========
 
 .. image:: https://badge.fury.io/py/haralyzer.svg
-   :target: http://badge.fury.io/py/haralyzer
+   :target: https://badge.fury.io/py/haralyzer
 
 .. image:: https://img.shields.io/pypi/dm/haralyzer
    :target: https://pypi.org/project/haralyzer/
