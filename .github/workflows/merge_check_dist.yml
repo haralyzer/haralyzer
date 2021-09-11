@@ -4,6 +4,11 @@ on:
   pull_request:
     branches:
       - master
+    paths:
+      - haralyzer/**
+      - setup.py
+      - setup.cfg
+      - requirements.txt
   push:
     paths:
       - .github/workflows/merge_check_dist.yml
