@@ -10,6 +10,14 @@ on:
       - tests/**
       - haralyzer/**
       - .github/workflows/python.yml
+  pull_request:
+    branches:
+      - master
+    paths:
+      - haralyzer/**
+      - setup.py
+      - setup.cfg
+      - requirements.txt
 
 jobs:
   Lint:
@@ -18,29 +26,25 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-18.04, ubuntu-20.04, macos-10.15, windows-2016, windows-2019]
-        python-version: [3.6, 3.7, 3.8, 3.9, 3.10.0-beta.3, pypy-3.6, pypy-3.7]
-        exclude:
-          - python-version: 3.10.0-beta.3
-            os: windows-2016
-          - python-version: 3.10.0-beta.3
-            os: windows-2019
+        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10", "pypy-3.6", "pypy-3.7", "pypy-3.8"]
+
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
 
     - name: Linux Cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       if: startsWith(runner.os, 'Linux')
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-${{ matrix.python-version}}-${{ hashFiles('**/requirements.txt', '**/requirements-dev.txts') }}
 
     - name: MacOS Cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       if: startsWith(runner.os, 'macOS')
       with:
         path: ~/Library/Caches/pip
@@ -48,7 +52,7 @@ jobs:
 
 
     - name: Windows Cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       if: startsWith(runner.os, 'Windows')
       with:
         path: ~\AppData\Local\pip\Cache
@@ -65,6 +69,10 @@ jobs:
       run: |
         pip install bandit black>=20.8b1
         make lint
+
+    - name: Check Build
+      if: github.event.pull_request.base.ref == 'master'
+      run: make check-dist
 
     - name: Tests
       run: make test
@@ -84,5 +92,3 @@ jobs:
       - name: Coveralls Finished
         run: |
           curl https://coveralls.io/webhook?repo_token=${{ secrets.COVERALLS }} -d "payload[build_num]=${{ github.sha }}&payload[status]=done"
-
-
