@@ -352,7 +352,7 @@ class HarPage:
             )
 
     def __repr__(self):
-        return "ID: {0}, URL: {1}".format(self.page_id, self.url)
+        return f"ID: {self.page_id}, URL: {self.url}"
 
     def __iter__(self):
         return iter(self.entries)
