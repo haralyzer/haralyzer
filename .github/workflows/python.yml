@@ -16,9 +16,9 @@ on:
     branches:
       - master
     paths:
+      - tests/**
       - haralyzer/**
-      - setup.py
-      - setup.cfg
+      - .github/workflows/python.yml
       - requirements.txt
       - requirements_dev.txt
 
@@ -68,10 +68,7 @@ jobs:
         pip install . -r requirements_dev.txt
 
     - name: Lint
-#      if: startsWith(matrix.python-version,'3')
-      run: |
-#        pip install bandit black>=20.8b1
-        make lint
+      run: make lint
 
     - name: Check Build
       if: github.event.pull_request.base.ref == 'master'
