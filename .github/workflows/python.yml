@@ -68,7 +68,7 @@ jobs:
         pip install . -r requirements_dev.txt
 
     - name: Lint
-      if: matrix.python-version != "pypy-3.6"
+      if: matrix.python-version != 'pypy-3.6'
       run: make lint
 
     - name: Check Build
