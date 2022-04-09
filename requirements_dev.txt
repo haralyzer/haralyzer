@@ -1,11 +1,10 @@
 -r requirements.txt
-bumpversion
-coverage
-pytest
-pytest-cov
-coveralls
-sphinx
-# bandit
-# black >= 20.8b1
-flake8
-pylint
+coverage >= 6.2
+pytest >= 7.0.1
+pytest-cov >= 3.0.0
+coveralls >= 3.3.1
+sphinx >= 4.4.0
+bandit >= 1.7.1
+black >= 22.1.0
+flake8 >= 3.9.2
+pylint >= 2.13.0
