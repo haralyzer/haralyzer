@@ -20,3 +20,16 @@ page in HarParser.pages is a HarPage object. ::
     for page in har_parser.pages:
         assert isinstance(page, HarPage, None)
         # returns True for each
+
+
+You can also use either ``load_file()`` or ``load_json()`` functions to easily load a file or json data. ::
+
+    from haralyzer import load_file, load_json
+
+    har_parser = load_file('har_data.har')
+
+    # Or
+
+    with open('har_data.har', 'r') as infile:
+        data = infile.read()
+    har_parser = load_json(data)

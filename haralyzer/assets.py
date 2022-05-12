@@ -1,6 +1,6 @@
 # pylint: disable=C0302
 """
-Provides all of the main functional classes for analyzing HAR files
+Provides all the main functional classes for analyzing HAR files
 """
 
 import functools
