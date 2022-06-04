@@ -31,6 +31,18 @@ def test_init(har_data):
     assert har_parser.hostname == 'humanssuck.net'
 
 
+def test_from_file(har_data):
+    parser = HarParser.from_file(har_data('humanssuck.net.har', True))
+    assert isinstance(parser, HarParser)
+
+
+def test_from_string(har_data):
+    with open(har_data('humanssuck.net.har', True)) as infile:
+        data = infile.read()
+    parser = HarParser.from_string(data)
+    assert isinstance(parser, HarParser)
+
+
 def test_init_entry_with_no_pageref(har_data):
     '''
     If we find an entry with no pageref it should end up in a HarPage object

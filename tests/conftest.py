@@ -11,9 +11,11 @@ def har_data():
     """
     data_path = os.path.abspath(__file__ + '/../data/')
 
-    def load_doc(filename):
+    def load_doc(filename, as_path: bool = False):
         full_path = os.path.join(data_path, filename)
-        with open(full_path) as f:
+        if as_path:
+            return full_path
+        with open(full_path, encoding="utf-8") as f:
             return json.loads(f.read())
     return load_doc
 

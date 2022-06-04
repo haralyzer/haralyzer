@@ -5,6 +5,7 @@ Provides all the main functional classes for analyzing HAR files
 
 import functools
 import datetime
+import json
 import re
 from typing import List, Optional
 
@@ -54,6 +55,31 @@ class HarParser:
                 " to instantiate this class. Please RTFM."
             )
         self.har_data = har_data["log"]
+
+    @staticmethod
+    def from_file(file: [str, bytes]) -> 'HarParser':
+        """
+        Function create a HarParser from a file path
+
+        :param file: Path to har file or bytes of har file
+        :type file: [str, bytes]
+        :return: HarParser Object
+        :rtype HarParser
+        """
+        with open(file=file, mode="r", encoding="utf-8") as infile:
+            return HarParser(json.load(infile))
+
+    @staticmethod
+    def from_string(data: [str, bytes]):
+        """
+        Function to load string or bytes as a HarParser
+
+        :param data: Input string or bytes
+        :type  data: [str, bytes]
+        :return: HarParser Object
+        :rtype HarParser
+        """
+        return HarParser(json.loads(data))
 
     @staticmethod
     @convert_to_entry
