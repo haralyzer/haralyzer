@@ -112,7 +112,7 @@ class HarParser:
         """
         if header_type not in ["request", "response"]:
             raise ValueError(
-                "Invalid header_type, should be either:\n\n" "* 'request'\n*'response'"
+                "Invalid header_type, should be either:\n\n* 'request'\n*'response'"
             )
 
         # TODO - headers are empty in some HAR data.... need fallbacks here
