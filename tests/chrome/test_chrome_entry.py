@@ -2,12 +2,12 @@ import pytest
 from haralyzer import HarPage, HarEntry
 
 
-PAGE_ID = 'page_1'
+PAGE_ID = "page_1"
 
 
 def test_entry(har_data):
     """
-        Tests that HarEntry class works
+    Tests that HarEntry class works
     """
     init_data = har_data("chrome.har")
     single_entry = HarPage(PAGE_ID, har_data=init_data).entries[1]
@@ -24,35 +24,40 @@ def test_entry(har_data):
     assert single_entry.serverAddress == "104.27.152.17"
     assert single_entry.time == 110.02700000244658
     assert single_entry.timings == {
-          "blocked": 0.5099999980302528,
-          "dns": 0,
-          "ssl": 36.527,
-          "connect": 62.269,
-          "send": 1.0060000000000002,
-          "wait": 44.8429999964661,
-          "receive": 1.3990000079502352,
-          "_blocked_queueing": 0.5099999980302528
-        }
+        "blocked": 0.5099999980302528,
+        "dns": 0,
+        "ssl": 36.527,
+        "connect": 62.269,
+        "send": 1.0060000000000002,
+        "wait": 44.8429999964661,
+        "receive": 1.3990000079502352,
+        "_blocked_queueing": 0.5099999980302528,
+    }
     assert single_entry.url == "https://jwhite.network/"
 
 
 def test_request(har_data):
     """
-        Tests that HarEntry.request has the correct data
+    Tests that HarEntry.request has the correct data
     """
     init_data = har_data("chrome.har")
     request = HarPage(PAGE_ID, har_data=init_data).entries[1].request
     assert str(request) == "HarEntry.Request for https://jwhite.network/"
     assert repr(request) == "HarEntry.Request for https://jwhite.network/"
 
-    assert request.accept == "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"
-    assert request.cookies == [{
-              "name": "__cfduid",
-              "value": "df477fc1d24c2bbce2fe8127a020316a11598723802",
-              "expires": None,
-              "httpOnly": False,
-              "secure": False
-            }]
+    assert (
+        request.accept
+        == "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"
+    )
+    assert request.cookies == [
+        {
+            "name": "__cfduid",
+            "value": "df477fc1d24c2bbce2fe8127a020316a11598723802",
+            "expires": None,
+            "httpOnly": False,
+            "secure": False,
+        }
+    ]
     assert request.bodySize == 0
     assert request.cacheControl == "no-cache"
     assert request.encoding == "gzip, deflate, br"
@@ -64,14 +69,18 @@ def test_request(har_data):
     assert request.method == "GET"
     assert len(request.queryString) == 0
     assert request.url == "https://jwhite.network/"
-    assert request.userAgent == "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36"
+    assert (
+        request.userAgent
+        == "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 "
+        "Safari/537.36"
+    )
 
     assert request.get_header_value("Connection") is None
 
 
 def test_response(har_data):
     """
-        Tests the HarEntry.response has the correct data
+    Tests the HarEntry.response has the correct data
     """
     init_data = har_data("chrome.har")
     response = HarPage(PAGE_ID, har_data=init_data).entries[1].response
@@ -97,8 +106,8 @@ def test_response(har_data):
 
 def test_backwards(har_data):
     """
-        Tests that HarEntry class works if expecting dictionary.
-        Made so it is a non-breaking change
+    Tests that HarEntry class works if expecting dictionary.
+    Made so it is a non-breaking change
     """
     init_data = har_data("chrome.har")
     single_entry = HarPage(PAGE_ID, har_data=init_data).entries[1]
@@ -110,15 +119,15 @@ def test_backwards(har_data):
     assert single_entry["serverIPAddress"] == "104.27.152.17"
     assert single_entry["time"] == 110.02700000244658
     assert single_entry["timings"] == {
-          "blocked": 0.5099999980302528,
-          "dns": 0,
-          "ssl": 36.527,
-          "connect": 62.269,
-          "send": 1.0060000000000002,
-          "wait": 44.8429999964661,
-          "receive": 1.3990000079502352,
-          "_blocked_queueing": 0.5099999980302528
-        }
+        "blocked": 0.5099999980302528,
+        "dns": 0,
+        "ssl": 36.527,
+        "connect": 62.269,
+        "send": 1.0060000000000002,
+        "wait": 44.8429999964661,
+        "receive": 1.3990000079502352,
+        "_blocked_queueing": 0.5099999980302528,
+    }
     assert single_entry["request"]["method"] == "GET"
 
     assert len(single_entry) == 12

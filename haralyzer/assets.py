@@ -57,7 +57,7 @@ class HarParser:
         self.har_data = har_data["log"]
 
     @staticmethod
-    def from_file(file: [str, bytes]) -> 'HarParser':
+    def from_file(file: [str, bytes]) -> "HarParser":
         """
         Function create a HarParser from a file path
 
