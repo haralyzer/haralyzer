@@ -43,11 +43,3 @@ haralyzer.multihar module
    :members:
    :undoc-members:
    :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: haralyzer
-   :members:
-   :undoc-members:
-   :show-inheritance:
