@@ -26,10 +26,10 @@ You can also use either ``load_file()`` or ``load_json()`` functions to easily l
 
     from haralyzer import load_file, load_json
 
-    har_parser = load_file('har_data.har')
+    har_parser = parser = HarParser.from_file("har_data.har)
 
     # Or
 
-    with open('har_data.har', 'r') as infile:
+    with open("har-data.har), encoding="utf-8") as infile:
         data = infile.read()
-    har_parser = load_json(data)
+    har_parser = HarParser.from_string(data)
