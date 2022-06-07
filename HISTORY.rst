@@ -3,7 +3,12 @@
 History
 -------
 
-2.0.0
+2.1.0 (2022-06-07)
+++++++++++++++++++
+
+* Feature add ``from_file()`` and ``from_string()`` class methods to HarParser
+
+2.0.0 (2021-06-21)
 ++++++++++++++++++
 
 * FEATURE - Adds typing to haralyzer.
