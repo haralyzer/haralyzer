@@ -1,6 +1,9 @@
 haralyzer package
 =================
 
+Submodules
+----------
+
 haralyzer.assets module
 -----------------------
 
@@ -40,4 +43,3 @@ haralyzer.multihar module
    :members:
    :undoc-members:
    :show-inheritance:
-

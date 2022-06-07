@@ -1,7 +1,8 @@
+"""Tests for multi parser"""
 import pytest
 from haralyzer import MultiHarParser, HarPage
 
-PAGE_ID = 'page_3'
+PAGE_ID = "page_3"
 
 
 def test_init(har_data):
@@ -42,19 +43,19 @@ def test_stdev(har_data):
     data = _load_test_data(har_data)
     har_parser = MultiHarParser(har_data=data)
     with pytest.raises(ValueError):
-        har_parser.get_stdev('nonexistent')
+        har_parser.get_stdev("nonexistent")
     # Full page load time stdev
-    assert har_parser.get_stdev('page') == 11
+    assert har_parser.get_stdev("page") == 11
     # Time to first byte stdev
-    assert har_parser.get_stdev('ttfb') == 10
+    assert har_parser.get_stdev("ttfb") == 10
     # Test specific asset standard deviation
-    assert har_parser.get_stdev('js') == 6
-    assert har_parser.get_stdev('css') == 4
-    assert har_parser.get_stdev('image') == 4
-    assert har_parser.get_stdev('html') == 10
+    assert har_parser.get_stdev("js") == 6
+    assert har_parser.get_stdev("css") == 4
+    assert har_parser.get_stdev("image") == 4
+    assert har_parser.get_stdev("html") == 10
     # TODO - Get audio/video load time data
-    assert har_parser.get_stdev('video') == 0
-    assert har_parser.get_stdev('audio') == 0
+    assert har_parser.get_stdev("video") == 0
+    assert har_parser.get_stdev("audio") == 0
 
 
 def _load_test_data(har_data, num_test_files=3):
@@ -66,5 +67,5 @@ def _load_test_data(har_data, num_test_files=3):
     """
     results = []
     for i in range(1, num_test_files + 1):
-        results.append(har_data('multi_test_{0}.har'.format(i)))
+        results.append(har_data(f"multi_test_{i}.har"))
     return results

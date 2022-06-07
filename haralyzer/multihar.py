@@ -21,7 +21,7 @@ class MultiHarParser:
         :param har_data: A list of dict representing the JSON
         of a HAR file. See the docstring of HarParser.__init__ for more detail.
         :type har_data: List[dict]
-        :param page_id: IF a the page ID is provided, the
+        :param page_id: If a page ID is provided, the
         multiparser will return aggregate results for this specific page. If
         not, it will assume that there is only one page in the run (this was
         written specifically for that use case).
