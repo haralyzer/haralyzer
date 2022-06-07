@@ -22,11 +22,11 @@ page in HarParser.pages is a HarPage object. ::
         # returns True for each
 
 
-You can also use either ``load_file()`` or ``load_json()`` functions to easily load a file or json data. ::
+You can also use either ``from_file()`` or ``from_string()`` methods to easily load a file or json data. ::
 
-    from haralyzer import load_file, load_json
+    from haralyzer import HarParser
 
-    har_parser = parser = HarParser.from_file("har_data.har)
+    har_parser = HarParser.from_file("har_data.har)
 
     # Or
 
