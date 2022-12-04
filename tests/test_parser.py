@@ -73,6 +73,15 @@ def test_init_entry_with_no_pageref(har_data):
     assert len(page.entries) == 1
 
 
+def test_init_entry_with_no_page(har_data):
+    data = har_data("missing_page.har")
+    har_parser = HarParser(data)
+    assert len(har_parser.pages) == 1
+    unknown_page = har_parser.pages[0]
+    assert unknown_page.page_id == "unknown"
+    assert len(unknown_page.entries) == 1
+
+
 def test_match_headers(har_data):
 
     # The HarParser does not work without a full har file, but we only want

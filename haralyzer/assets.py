@@ -273,7 +273,7 @@ class HarParser:
         pages = []
         if any("pageref" not in entry for entry in self.har_data["entries"]):
             pages.append(HarPage("unknown", har_parser=self))
-        for har_page in self.har_data["pages"]:
+        for har_page in self.har_data.get("pages", []):
             page = HarPage(har_page["id"], har_parser=self)
             pages.append(page)
 
@@ -364,7 +364,7 @@ class HarPage:
         valid = False
         if self.page_id == "unknown":
             valid = True
-        for page in raw_data["pages"]:
+        for page in raw_data.get("pages", []):
             if page["id"] == self.page_id:
                 valid = True
                 self.title = page.get("title", "")
