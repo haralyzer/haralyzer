@@ -3,6 +3,11 @@
 History
 -------
 
+2.1.1 (2022-12-04)
+++++++++++++++++++
+
+* Allow 'pages' property is missing in log object
+
 2.1.0 (2022-06-07)
 ++++++++++++++++++
 
