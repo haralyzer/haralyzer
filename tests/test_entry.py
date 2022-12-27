@@ -64,6 +64,8 @@ def test_request(har_data):
         request.userAgent
         == "Mozilla/5.0 (X11; Linux i686 on x86_64; rv:25.0) Gecko/20100101 Firefox/25.0"
     )
+    assert request.mimeType is None
+    assert request.text is None
 
     assert request.get_header_value("Connection") == "keep-alive"
 

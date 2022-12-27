@@ -65,6 +65,40 @@ def test_request(har_data):
         request.userAgent
         == "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:81.0) Gecko/20100101 Firefox/81.0"
     )
+    assert request.mimeType is None
+    assert request.text is None
+
+    assert request.get_header_value("Connection") == "keep-alive"
+
+
+def test_request_post(har_data):
+    """
+    Tests that HarEntry.request has the correct POST data
+    """
+    init_data = har_data("firefox.har")
+    request = HarPage(PAGE_ID, har_data=init_data).entries[26].request
+    assert str(request) == "HarEntry.Request for https://jwhite.report-uri.com/r/d/csp/enforce"
+    assert repr(request) == "HarEntry.Request for https://jwhite.report-uri.com/r/d/csp/enforce"
+
+    assert request.accept == "*/*"
+    assert request.cookies == []
+    assert request.bodySize == 929
+    assert request.cacheControl is None
+    assert request.encoding == "gzip, deflate, br"
+    assert len(request.headers) == 9
+    assert request.headersSize == 356
+    assert request.host == "jwhite.report-uri.com"
+    assert request.httpVersion == "HTTP/2"
+    assert request.language == "en-US,en;q=0.5"
+    assert request.method == "POST"
+    assert len(request.queryString) == 0
+    assert request.url == "https://jwhite.report-uri.com/r/d/csp/enforce"
+    assert (
+        request.userAgent
+        == "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:81.0) Gecko/20100101 Firefox/81.0"
+    )
+    assert request.mimeType == "application/csp-report"
+    assert len(request.text) == 929
 
     assert request.get_header_value("Connection") == "keep-alive"
 

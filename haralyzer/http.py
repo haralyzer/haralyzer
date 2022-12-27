@@ -121,6 +121,26 @@ class Request(HttpTransaction):
         """
         return self.get_header_value("User-Agent")
 
+    @cached_property
+    def mimeType(self) -> Optional[str]:
+        """
+        :return: Mime Type of request
+        :rtype: str
+        """
+        if "postData" not in self.raw_entry:
+            return None
+        return self.raw_entry["postData"].get("mimeType")
+
+    @cached_property
+    def text(self) -> Optional[str]:
+        """
+        :return: Request body
+        :rtype: str
+        """
+        if "postData" not in self.raw_entry:
+            return None
+        return self.raw_entry["postData"].get("text")
+
 
 class Response(HttpTransaction):
     """Response object for a HarEntry"""
