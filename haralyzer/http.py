@@ -270,9 +270,17 @@ class Response(HttpTransaction):
         return self.raw_entry["content"]["mimeType"]
 
     @cached_property
-    def text(self) -> str:
+    def text(self) -> Optional[str]:
         """
         :return: Response body
         :rtype: str
         """
-        return self.raw_entry["content"]["text"]
+        return self.raw_entry["content"].get("text")
+
+    @cached_property
+    def textEncoding(self) -> str:
+        """
+        :return: How the response body is encoded
+        :rtype: str
+        """
+        return self.raw_entry["content"].get("encoding")

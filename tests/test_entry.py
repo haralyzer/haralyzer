@@ -93,6 +93,7 @@ def test_response(har_data):
     assert response.status == 200
     assert response.statusText == "OK"
     assert len(response.text) == 308
+    assert response.textEncoding is None
 
     assert response.get_header_value("Server") == "nginx"
 
