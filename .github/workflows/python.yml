@@ -79,11 +79,11 @@ jobs:
       run: make test
 
     - name: Report to Coveralls
-      run: coveralls
+      run: coveralls --service=github
       env:
-        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS }}
         COVERALLS_FLAG_NAME: ${{ matrix.os }}-${{ matrix.python-version }}
         COVERALLS_PARALLEL: true
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
   Finish:
@@ -92,4 +92,4 @@ jobs:
     steps:
       - name: Coveralls Finished
         run: |
-          curl https://coveralls.io/webhook?repo_token=${{ secrets.COVERALLS }} -d "payload[build_num]=${{ github.sha }}&payload[status]=done"
+          curl https://coveralls.io/webhook?repo_token=${{ secrets.GITHUB_TOKEN }} -d "payload[build_num]=${{ github.sha }}&payload[status]=done"
