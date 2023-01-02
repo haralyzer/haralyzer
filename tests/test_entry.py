@@ -64,6 +64,8 @@ def test_request(har_data):
         request.userAgent
         == "Mozilla/5.0 (X11; Linux i686 on x86_64; rv:25.0) Gecko/20100101 Firefox/25.0"
     )
+    assert request.mimeType is None
+    assert request.text is None
 
     assert request.get_header_value("Connection") == "keep-alive"
 
@@ -91,6 +93,7 @@ def test_response(har_data):
     assert response.status == 200
     assert response.statusText == "OK"
     assert len(response.text) == 308
+    assert response.textEncoding is None
 
     assert response.get_header_value("Server") == "nginx"
 

@@ -74,6 +74,41 @@ def test_request(har_data):
         == "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 "
         "Safari/537.36"
     )
+    assert request.mimeType is None
+    assert request.text is None
+
+    assert request.get_header_value("Connection") is None
+
+
+def test_request_post(har_data):
+    """
+    Tests that HarEntry.request has the correct POST data
+    """
+    init_data = har_data("chrome.har")
+    request = HarPage(PAGE_ID, har_data=init_data).entries[30].request
+    assert str(request) == "HarEntry.Request for https://jwhite.report-uri.com/r/d/csp/enforce"
+    assert repr(request) == "HarEntry.Request for https://jwhite.report-uri.com/r/d/csp/enforce"
+
+    assert request.accept == "*/*"
+    assert request.cookies == []
+    assert request.bodySize == 1034
+    assert request.cacheControl == "no-cache"
+    assert request.encoding == "gzip, deflate, br"
+    assert len(request.headers) == 17
+    assert request.headersSize == -1
+    assert request.host is None
+    assert request.httpVersion == "http/2.0"
+    assert request.language == "en-US,en;q=0.9"
+    assert request.method == "POST"
+    assert len(request.queryString) == 0
+    assert request.url == "https://jwhite.report-uri.com/r/d/csp/enforce"
+    assert (
+        request.userAgent
+        == "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 "
+        "Safari/537.36"
+    )
+    assert request.mimeType == "application/csp-report"
+    assert len(request.text) == 1034
 
     assert request.get_header_value("Connection") is None
 
@@ -100,6 +135,33 @@ def test_response(har_data):
     assert response.statusText == ""
     with pytest.raises(KeyError):
         assert len(response.text)
+
+    assert response.get_header_value("Server") == "cloudflare"
+
+
+def test_response_encoded(har_data):
+    """
+    Tests the HarEntry.response has the correct data with encoded content
+    """
+    init_data = har_data("chrome.har")
+    response = HarPage(PAGE_ID, har_data=init_data).entries[9].response
+
+    assert response.bodySize == -1
+    assert response.cacheControl == "max-age=31536000"
+    assert len(response.contentSecurityPolicy) == 654
+    assert response.contentSize == 31485
+    assert response.contentType == "image/png"
+    assert response.date == "Thu, 24 Sep 2020 22:22:57 GMT"
+    assert len(response.headers) == 32
+    assert response.headersSize == -1
+    assert response.httpVersion == "http/2.0"
+    assert response.lastModified == "Sat, 29 Aug 2020 20:36:06 GMT"
+    assert response.mimeType == "image/png"
+    assert response.redirectURL == ""
+    assert response.status == 200
+    assert response.statusText == ""
+    assert len(response.text) == 41980
+    assert response.textEncoding == "base64"
 
     assert response.get_header_value("Server") == "cloudflare"
 
