@@ -68,7 +68,7 @@ jobs:
         pip install . -r requirements-dev.txt
 
     - name: Lint
-      if: contains(fromJSON('["pypy-3.9"]'), matrix.python-version) != true && contains(fromJSON('["windows-2019", "windows-2022" ,"macos-12"]'), runner.os) != true
+      if: matrix.python-version != 'pypy-3.9'
       run: make lint
 
     - name: Check Build
