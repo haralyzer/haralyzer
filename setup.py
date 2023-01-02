@@ -1,25 +1,15 @@
 #!/usr/bin/env python
 from setuptools import setup
 
-install_reqs = [
-    'cached-property',
-    'python-dateutil',
-]
+install_reqs = open("requirements.txt").readlines()
+test_reqs = open("requirements-dev.txt").readlines()
 
-test_requirements = [
-    'pytest-cov',
-    'coveralls',
-    'bandit',
-    'black>=20.8b1',
-    'flake8',
-    'pylint',
-]
 
 readme = open('README.rst').read()
 
 setup(
         name='haralyzer',
-        version='2.1.1',
+        version='2.2.0',
         description='A python framework for getting useful stuff out of HAR files',
         long_description=readme,
         long_description_content_type="text/x-rst",
@@ -31,7 +21,7 @@ setup(
             'haralyzer'
         ],
         package_dir={'haralyzer': 'haralyzer'},
-        tests_require=test_requirements,
+        tests_require=test_reqs[1:],
         install_requires=install_reqs,
         extras_require={
         },
