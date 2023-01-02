@@ -3,21 +3,26 @@
 History
 -------
 
+2.2.0 (2023-01-02)
+++++++++++++++++++
+
+* Feature - Populate request.postData and response.content.encoding in HarEntry #51
+
 2.1.1 (2022-12-04)
 ++++++++++++++++++
 
-* Allow 'pages' property is missing in log object
+* Allow 'pages' property is missing in log object #49
 
 2.1.0 (2022-06-07)
 ++++++++++++++++++
 
-* Feature add ``from_file()`` and ``from_string()`` class methods to HarParser
+* Feature add ``from_file()`` and ``from_string()`` class methods to HarParser #46
 
 2.0.0 (2021-06-21)
 ++++++++++++++++++
 
-* FEATURE - Adds typing to haralyzer.
-* Deprecation - Drops support for Python 2.7
+* FEATURE - Adds typing to haralyzer. #45
+* Deprecation - Drops support for Python 2.7 #45
 
 1.9.0 (2020-12-24)
 ++++++++++++++++++
