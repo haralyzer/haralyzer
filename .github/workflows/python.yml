@@ -44,14 +44,14 @@ jobs:
       if: startsWith(runner.os, 'Linux')
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-${{ matrix.python-version}}-${{ hashFiles('**/requirements.txt', '**/requirements_dev.txt') }}
+        key: ${{ runner.os }}-${{ matrix.python-version}}-${{ hashFiles('**/requirements.txt', '**/requirements-dev.txt') }}
 
     - name: MacOS Cache
       uses: actions/cache@v3
       if: startsWith(runner.os, 'macOS')
       with:
         path: ~/Library/Caches/pip
-        key: ${{ runner.os }}-${{ matrix.python-version}}-${{ hashFiles('**/requirements.txt', '**/requirements_dev.txt') }}
+        key: ${{ runner.os }}-${{ matrix.python-version}}-${{ hashFiles('**/requirements.txt', '**/requirements-dev.txt') }}
 
 
     - name: Windows Cache
@@ -59,16 +59,16 @@ jobs:
       if: startsWith(runner.os, 'Windows')
       with:
         path: ~\AppData\Local\pip\Cache
-        key: ${{ runner.os }}-${{ matrix.python-version}}-${{ hashFiles('**/requirements.txt', '**/requirements_dev.txt') }}
+        key: ${{ runner.os }}-${{ matrix.python-version}}-${{ hashFiles('**/requirements.txt', '**/requirements-dev.txt') }}
 
 
     - name: Install Dependencies
       run: |
         pip install --upgrade pip wheel
-        pip install . -r requirements_dev.txt
+        pip install . -r requirements-dev.txt
 
     - name: Lint
-      if: contains(fromJSON('["pypy-3.9"]'), matrix.python-version) != true && contains(fromJSON('["windows-2019", "windows-2022" ,"macos-12"]'), matrix.os)
+      if: contains(fromJSON('["pypy-3.9"]'), matrix.python-version) != true && contains(fromJSON('["windows-2019", "windows-2022" ,"macos-12"]'), matrix.os) != true
       run: make lint
 
     - name: Check Build
