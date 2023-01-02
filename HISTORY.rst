@@ -6,23 +6,23 @@ History
 2.2.0 (2023-01-02)
 ++++++++++++++++++
 
-* Feature - Populate request.postData and response.content.encoding in HarEntry #51
+* Feature - Populate request.postData and response.content.encoding in HarEntry `#51 <https://github.com/haralyzer/haralyzer/pull/51>`_
 
 2.1.1 (2022-12-04)
 ++++++++++++++++++
 
-* Allow 'pages' property is missing in log object #49
+* Allow 'pages' property is missing in log object `#49 <https://github.com/haralyzer/haralyzer/pull/49>`_
 
 2.1.0 (2022-06-07)
 ++++++++++++++++++
 
-* Feature add ``from_file()`` and ``from_string()`` class methods to HarParser #46
+* Feature add ``from_file()`` and ``from_string()`` class methods to HarParser `#46 <https://github.com/haralyzer/haralyzer/pull/46>`_
 
 2.0.0 (2021-06-21)
 ++++++++++++++++++
 
-* FEATURE - Adds typing to haralyzer. #45
-* Deprecation - Drops support for Python 2.7 #45
+* FEATURE - Adds typing to haralyzer. `#45 <https://github.com/haralyzer/haralyzer/pull/45>`_
+* Deprecation - Drops support for Python 2.7 `#45 <https://github.com/haralyzer/haralyzer/pull/45>`_
 
 1.9.0 (2020-12-24)
 ++++++++++++++++++
