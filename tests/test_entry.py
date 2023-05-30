@@ -1,7 +1,7 @@
 """Tests for har Entry"""
 import pytest
-from haralyzer import HarPage, HarEntry
 
+from haralyzer import HarEntry, HarPage
 
 PAGE_ID = "page_3"
 
@@ -68,6 +68,16 @@ def test_request(har_data):
     assert request.text is None
 
     assert request.get_header_value("Connection") == "keep-alive"
+    formatted = (
+        "GET http://humanssuck.net/ HTTP/1.1\n"
+        "Host: humanssuck.net\n"
+        "User-Agent: Mozilla/5.0 (X11; Linux i686 on x86_64; rv:25.0) Gecko/20100101 Firefox/25.0\n"
+        "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\n"
+        "Accept-Language: en-US,en;q=0.5\n"
+        "Accept-Encoding: gzip, deflate\n"
+        "Connection: keep-alive\n\n"
+    )
+    assert request.formatted == formatted
 
 
 def test_response(har_data):
@@ -94,8 +104,34 @@ def test_response(har_data):
     assert response.statusText == "OK"
     assert len(response.text) == 308
     assert response.textEncoding is None
-
     assert response.get_header_value("Server") == "nginx"
+    formatted = (
+        "HTTP/1.1 200 OK\n"
+        "Server: nginx\n"
+        "Date: Mon, 23 Feb 2015 03:28:12 GMT\n"
+        "Content-Type: text/html; charset=UTF-8\n"
+        "Transfer-Encoding: chunked\n"
+        "Connection: keep-alive\n"
+        "Vary: Accept-Encoding\n"
+        "X-Accel-Version: 0.01\n"
+        "Last-Modified: Mon, 23 Feb 2015 03:22:35 GMT\n"
+        'Etag: "3e20f0c-134-50fb8e9e3f6be"\n'
+        "X-Powered-By: PleskLin\n"
+        "Content-Encoding: gzip\n\n"
+        "<!DOCTYPE HTML>\n<html>\r\n"
+        "<head>humanssuck.net\n"
+        '<link rel="stylesheet" type="text/css" href="test.css"></head>\r\n'
+        "<body>\r\n"
+        '<img src="screen_login.gif">\n'
+        '<script src="jquery-1.7.1.min.js"></script>\n'
+        '<video width="320" height="240" controls>\n\t'
+        '<source src="test_video.mp4" type="video/mp4">\n'
+        "</video>\n"
+        "</body>\r\n"
+        "</html>\r\n\n"
+    )
+
+    assert response.formatted == formatted
 
 
 def test_backwards(har_data):

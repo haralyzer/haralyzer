@@ -13,6 +13,13 @@ class Request(HttpTransaction):
     def __repr__(self):
         return f"HarEntry.Request for {self.url}"
 
+    def _start_line(self) -> str:
+        """
+        :return: Request specific start line
+        :rtype: str
+        """
+        return f"{self.method} {self.url} {self.httpVersion}"
+
     # Root Level values
 
     @cached_property
@@ -160,6 +167,13 @@ class Response(HttpTransaction):
 
     def __repr__(self) -> str:
         return f"HarEntry.Response for {self.url}"
+
+    def _start_line(self) -> str:
+        """
+        :return: Response specific start line (status-line)
+        :rtype: str
+        """
+        return f"{self.httpVersion} {self.status} {self.statusText}"
 
     # Root Level values
 
