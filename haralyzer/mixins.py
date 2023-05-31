@@ -1,6 +1,8 @@
 """Mixin Objects that allow for shared methods"""
+import abc
 from collections.abc import MutableMapping
 from typing import Any, Optional
+
 from cached_property import cached_property
 
 
@@ -21,6 +23,22 @@ class GetHeaders:
             if header["name"].lower() == name.lower():
                 return header["value"]
         return None
+
+    @cached_property
+    def _formatted_headers(self) -> str:
+        """
+        Returns a formatted string of the headers in `KEY: VALUE` format
+
+        :return: string of all headers
+        :rtype: str
+        """
+        formatted_headers = ""
+
+        for header in self.raw_entry["headers"]:
+            name, value = header["name"], header["value"]
+            formatted_headers += f"{name}: {value}\n"
+
+        return formatted_headers
 
 
 class MimicDict(MutableMapping):
@@ -59,3 +77,18 @@ class HttpTransaction(GetHeaders, MimicDict):
         :rtype: list
         """
         return self.raw_entry["headers"]
+
+    @cached_property
+    def formatted(self) -> str:
+        """
+        Formatted HttpTransaction string for pretty print.
+
+        :return: formatted string
+        :rtype: str
+        """
+        body = self.text if self.text else ""
+        return f"{self._start_line()}\n{self._formatted_headers}\n{body}"
+
+    @abc.abstractmethod
+    def _start_line(self) -> str:
+        pass
