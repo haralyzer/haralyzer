@@ -6,3 +6,4 @@
 
 
 - [ ] Released Need
+- [ ] Changelog entry added to `HISTORY.rst`
