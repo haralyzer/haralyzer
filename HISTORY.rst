@@ -3,31 +3,42 @@
 History
 -------
 
+2.3.0 (2023-06-15)
+++++++++++++++++++
+
+* Feature - Add formatted HTTP string
+  Provided by @netanelc305
+
+
 2.2.0 (2023-01-02)
 ++++++++++++++++++
 
-* Feature - Populate request.postData and response.content.encoding in HarEntry `#51 <https://github.com/haralyzer/haralyzer/pull/51>`_
+* Feature - Populate request.postData and response.content.encoding in HarEntry
+  Provided by @yysushi
 
 2.1.1 (2022-12-04)
 ++++++++++++++++++
 
-* Allow 'pages' property is missing in log object `#49 <https://github.com/haralyzer/haralyzer/pull/49>`_
+* Feature - Allow 'pages' property is missing in log object
 
-2.1.0 (2022-06-07)
+2.1.0 (2022-06-08)
 ++++++++++++++++++
 
-* Feature add ``from_file()`` and ``from_string()`` class methods to HarParser `#46 <https://github.com/haralyzer/haralyzer/pull/46>`_
+* Feature - Add from_file() and from_string() class methods to HarParser
+
 
 2.0.0 (2021-06-21)
 ++++++++++++++++++
 
-* FEATURE - Adds typing to haralyzer. `#45 <https://github.com/haralyzer/haralyzer/pull/45>`_
-* Deprecation - Drops support for Python 2.7 `#45 <https://github.com/haralyzer/haralyzer/pull/45>`_
+* Feature - Adds typing to haralyzer.
+
+* Deprecation - Drops support for Python 2.7
+
 
 1.9.0 (2020-12-24)
 ++++++++++++++++++
 
-* FEATURE - Creation of HarEntry class to get all the entries from a HarPage.
+* Feature - Creation of HarEntry class to get all the entries from a HarPage.
   Provided by @Cyb3r-Jak3
 
 * Switched from Travis-CI to GitHub Actions.
