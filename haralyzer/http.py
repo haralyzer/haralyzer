@@ -146,7 +146,8 @@ class Request(HttpTransaction):
         """
         if "postData" not in self.raw_entry:
             return None
-        return self.raw_entry["postData"].get("text")
+        post_data = self.raw_entry["postData"]
+        return post_data.get("_textBase64", post_data.get("text"))
 
 
 class Response(HttpTransaction):
