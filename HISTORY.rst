@@ -6,6 +6,11 @@ History
 UNRELEASED
 ++++++++++++++++++
 
+2.4.0 (2023-07-11)
+++++++++++++++++++
+
+* Feature - Handle `_textBase64` in `postData`
+  Provided by @netanelc305
 
 2.3.0 (2023-06-15)
 ++++++++++++++++++

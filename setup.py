@@ -9,7 +9,7 @@ readme = open('README.rst').read()
 
 setup(
         name='haralyzer',
-        version='2.3.0',
+        version='2.4.0',
         description='A python framework for getting useful stuff out of HAR files',
         long_description=readme,
         long_description_content_type="text/x-rst",
