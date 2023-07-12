@@ -133,8 +133,7 @@ def test_response(har_data):
     assert response.redirectURL == "https://www.jwhite.network"
     assert response.status == 301
     assert response.statusText == ""
-    with pytest.raises(KeyError):
-        assert len(response.text)
+    assert response.text is None
 
     assert response.get_header_value("Server") == "cloudflare"
 
