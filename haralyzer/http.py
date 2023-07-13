@@ -290,7 +290,8 @@ class Response(HttpTransaction):
         :return: Response body
         :rtype: str
         """
-        return self.raw_entry["content"]["text"]
+        content = self.raw_entry["content"]
+        return content.get("_textBase64", content.get("text"))
 
     @cached_property
     def textEncoding(self) -> str:
