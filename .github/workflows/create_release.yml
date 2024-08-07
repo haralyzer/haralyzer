@@ -26,7 +26,7 @@ jobs:
           echo "WHEEL_PATH=${WHEEL_PATH}" >> $GITHUB_ENV
 
       - name: Release
-        uses: crazy-max/ghaction-github-release@v1
+        uses: crazy-max/ghaction-github-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
