@@ -60,10 +60,10 @@ operate on a single entry (from a HarPage) or a ``list`` of entries::
         for entry in page.entries:
             ### MATCH HEADERS ###
             if har_parser.match_headers(entry, 'Content-Type', 'image.*'):
-                print 'This would appear to be an image'
+                print('This would appear to be an image')
             ### MATCH REQUEST TYPE ###
             if har_parser.match_request_type(entry, 'GET'):
-                print 'This is a GET request'
+                print('This is a GET request')
             ### MATCH STATUS CODE ###
             if har_parser.match_status_code(entry, '2.*'):
-                print 'Looks like all is well in the world'
+                print('Looks like all is well in the world')
