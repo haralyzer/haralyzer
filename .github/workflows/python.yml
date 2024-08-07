@@ -46,6 +46,7 @@ jobs:
         path: ~/.cache/pip
         key: |
           ${{ runner.os }}-${{ matrix.python-version}}-${{ hashFiles('**/requirements.txt', '**/requirements-dev.txt') }}
+        restore-keys: |
           ${{ runner.os }}-${{ matrix.python-version}}-
 
     - name: MacOS Cache
@@ -53,9 +54,9 @@ jobs:
       if: startsWith(runner.os, 'macOS')
       with:
         path: ~/Library/Caches/pip
-        key: |
-            ${{ runner.os }}-${{ matrix.python-version}}-${{ hashFiles('**/requirements.txt', '**/requirements-dev.txt') }}
-            ${{ runner.os }}-${{ matrix.python-version}}-
+        key: ${{ runner.os }}-${{ matrix.python-version}}-${{ hashFiles('**/requirements.txt', '**/requirements-dev.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ matrix.python-version}}-
 
 
     - name: Windows Cache
@@ -63,8 +64,8 @@ jobs:
       if: startsWith(runner.os, 'Windows')
       with:
         path: ~\AppData\Local\pip\Cache
-        key: |
-          ${{ runner.os }}-${{ matrix.python-version}}-${{ hashFiles('**/requirements.txt', '**/requirements-dev.txt') }}
+        key: ${{ runner.os }}-${{ matrix.python-version}}-${{ hashFiles('**/requirements.txt', '**/requirements-dev.txt') }}
+        restore-keys: |
           ${{ runner.os }}-${{ matrix.python-version}}-
           
 
