@@ -29,7 +29,7 @@ lint:
 
 
 check-dist:
-	pip install -U twine wheel setuptools --quiet
+	pip install -U twine wheel setuptools build --quiet
 	python setup.py egg_info
-	python setup.py sdist bdist_wheel
+	python -m build --sdist --wheel .
 	twine check --strict dist/*
