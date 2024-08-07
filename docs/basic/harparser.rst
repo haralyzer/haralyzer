@@ -11,10 +11,10 @@ page in HarParser.pages is a HarPage object. ::
     with open('har_data.har', 'r') as f:
         har_parser = HarParser(json.loads(f.read()))
 
-    print har_parser.browser
+    print(har_parser.browser)
     # {u'name': u'Firefox', u'version': u'25.0.1'}
 
-    print har_parser.hostname
+    print(har_parser.hostname)
     # 'humanssuck.net'
 
     for page in har_parser.pages:
@@ -26,10 +26,10 @@ You can also use either ``from_file()`` or ``from_string()`` methods to easily l
 
     from haralyzer import HarParser
 
-    har_parser = HarParser.from_file("har_data.har)
+    har_parser = HarParser.from_file("har_data.har")
 
     # Or
 
-    with open("har-data.har), encoding="utf-8") as infile:
+    with open("har-data.har"), encoding="utf-8") as infile:
         data = infile.read()
     har_parser = HarParser.from_string(data)
