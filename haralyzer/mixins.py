@@ -1,4 +1,5 @@
 """Mixin Objects that allow for shared methods"""
+
 import abc
 from collections.abc import MutableMapping
 from typing import Any, Optional

@@ -28,39 +28,46 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, ubuntu-22.04, macos-11, macos-12, windows-2019, windows-2022]
-        python-version: ["3.8", "3.9", "3.10", "3.11", "pypy-3.8", "pypy-3.9"]
+        os: [ubuntu-20.04, ubuntu-22.04, ubuntu-24.04, macos-12, macos-13, macos-14, windows-2019, windows-2022]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "pypy-3.8", "pypy-3.9", "pypy-3.10"]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
 
     - name: Linux Cache
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       if: startsWith(runner.os, 'Linux')
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-${{ matrix.python-version}}-${{ hashFiles('**/requirements.txt', '**/requirements-dev.txt') }}
+        key: |
+          ${{ runner.os }}-${{ matrix.python-version}}-${{ hashFiles('**/requirements.txt', '**/requirements-dev.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ matrix.python-version}}-
 
     - name: MacOS Cache
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       if: startsWith(runner.os, 'macOS')
       with:
         path: ~/Library/Caches/pip
         key: ${{ runner.os }}-${{ matrix.python-version}}-${{ hashFiles('**/requirements.txt', '**/requirements-dev.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ matrix.python-version}}-
 
 
     - name: Windows Cache
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       if: startsWith(runner.os, 'Windows')
       with:
         path: ~\AppData\Local\pip\Cache
         key: ${{ runner.os }}-${{ matrix.python-version}}-${{ hashFiles('**/requirements.txt', '**/requirements-dev.txt') }}
-
+        restore-keys: |
+          ${{ runner.os }}-${{ matrix.python-version}}-
+          
 
     - name: Install Dependencies
       run: |

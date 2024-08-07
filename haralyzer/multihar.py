@@ -1,4 +1,5 @@
 """Contains the mutlihar parse object"""
+
 from statistics import stdev
 from statistics import mean
 from typing import Union, List

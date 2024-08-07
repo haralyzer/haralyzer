@@ -15,11 +15,11 @@ jobs:
       - name: Install Dependencies
         run: |
           pip install --upgrade pip
-          pip install setuptools wheel twine
+          pip install setuptools wheel twine build
 
       - name: Build
         run: |
-          python setup.py sdist bdist_wheel
+          python -m build --sdist --wheel .
           SDIST_PATH=$(ls dist/*.tar.gz)
           WHEEL_PATH=$(ls dist/*.whl)
           echo "SDIST_PATH=${SDIST_PATH}" >> $GITHUB_ENV
