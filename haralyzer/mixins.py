@@ -2,9 +2,8 @@
 
 import abc
 from collections.abc import MutableMapping
+from functools import cached_property
 from typing import Any, Optional
-
-from cached_property import cached_property
 
 
 class GetHeaders:

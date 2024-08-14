@@ -1,9 +1,9 @@
 """Contains the mutlihar parse object"""
 
+from functools import cached_property
 from statistics import stdev
 from statistics import mean
 from typing import Union, List
-from cached_property import cached_property
 from .assets import HarParser
 
 DECIMAL_PRECISION = 0
