@@ -6,6 +6,10 @@ History
 UNRELEASED
 ++++++++++++++++++
 
+
+2.4.1 (2024-08-14)
+++++++++++++++++++
+
 * Fix - Pyright type inferences
   Provided by @vantaboard, @naz-theori
 
