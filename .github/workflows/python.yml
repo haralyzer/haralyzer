@@ -28,8 +28,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, ubuntu-22.04, ubuntu-24.04, macos-12, macos-13, macos-14, windows-2019, windows-2022]
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "pypy-3.8", "pypy-3.9", "pypy-3.10", "pypy-3.11"]
+        os: [ubuntu-20.04, ubuntu-22.04, ubuntu-24.04, macos-14, windows-2022, windows-2025]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "pypy-3.11"]
 
     steps:
     - uses: actions/checkout@v6
