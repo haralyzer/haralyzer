@@ -23,7 +23,7 @@ test:
 
 lint:
 	black --check haralyzer
-	pylint --disable=E1101,C0103,W0511,R0901 haralyzer
+	pylint --disable=E1101,C0103,W0511,R0901,R0917 haralyzer
 	flake8 --max-line-length 89 --statistics --show-source --count haralyzer
 	bandit -r haralyzer
 
